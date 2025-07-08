@@ -1,0 +1,281 @@
+.project__header {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.project__headerVideo {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    filter: brightness(0.7);
+}
+
+.project__headerTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.project__headerMainTitle {
+    font-size: 200px;
+}
+
+.project__headerSubTitle {
+    font-size: 50px;
+    text-align: center;
+    line-height: normal;
+}
+
+.project__headerNavigator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+}
+
+.project__headerNavigatorItem {
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+.project__headerNavigatorItem:hover {
+    background-color: #0000001f;
+    cursor: pointer;
+}
+
+.project__headerNavigatorItemTitle {
+    font-size: 15px;
+}
+
+.project__additionalInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 0;
+}
+
+.project__authors {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.project__authorsOneLine {
+    display: flex;
+    gap: 20px;
+}
+
+.project__author {
+    font-size: 25px;
+}
+
+.project__affiliations {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.project__affiliation {
+    font-size: 20px;
+}
+
+.project__materials {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.project__material {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 100px;
+}
+
+.project__materialIcon {
+    width: 25px;
+}
+
+.project__materialName {
+    font-size: 20px;
+}
+
+.project__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.project__bodyContentTitle {
+    font-size: 40px;
+}
+
+.project__bodyContentWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.project__bodyContent {
+    padding: 30px 0;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.project__overviewVideo {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__abstractText {
+    font-size: 15px;
+    text-align: justify;
+}
+
+.project__methodContent {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.project__methodContentTitle {
+    font-size: 25px;
+    width: 100%;
+}
+
+.project__methodContentText {
+    text-align: center;
+    font-size: 15px;
+}
+
+.project__methodDataCollectionBody {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.project__methodDataCollectionImage {
+    width: 400px;
+}
+
+.project__methodDataCollectionPointCloudsWrapper {
+    position: relative;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.project__methodDataCollectionPointClouds {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.project__methodDataCollectionPointCloud {
+    width: 350px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.project__methodDataCollectionPointCloudsLeftArrow {
+    left: 10px;
+}
+
+.project__methodDataCollectionPointCloudsRightArrow {
+    left: 310px;
+}
+
+.project__methodDataCollectionPointCloudsArrow {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__methodDataCollectionPointCloudsArrow > svg {
+    width: 20px;
+    height: 20px;
+}
+
+.project__methodDataCollectionPointCloudsArrow:hover {
+    cursor: pointer;
+    background-color: #a3a3a3;
+    transition: background-color 0.3s ease;
+}
+
+.project__keyFeature {
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.project__keyFeatureTitle {
+    font-size: 25px;
+    width: 100%;
+}
+
+.project__keyFeatureBody {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.project__keyFeatureImage {
+    width: 50%;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__keyFeatureTextBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project__keyFeatureText {
+    font-size: 15px;
+}
