@@ -222,7 +222,7 @@
     left: 310px;
 }
 
-.project__methodDataCollectionPointCloudsArrow, .project__applicabilityVideosArrow {
+.project__methodDataCollectionPointCloudsArrow, .project__applicabilityVideosArrow, .project__dataEfficiencyArrow {
     position: absolute;
     width: 30px;
     height: 30px;
@@ -232,17 +232,17 @@
     align-items: center;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     z-index: 1;
+    transition: background-color 0.3s ease;
 }
 
-.project__methodDataCollectionPointCloudsArrow > svg, .project__applicabilityVideosArrow > svg {
+.project__methodDataCollectionPointCloudsArrow > svg, .project__applicabilityVideosArrow > svg, .project__dataEfficiencyArrow > svg {
     width: 20px;
     height: 20px;
 }
 
-.project__methodDataCollectionPointCloudsArrow:hover, .project__applicabilityVideosArrow:hover {
+.project__methodDataCollectionPointCloudsArrow:hover, .project__applicabilityVideosArrow:hover, .project__dataEfficiencyArrow:hover {
     cursor: pointer;
     background-color: #a3a3a3;
-    transition: background-color 0.3s ease;
 }
 
 .project__keyFeature {
@@ -360,6 +360,91 @@
 
 .project__applicabilityTextFootnote {
     font-size: 12px;
+}
+
+.project__dataEfficiencyBodyWrapper {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.project__dataEfficiencyLeftArrow {
+    left: 10px;
+}
+
+.project__dataEfficiencyRightArrow {
+    left: 760px;
+}
+
+.project__dataEfficiencyBodyContents {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow-x: hidden;
+}
+
+.project__dataEfficiencyBody {
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.project__dataEfficiencyText {
+    text-align: center;
+    font-size: 15px;
+}
+
+.project__dataEfficiencyMedias {
+    width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project__dataEfficiencyExp3aVideo {
+    width: 300px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__dataEfficiencyExp3bScenesImage, .project__dataEfficiencyExp3cScenesImage {
+    width: 400px;
+}
+
+.project__dataEfficiencyExp3bGraphImage, .project__dataEfficiencyExp3cGraphImage {
+    width: 350px;
+}
+
+.project__dataEfficiencyExp3aImage {
+    width: 450px;
+}
+
+.project__dataEfficiencyExp4Medias, .project__dataEfficiencyExp5Medias {
+    justify-content: center;
+}
+
+.project__dataEfficiencyExp4Image {
+    width: 700px;
+}
+
+.project__dataEfficiencyExp5Video {
+    width: 600px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__failureCasesBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project__failureCasesText {
+    font-size: 15px;
+    text-align: justify;
 }
 
 .project__futureWorkBody {

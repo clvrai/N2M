@@ -11,6 +11,8 @@ const Project = () => {
     const pointCloudsRef = useRef(null);
     const [currentApplicabilityVideo, setCurrentApplicabilityVideo] = useState(0);
     const applicabilityVideosRef = useRef(null);
+    const [currentDataEfficiencyContent, setCurrentDataEfficiencyContent] = useState(0);
+    const dataEfficiencyContentsRef = useRef(null);
 
     const scrollToCurrentPointCloud = (index) => {
         const container = pointCloudsRef.current;
@@ -65,6 +67,34 @@ const Project = () => {
             const prev = currentApplicabilityVideo - 1;
             setCurrentApplicabilityVideo(prev);
             scrollToCurrentApplicabilityVideo(prev);
+        }
+    };
+
+    const scrollToCurrentDataEfficiencyContent = (index) => {
+        const container = dataEfficiencyContentsRef.current;
+        const dataEfficiencyContents = container.querySelectorAll('.project__dataEfficiencyBody');
+        if (dataEfficiencyContents[index]) {
+            dataEfficiencyContents[index].scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest',
+            });
+        }
+    };
+
+    const incrementDataEfficiencyContent = () => {
+        if (currentDataEfficiencyContent < 4) {
+            const next = currentDataEfficiencyContent + 1;
+            setCurrentDataEfficiencyContent(next);
+            scrollToCurrentDataEfficiencyContent(next);
+        }
+    };
+
+    const decrementDataEfficiencyContent = () => {
+        if (currentDataEfficiencyContent > 0) {
+            const prev = currentDataEfficiencyContent - 1;
+            setCurrentDataEfficiencyContent(prev);
+            scrollToCurrentDataEfficiencyContent(prev);
         }
     };
 
@@ -295,11 +325,80 @@ const Project = () => {
                             <span className="project__applicabilityTextFootnote">*Reachability baseline: Reachabilitiy based naive integration between navigation and manipulation</span>
                         </p>
                     </div>
+
+                    <div className="project__keyFeature">
+                        <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Data efficiency</span> and <span className="blue-color google-sans-semibold">generalizability</span></p>
+                        <div className="project__keyFeatureBody project__dataEfficiencyBodyWrapper">
+                            <div className="project__dataEfficiencyLeftArrow project__dataEfficiencyArrow dark-gray-background" onClick={decrementDataEfficiencyContent}>
+                                <ArrowBackIosNewIcon className="white-color" />
+                            </div>
+                            <div className="project__dataEfficiencyRightArrow project__dataEfficiencyArrow dark-gray-background" onClick={incrementDataEfficiencyContent}>
+                                <ArrowForwardIosIcon className="white-color" />
+                            </div>
+                            <div className="project__dataEfficiencyBodyContents" ref={dataEfficiencyContentsRef}>
+                                <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
+                                    <div className="project__dataEfficiencyExp3aMedias project__dataEfficiencyMedias">
+                                        <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay>
+                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3a.png`} alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
+                                    </div>
+                                    <p className="project__dataEfficiencyText project__dataEfficiencyExp3aText google-sans-regular">
+                                        💎 <span className="google-sans-semibold">Data Efficiency</span>: Surpasses Oracle baseline with only 20 rollouts.
+                                    </p>
+                                </div>
+                                <div className="project__dataEfficiencyBody project__dataEfficiencyExp3b">
+                                    <div className="project__dataEfficiencyExp3bMedias project__dataEfficiencyMedias">
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_scenes.png`} alt="data_efficiency_exp3b_scenes" className="project__dataEfficiencyExp3bScenesImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_graph.png`} alt="data_efficiency_exp3b_graph" className="project__dataEfficiencyExp3bGraphImage" />
+                                    </div>
+                                    <p className="project__dataEfficiencyText project__dataEfficiencyExp3bText google-sans-regular">
+                                        💎 <span className="google-sans-semibold">Generalizability</span>: With increasing number of scene texture diversity, it learns to generalize better
+                                    </p>
+                                </div>
+                                <div className="project__dataEfficiencyBody project__dataEfficiencyExp3c">
+                                    <div className="project__dataEfficiencyExp3cMedias project__dataEfficiencyMedias">
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_scenes.png`} alt="data_efficiency_exp3c_scenes" className="project__dataEfficiencyExp3cScenesImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_graph.png`} alt="data_efficiency_exp3c_graph" className="project__dataEfficiencyExp3cGraphImage" />
+                                    </div>
+                                    <p className="project__dataEfficiencyText project__dataEfficiencyExp3cText google-sans-regular">
+                                        💎 <span className="google-sans-semibold">Generalizability</span>: With increasing number of scene layout diversity, it learns to generalize better
+                                    </p>
+                                </div>
+                                <div className="project__dataEfficiencyBody project__dataEfficiencyExp4">
+                                    <div className="project__dataEfficiencyExp4Medias project__dataEfficiencyMedias">
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp4.png`} alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
+                                    </div>
+                                    <p className="project__dataEfficiencyText project__dataEfficiencyExp4Text google-sans-regular">
+                                        💎 <span className="google-sans-semibold">Data Efficiency</span>: Even with less than 12 rollouts, it achieves good performance <br/>
+                                        💎 <span className="google-sans-semibold">Generalizability</span>: With increasing number of scene layout diversity, it learns to generalize better
+                                    </p>
+                                </div>
+                                <div className="project__dataEfficiencyBody project__dataEfficiencyExp5">
+                                    <div className="project__dataEfficiencyExp5Medias project__dataEfficiencyMedias">
+                                        <video className="project__dataEfficiencyExp5Video" loop muted autoPlay>
+                                            <source src="./videos/Data_Efficiency_Exp5.mov" type="video/mp4" />
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                    <p className="project__dataEfficiencyText project__dataEfficiencyExp5Text google-sans-regular">
+                                        💎 <span className="google-sans-semibold">Generalizability</span>: It generalizes to completely unseen environments with only 15 rollouts
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="project__bodyContentWrapper light-gray-background">
                     <div className="project__bodyContent project__failureCases">
                         <p className="project__bodyContentTitle google-sans-semibold">Failure Cases</p>
+                        <div className="project__failureCasesBody">
+                            <p className="project__failureCasesText google-sans-regular">❌ Our method is not good when the object is small.</p>
+                            <p className="project__failureCasesText google-sans-regular">❌ Prediction is not consistent. (Statistics)</p>
+                            <p className="project__failureCasesText google-sans-regular">❌ Even handover works in unseen scenarios, other tasks not working well. ( but with several in domain data, it will quickly and effectively learn that preference.)</p>
+                        </div>
                     </div>
                 </div>
 
