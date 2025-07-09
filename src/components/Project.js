@@ -214,7 +214,7 @@ const Project = () => {
             <div className="project__body">
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
-                    <video className="project__overviewVideo" loop muted autoPlay controls>
+                    <video className="project__overviewVideo" loop muted autoPlay control playsInline>
                         <source src="./videos/RA-L overview.mov" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
@@ -300,19 +300,19 @@ const Project = () => {
                                 <ArrowForwardIosIcon className="white-color" />
                             </div>
                             <div className="project__realTimeVideos" ref={realTimeVideosRef}>
-                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                <video className="project__realtimeVideo" loop muted autoPlay playsInline>
                                     <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
-                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                <video className="project__realtimeVideo" loop muted autoPlay playsInline>
                                     <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
-                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                <video className="project__realtimeVideo" loop muted autoPlay playsInline>
                                     <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
-                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                <video className="project__realtimeVideo" loop muted autoPlay playsInline>
                                     <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
@@ -324,7 +324,7 @@ const Project = () => {
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Viewpoint</span> Robustness</p>
                         <div className="project__keyFeatureBody project__viewpointRobustnessBody">
-                            <video className="project__viewpointRobustnessVideo" loop muted autoPlay>
+                            <video className="project__viewpointRobustnessVideo" loop muted autoPlay playsInline>
                                 <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
@@ -343,19 +343,19 @@ const Project = () => {
                                     <ArrowForwardIosIcon className="white-color" />
                                 </div>
                                 <div className="project__applicabilityVideos" ref={applicabilityVideosRef}>
-                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
                                         <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
-                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
                                         <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
-                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
                                         <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
-                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
                                         <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
@@ -382,7 +382,7 @@ const Project = () => {
                             <div className="project__dataEfficiencyBodyContents" ref={dataEfficiencyContentsRef}>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
                                     <div className="project__dataEfficiencyExp3aMedias project__dataEfficiencyMedias">
-                                        <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay>
+                                        <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay playsInline>
                                             <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
@@ -421,7 +421,7 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp5">
                                     <div className="project__dataEfficiencyExp5Medias project__dataEfficiencyMedias">
-                                        <video className="project__dataEfficiencyExp5Video" loop muted autoPlay>
+                                        <video className="project__dataEfficiencyExp5Video" loop muted autoPlay playsInline>
                                             <source src="./videos/Data_Efficiency_Exp5.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
