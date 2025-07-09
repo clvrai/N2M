@@ -413,8 +413,8 @@ const Project = () => {
                 <div className="project__bodyContent project__bibtex">
                     <p className="project__bodyContentTitle google-sans-semibold">Bibtex</p>
                     <div className="project__bibtexBody">
-                        <pre className="project__bibtexText google-sans-regular">
-                            
+                        <pre className="project__bibtexText google-sans-regular light-gray-background">
+                            TBD
                         </pre>
                     </div>
                 </div>
