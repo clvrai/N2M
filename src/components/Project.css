@@ -528,26 +528,21 @@
     justify-content: space-between;
 }
 
-.project__dataEfficiencyExp3aVideo {
-    width: 40%;
-    border-radius: 15px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-}
-
-.project__dataEfficiencyExp3bScenesImage, .project__dataEfficiencyExp3cScenesImage {
+.project__dataEfficiencyExp3bScenesImage, .project__dataEfficiencyExp3cScenesImage, .project__dataEfficiencyExp3aVideo {
     width: 50%;
 }
 
-.project__dataEfficiencyExp3bGraphImage, .project__dataEfficiencyExp3cGraphImage {
+.project__dataEfficiencyExp3bGraphImage, .project__dataEfficiencyExp3cGraphImage, .project__dataEfficiencyExp3aImage {
     width: 45%;
-}
-
-.project__dataEfficiencyExp3aImage {
-    width: 55%;
 }
 
 .project__dataEfficiencyExp4Medias, .project__dataEfficiencyExp5Medias {
     justify-content: center;
+}
+
+.project__dataEfficiencyExp3aVideo {
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .project__dataEfficiencyExp4Image {

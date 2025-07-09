@@ -385,7 +385,7 @@ const Project = () => {
                                             <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
-                                        <img src='./figures/Data_Efficiency_Exp3a.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3a_graph.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3aText google-sans-regular">
                                         💎 <span className="google-sans-semibold">Data Efficiency</span>: Surpasses Oracle baseline with only 20 rollouts.
