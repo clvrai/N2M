@@ -110,18 +110,18 @@ const Project = () => {
                     <p className="project__headerSubTitle google-sans-regular white-color">Bridging Navigation and Manipulation by Learning <br/>Initial Pose Preference from Rollout</p>
                 </div>
                 <div className="project__headerNavigator">
-                    <div className="project__headerNavigatorItem">
+                    <a href="#overview" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Overview</p>
-                    </div>
-                    <div className="project__headerNavigatorItem">
+                    </a>
+                    <a href="#key-features" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Key Features</p>
-                    </div>
-                    <div className="project__headerNavigatorItem">
+                    </a>
+                    <a href="#failure-cases" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Failure Cases</p>
-                    </div>
-                    <div className="project__headerNavigatorItem">
+                    </a>
+                    <a href="#future-work" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Future Work</p>
-                    </div>
+                    </a>
                 </div>
             </div>
             <div className="project__additionalInfo">
@@ -147,7 +147,7 @@ const Project = () => {
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src={`${process.env.PUBLIC_URL}/icons/arxiv.png`} alt="paper" className="project__materialIcon" />
+                            <img src='./icons/arxiv.png' alt="paper" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">arXiv</p>
                         </div>
                     </a>
@@ -159,13 +159,13 @@ const Project = () => {
                     </a>
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src={`${process.env.PUBLIC_URL}/icons/youtube.png`} alt="youtube" className="project__materialIcon" />
+                            <img src='./icons/youtube.png' alt="youtube" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Youtube</p>
                         </div>
                     </a>
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src={`${process.env.PUBLIC_URL}/icons/bilibili.png`} alt="bilibili" className="project__materialIcon" />
+                            <img src='./icons/bilibili.png' alt="bilibili" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Bilibili</p>
                         </div>
                     </a>
@@ -174,7 +174,7 @@ const Project = () => {
 
 
             <div className="project__body">
-                <div className="project__bodyContent project__overview">
+                <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
                     <video className="project__overviewVideo" loop muted autoPlay controls>
                         <source src="./videos/RA-L overview.mov" type="video/mp4" />
@@ -201,13 +201,13 @@ const Project = () => {
                     <p className="project__bodyContentTitle google-sans-semibold">Method</p>
                     <div className="project__methodContent">
                         <p className="project__methodContentTitle google-sans-semibold">Pipeline</p>
-                        <img src={`${process.env.PUBLIC_URL}/figures/Method_System_Overview.png`} alt="method_system_overview" className="project__methodPipelineImage" />
+                        <img src='./figures/Method_System_Overview.png' alt="method_system_overview" className="project__methodPipelineImage" />
                         <p className="project__methodContentText google-sans-regular">Navigate within task area &rarr; <span className="blue-color google-sans-semibold">Adjust pose with N2M</span> &rarr; Execute manipulation policy</p>
                     </div>
                     <div className="project__methodContent project__methodDataCollection">
                         <p className="project__methodContentTitle google-sans-semibold">Data Collection</p>
                         <div className="project__methodDataCollectionBody">
-                            <img src={`${process.env.PUBLIC_URL}/figures/Method_Data_Preparation.png`} alt="method_data_preparation" className="project__methodDataCollectionImage" />
+                            <img src='./figures/Method_Data_Preparation.png' alt="method_data_preparation" className="project__methodDataCollectionImage" />
                             <div className="project__methodDataCollectionPointCloudsWrapper">
                                 <div className="project__methodDataCollectionPointCloudsLeftArrow project__methodDataCollectionPointCloudsArrow dark-gray-background" onClick={decrementPointCloud}>
                                     <ArrowBackIosNewIcon className="white-color" />
@@ -217,19 +217,19 @@ const Project = () => {
                                 </div>
                                 <div className="project__methodDataCollectionPointClouds" ref={pointCloudsRef}>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/local_scene.pcd`} />
+                                        <PointCloudViewer pcdPath='./pcls/local_scene.pcd' />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Local Scene</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered1.pcd`} />
+                                        <PointCloudViewer pcdPath='./pcls/rendered1.pcd' />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 1</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered2.pcd`} />
+                                        <PointCloudViewer pcdPath='./pcls/rendered2.pcd' />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 2</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered3.pcd`} />
+                                        <PointCloudViewer pcdPath='./pcls/rendered3.pcd' />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 3</p>
                                     </div>
                                 </div>
@@ -238,12 +238,12 @@ const Project = () => {
                     </div>
                 </div>
 
-                <div className="project__bodyContent project__keyFeatures">
+                <div className="project__bodyContent project__keyFeatures" id="key-features">
                     <p className="project__bodyContentTitle google-sans-semibold">Key Features</p>
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Ego-centric</span> Prediction</p>
                         <div className="project__keyFeatureBody project__egoCentricBody">
-                            <img src={`${process.env.PUBLIC_URL}/figures/Key_Feature_Ego-centric.png`} alt="key_feature_ego-centric" className="project__egoCentricImage" />
+                            <img src='./figures/Key_Feature_Ego-centric.png' alt="key_feature_ego-centric" className="project__egoCentricImage" />
                             <div className="project__egoCentricTextBody">
                                 <p className="project__egoCentricText google-sans-regular">
                                     ✅ N2M only requires ego-centric observations and produces predictions based on ego-centric coordinate
@@ -342,7 +342,7 @@ const Project = () => {
                                             <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3a.png`} alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3a.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3aText google-sans-regular">
                                         💎 <span className="google-sans-semibold">Data Efficiency</span>: Surpasses Oracle baseline with only 20 rollouts.
@@ -350,8 +350,8 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3b">
                                     <div className="project__dataEfficiencyExp3bMedias project__dataEfficiencyMedias">
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_scenes.png`} alt="data_efficiency_exp3b_scenes" className="project__dataEfficiencyExp3bScenesImage" />
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_graph.png`} alt="data_efficiency_exp3b_graph" className="project__dataEfficiencyExp3bGraphImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3b_scenes.png' alt="data_efficiency_exp3b_scenes" className="project__dataEfficiencyExp3bScenesImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3b_graph.png' alt="data_efficiency_exp3b_graph" className="project__dataEfficiencyExp3bGraphImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3bText google-sans-regular">
                                         💎 <span className="google-sans-semibold">Generalizability</span>: With increasing number of scene texture diversity, it learns to generalize better
@@ -359,8 +359,8 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3c">
                                     <div className="project__dataEfficiencyExp3cMedias project__dataEfficiencyMedias">
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_scenes.png`} alt="data_efficiency_exp3c_scenes" className="project__dataEfficiencyExp3cScenesImage" />
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_graph.png`} alt="data_efficiency_exp3c_graph" className="project__dataEfficiencyExp3cGraphImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3c_scenes.png' alt="data_efficiency_exp3c_scenes" className="project__dataEfficiencyExp3cScenesImage" />
+                                        <img src='./figures/Data_Efficiency_Exp3c_graph.png' alt="data_efficiency_exp3c_graph" className="project__dataEfficiencyExp3cGraphImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3cText google-sans-regular">
                                         💎 <span className="google-sans-semibold">Generalizability</span>: With increasing number of scene layout diversity, it learns to generalize better
@@ -368,7 +368,7 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp4">
                                     <div className="project__dataEfficiencyExp4Medias project__dataEfficiencyMedias">
-                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp4.png`} alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
+                                        <img src='./figures/Data_Efficiency_Exp4.png' alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp4Text google-sans-regular">
                                         💎 <span className="google-sans-semibold">Data Efficiency</span>: Even with less than 12 rollouts, it achieves good performance <br/>
@@ -392,7 +392,7 @@ const Project = () => {
                 </div>
 
                 <div className="project__bodyContentWrapper light-gray-background">
-                    <div className="project__bodyContent project__failureCases">
+                    <div className="project__bodyContent project__failureCases" id="failure-cases">
                         <p className="project__bodyContentTitle google-sans-semibold">Failure Cases</p>
                         <div className="project__failureCasesBody">
                             <p className="project__failureCasesText google-sans-regular">❌ Our method is not good when the object is small.</p>
@@ -402,7 +402,7 @@ const Project = () => {
                     </div>
                 </div>
 
-                <div className="project__bodyContent project__futureWork">
+                <div className="project__bodyContent project__futureWork" id="future-work">
                     <p className="project__bodyContentTitle google-sans-semibold">Future Work</p>
                     <div className="project__futureWorkBody">
                         <p className="project__futureWorkText google-sans-regular">❗<span className="google-sans-semibold">Hardware dependency</span>: N2M relies on high quality depth estimation to capture realistic point cloud. Enabling N2M to run with only an RGB camera through monocular depth estimation and scene reconstruction to reduce hardware dependencies.</p>
