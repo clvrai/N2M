@@ -158,7 +158,7 @@ const Project = () => {
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Key Features</p>
                     </a>
                     <a href="#future-work" className="project__headerNavigatorItem">
-                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Limitations and Future Work</p>
+                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Limitations & Future Work</p>
                     </a>
                 </div>
             </div>
@@ -179,7 +179,8 @@ const Project = () => {
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
                 </div>
                 <div className="project__symbols">
-                    <p className="project__symbolsText google-sans-regular">&dagger; indicates equal contribution, &Dagger; indicates corresponding author</p>
+                    <p className="project__symbolsText google-sans-regular">&dagger; indicates equal contribution</p>
+                    <p className="project__symbolsText google-sans-regular">&Dagger; indicates corresponding author</p>
                 </div>
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
@@ -372,11 +373,11 @@ const Project = () => {
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Data efficiency</span> and <span className="blue-color google-sans-semibold">generalizability</span></p>
                         <div className="project__keyFeatureBody project__dataEfficiencyBodyWrapper">
                             <div className="project__dataEfficiencyNavigator">
-                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 0 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(0)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">PnP data efficiency</p></div>
-                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 1 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(1)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
-                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 2 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(2)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
-                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 3 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(3)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Taking lamp out of the shelf</p></div>
-                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 4 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(4)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Toy box handover</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton project__dataEfficiencyNavigatorButtonFirstThree light-gray-background ${currentDataEfficiencyContent === 0 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(0)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">PnP data efficiency</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton project__dataEfficiencyNavigatorButtonFirstThree light-gray-background ${currentDataEfficiencyContent === 1 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(1)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton project__dataEfficiencyNavigatorButtonFirstThree light-gray-background ${currentDataEfficiencyContent === 2 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(2)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton project__dataEfficiencyNavigatorButtonLastTwo light-gray-background ${currentDataEfficiencyContent === 3 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(3)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Taking lamp out of the shelf</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton project__dataEfficiencyNavigatorButtonLastTwo light-gray-background ${currentDataEfficiencyContent === 4 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(4)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Toy box handover</p></div>
                             </div>
                             <div className="project__dataEfficiencyBodyContents" ref={dataEfficiencyContentsRef}>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">

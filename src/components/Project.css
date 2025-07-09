@@ -63,6 +63,7 @@
 
 .project__headerNavigatorItemTitle {
     font-size: 15px;
+    text-align: center;
 }
 
 .project__additionalInfo {
@@ -78,9 +79,9 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     width: 80%;
     max-width: 800px;
-    gap: 20px;
 }
 
 .project__authorsOneLine {
@@ -97,17 +98,33 @@
     gap: 20px;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
+    width: 80%;
+    max-width: 800px;
 }
 
 .project__affiliation {
     font-size: 20px;
 }
 
+.project__symbols {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    max-width: 800px;
+}
+
 .project__materials {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
     align-items: center;
+    width: 80%;
+    max-width: 800px;
 }
 
 .project__material {
@@ -199,17 +216,18 @@
     position: relative;
     width: 36vw;
     max-width: 540px;
-    height: 400px;
     display: flex;
     flex-direction: column;
+    gap: 20px;
     overflow-x: hidden;
     overflow-y: visible;
 }
 
 .project__methodDataCollectionPointCloudsNavigator {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
-    border-radius: 100px;
+    border-radius: 20px;
     overflow: hidden;
 }
 
@@ -247,7 +265,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    bottom: 7px;
+    bottom: 0;
     background-color: #ffffff;
     opacity: 0.5;
 }
@@ -288,7 +306,6 @@
     width: 36vw !important;
     max-width: 540px;
     height: 100%;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .project__methodDataCollectionPointCloudsLeftArrow, .project__realTimeVideosLeftArrow {
@@ -461,12 +478,14 @@
 .project__dataEfficiencyNavigator {
     display: flex;
     justify-content: space-around;
-    border-radius: 100px;
+    border-radius: 30px;
     overflow: hidden;
+    flex-wrap: wrap;
 }
 
 .project__dataEfficiencyNavigatorButton {
-    width: 25%;
+    width: 20%;
+    min-width: 200px;
     height: 40px;
     display: flex;
     justify-content: center;
@@ -592,7 +611,7 @@
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1500px) {
     .project__methodDataCollectionBody {
         display: flex;
         flex-direction: column;
@@ -614,5 +633,23 @@
         max-width: 80vw;
         height: 100%;
         box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    .project__dataEfficiencyNavigatorButtonFirstThree {
+        width: 33.33%;
+    }
+    
+    .project__dataEfficiencyNavigatorButtonLastTwo {
+        width: 50%;
+    }
+}
+
+@media (max-width: 800px) {
+    .project__methodDataCollectionPointCloudsNavigatorButton {
+        width: 50%;
+    }
+
+    .project__dataEfficiencyNavigatorButton {
+        width: 100%;
     }
 }
