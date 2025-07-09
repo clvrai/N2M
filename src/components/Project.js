@@ -140,7 +140,7 @@ const Project = () => {
         <div className="project">
             <div className="project__header">
                 <video className="project__headerVideo" loop muted autoPlay>
-                    <source src="./videos/Teaser_x8_05k_web.mov" type="video/mp4" />
+                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
                 <div className="project__headerTitle">
@@ -300,15 +300,15 @@ const Project = () => {
                             </div>
                             <div className="project__realTimeVideos" ref={realTimeVideosRef}>
                                 <video className="project__realtimeVideo" loop muted autoPlay>
+                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                <video className="project__realtimeVideo" loop muted autoPlay>
                                     <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay>
                                     <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
-                                <video className="project__realtimeVideo" loop muted autoPlay>
-                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay>
