@@ -660,4 +660,40 @@
     .project__headerSubTitle {
         font-size: 40px;
     }
+
+    .project__applicabilityMedias {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .project__applicabilityVideoWrapper, .project__applicabilityVideo {
+        width: 80vw;
+        max-width: 1200px;
+    }
+    
+    .project__applicabilityImage {
+        width: 100%;
+    }
+
+    .project__dataEfficiencyMedias {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .project__dataEfficiencyExp3bScenesImage, .project__dataEfficiencyExp3cScenesImage, .project__dataEfficiencyExp3aVideo {
+        width: 90%;
+    }
+    
+    .project__dataEfficiencyExp3bGraphImage, .project__dataEfficiencyExp3cGraphImage, .project__dataEfficiencyExp3aImage {
+        width: 90%;
+    }
+
+    .project__dataEfficiencyExp4Image {
+        width: 90%;
+    }
+    
+    .project__dataEfficiencyExp5Video {
+        width: 90%;
+    }
 }
