@@ -361,7 +361,7 @@ const Project = () => {
                                     </video>
                                 </div>
                             </div>
-                            <img src='./figures/Broad_Applicability.png' alt="key_feature_applicability" className="project__applicabilityImage" />
+                            <img src='./figures/Broad_applicability.png' alt="key_feature_applicability" className="project__applicabilityImage" />
                         </div>
                         <p className="project__applicabilityText google-sans-regular">
                             💎 <span className="google-sans-semibold">Broad applicability</span>: N2M demonstrates substantial performance gain across various tasks and policies <br/>
