@@ -95,7 +95,7 @@
 
 .project__affiliations {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
@@ -109,7 +109,7 @@
 
 .project__symbols {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
