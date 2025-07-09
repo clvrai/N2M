@@ -652,4 +652,12 @@
     .project__dataEfficiencyNavigatorButton {
         width: 100%;
     }
+
+    .project__headerMainTitle {
+        font-size: 150px;
+    }
+    
+    .project__headerSubTitle {
+        font-size: 40px;
+    }
 }
