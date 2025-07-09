@@ -139,7 +139,7 @@ const Project = () => {
     return (
         <div className="project">
             <div className="project__header">
-                <video className="project__headerVideo" loop muted autoPlay>
+                <video className="project__headerVideo" loop muted autoPlay playsInline>
                     <source src="./videos/Teaser_x8_1k_web.mov" type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
