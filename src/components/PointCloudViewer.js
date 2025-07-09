@@ -12,7 +12,7 @@ const PointCloudViewer = ({ pcdPath }) => {
 
         // Set up scene, camera, and renderer
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xffffff);
+        scene.background = new THREE.Color(0xF1F1F1);
         const camera = new THREE.PerspectiveCamera(
         75,
         container.clientWidth / container.clientHeight,
@@ -54,7 +54,7 @@ const PointCloudViewer = ({ pcdPath }) => {
         };
     }, [pcdPath]);
 
-    return <div ref={containerRef} style={{ width: '350px', height: '100%' }} />;
+    return <div className="project__methodDataCollectionPointCloudCanvas" ref={containerRef} />;
 };
 
 export default PointCloudViewer;

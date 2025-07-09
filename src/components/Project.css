@@ -22,6 +22,8 @@
 
 .project__headerTitle {
     display: flex;
+    width: 80%;
+    max-width: 1200px;
     flex-direction: column;
     align-items: center;
     gap: 20px;
@@ -51,6 +53,7 @@
     justify-content: center;
     align-items: center;
     height: 50px;
+    transition: background-color 0.3s ease;
 }
 
 .project__headerNavigatorItem:hover {
@@ -65,17 +68,19 @@
 .project__additionalInfo {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 30px;
     padding: 30px 0;
 }
 
 .project__authors {
     display: flex;
-    flex-direction: column;
-    width: 100%;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    width: 80%;
+    max-width: 800px;
+    gap: 20px;
 }
 
 .project__authorsOneLine {
@@ -143,7 +148,8 @@
 
 .project__bodyContent {
     padding: 30px 0;
-    width: 800px;
+    width: 80%;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -185,19 +191,83 @@
 }
 
 .project__methodDataCollectionImage {
-    width: 400px;
+    width: 50%;
 }
 
 .project__methodDataCollectionPointCloudsWrapper {
     position: relative;
-    height: 300px;
+    width: 36vw;
+    max-width: 540px;
+    height: 400px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     overflow-x: hidden;
     overflow-y: visible;
 }
 
+.project__methodDataCollectionPointCloudsNavigator {
+    display: flex;
+    justify-content: space-around;
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.project__methodDataCollectionPointCloudsNavigatorButton {
+    width: 25%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.project__methodDataCollectionPointCloudsNavigatorButton:hover {
+    cursor: pointer;
+    background-color: #0000001f;
+}
+
+.project__methodDataCollectionPointCloudsNavigatorButton--selected, .project__methodDataCollectionPointCloudsNavigatorButton--selected:hover {
+    background-color: #212121;
+}
+
+.project__methodDataCollectionPointCloudsNavigatorButton--selected > p {
+    color: #fff;
+}
+
+.project__methodDataCollectionPointCloudsNavigatorButtonText {
+    font-size: 15px;
+    transition: color 0.3s ease;
+}
+
+.project__methodDataCollection3DHelperWrapper {
+    position: absolute;
+    width: 100%;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 7px;
+    background-color: #ffffff;
+    opacity: 0.5;
+}
+
+.project__methodDataCollection3DHelperWrapper {
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project__methodDataCollection3DHelperWrapper--visible {
+    opacity: 0.9;
+    z-index: 1;
+}
+
+.project__methodDataCollection3DHelper {
+    width: 200px;
+}
+
 .project__methodDataCollectionPointClouds {
+    height: 400px;
     display: flex;
     gap: 20px;
     align-items: center;
@@ -206,23 +276,29 @@
 }
 
 .project__methodDataCollectionPointCloud {
-    width: 350px;
-    height: 300px;
+    height: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 }
 
-.project__methodDataCollectionPointCloudsLeftArrow {
+.project__methodDataCollectionPointCloudCanvas {
+    width: 36vw !important;
+    max-width: 540px;
+    height: 100%;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__methodDataCollectionPointCloudsLeftArrow, .project__realTimeVideosLeftArrow {
     left: 10px;
 }
 
-.project__methodDataCollectionPointCloudsRightArrow {
-    left: 310px;
+.project__methodDataCollectionPointCloudsRightArrow, .project__realTimeVideosRightArrow {
+    right: 10px;
 }
 
-.project__methodDataCollectionPointCloudsArrow, .project__applicabilityVideosArrow, .project__dataEfficiencyArrow {
+.project__methodDataCollectionPointCloudsArrow, .project__applicabilityVideosArrow, .project__dataEfficiencyArrow, .project__realTimeVideosArrow {
     position: absolute;
     width: 30px;
     height: 30px;
@@ -235,22 +311,26 @@
     transition: background-color 0.3s ease;
 }
 
-.project__methodDataCollectionPointCloudsArrow > svg, .project__applicabilityVideosArrow > svg, .project__dataEfficiencyArrow > svg {
+.project__methodDataCollectionPointCloudsArrow > svg, .project__applicabilityVideosArrow > svg, .project__dataEfficiencyArrow > svg, .project__realTimeVideosArrow > svg {
     width: 20px;
     height: 20px;
 }
 
-.project__methodDataCollectionPointCloudsArrow:hover, .project__applicabilityVideosArrow:hover, .project__dataEfficiencyArrow:hover {
+.project__methodDataCollectionPointCloudsArrow:hover, .project__applicabilityVideosArrow:hover, .project__dataEfficiencyArrow:hover, .project__realTimeVideosArrow:hover {
     cursor: pointer;
     background-color: #a3a3a3;
 }
 
 .project__keyFeature {
-    width: 800px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
+}
+
+.project__keyFeatureBody {
+    width: 100%;
 }
 
 .project__keyFeatureTitle {
@@ -261,12 +341,13 @@
 .project__egoCentricBody {
     width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 20px;
 }
 
 .project__egoCentricImage {
-    width: 50%;
+    width: 100%;
     border-radius: 15px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
@@ -281,19 +362,26 @@
     font-size: 15px;
 }
 
-.project__realTimeVideos {
-    width: 100%;
+.project_realTimeVideosWrapper {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
     align-items: center;
+    width: 100%;
+}
+
+.project__realTimeVideos {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 .project__realtimeVideo {
-    width: 390px;
+    width: 80vw;
+    max-width: 1200px;
     border-radius: 15px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    /* box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); */
 }
 
 .project__realTimeText {
@@ -320,7 +408,8 @@
 }
 
 .project__applicabilityVideoWrapper, .project__applicabilityVideo {
-    width: 400px;
+    width: 40vw;
+    max-width: 600px;
 }
 
 .project__applicabilityVideoWrapper {
@@ -334,7 +423,7 @@
 }
 
 .project__applicabilityVideosRightArrow {
-    left: 360px;
+    right: 10px;
 }
 
 .project__applicabilityVideos {
@@ -350,7 +439,7 @@
 }
 
 .project__applicabilityImage {
-    width: 350px;
+    width: 45%;
 }
 
 .project__applicabilityText {
@@ -364,10 +453,44 @@
 
 .project__dataEfficiencyBodyWrapper {
     width: 100%;
-    position: relative;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     overflow-x: hidden;
+    gap: 20px;
+}
+
+.project__dataEfficiencyNavigator {
+    display: flex;
+    justify-content: space-around;
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.project__dataEfficiencyNavigatorButton {
+    width: 25%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.project__dataEfficiencyNavigatorButton:hover {
+    cursor: pointer;
+    background-color: #0000001f;
+}
+
+.project__dataEfficiencyNavigatorButton--selected, .project__dataEfficiencyNavigatorButton--selected:hover {
+    background-color: #4596FF;
+}
+
+.project__dataEfficiencyNavigatorButton--selected > p {
+    color: #fff;
+}
+
+.project__dataEfficiencyNavigatorButtonText {
+    font-size: 15px;
+    transition: color 0.3s ease;
 }
 
 .project__dataEfficiencyLeftArrow {
@@ -375,7 +498,7 @@
 }
 
 .project__dataEfficiencyRightArrow {
-    left: 760px;
+    right: 10px;
 }
 
 .project__dataEfficiencyBodyContents {
@@ -386,7 +509,8 @@
 }
 
 .project__dataEfficiencyBody {
-    width: 800px;
+    width: 80vw;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     gap: 30px;
@@ -398,28 +522,29 @@
 }
 
 .project__dataEfficiencyMedias {
-    width: 800px;
+    width: 80vw;
+    max-width: 1200px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .project__dataEfficiencyExp3aVideo {
-    width: 300px;
+    width: 40%;
     border-radius: 15px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .project__dataEfficiencyExp3bScenesImage, .project__dataEfficiencyExp3cScenesImage {
-    width: 400px;
+    width: 50%;
 }
 
 .project__dataEfficiencyExp3bGraphImage, .project__dataEfficiencyExp3cGraphImage {
-    width: 350px;
+    width: 45%;
 }
 
 .project__dataEfficiencyExp3aImage {
-    width: 450px;
+    width: 55%;
 }
 
 .project__dataEfficiencyExp4Medias, .project__dataEfficiencyExp5Medias {
@@ -427,11 +552,11 @@
 }
 
 .project__dataEfficiencyExp4Image {
-    width: 700px;
+    width: 80%;
 }
 
 .project__dataEfficiencyExp5Video {
-    width: 600px;
+    width: 70%;
     border-radius: 15px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
@@ -440,6 +565,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%
 }
 
 .project__failureCasesText {
@@ -459,7 +585,7 @@
 }
 
 .project__bibtexBody {
-    width: 800px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -470,4 +596,29 @@
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 1200px) {
+    .project__methodDataCollectionBody {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 50px;
+    }
+
+    .project__methodDataCollectionImage {
+        width: 100%;
+    }
+    
+    .project__methodDataCollectionPointCloudsWrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .project__methodDataCollectionPointCloudCanvas {
+        width: 80vw !important;
+        max-width: 80vw;
+        height: 100%;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
 }

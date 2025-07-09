@@ -41,6 +41,11 @@ a {
   font-variation-settings: "wdth" 100;
 }
 
+.fixed-width {
+  width: 80%;
+  max-width: 1200px;
+}
+
 .white-color {
   color: #fff;
 }

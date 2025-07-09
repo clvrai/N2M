@@ -5,6 +5,7 @@ import PointCloudViewer from './PointCloudViewer';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Button from '@mui/material/Button';
 
 const Project = () => {
     const [currentPointCloud, setCurrentPointCloud] = useState(0);
@@ -13,6 +14,9 @@ const Project = () => {
     const applicabilityVideosRef = useRef(null);
     const [currentDataEfficiencyContent, setCurrentDataEfficiencyContent] = useState(0);
     const dataEfficiencyContentsRef = useRef(null);
+    const [currentRealTimeVideo, setCurrentRealTimeVideo] = useState(0);
+    const realTimeVideosRef = useRef(null);
+    const [isHoveringPointCloud, setIsHoveringPointCloud] = useState(false);
 
     const scrollToCurrentPointCloud = (index) => {
         const container = pointCloudsRef.current;
@@ -26,21 +30,20 @@ const Project = () => {
         }
     };
 
-    const incrementPointCloud = () => {
-        if (currentPointCloud < 3) {
-            const next = currentPointCloud + 1;
-            setCurrentPointCloud(next);
-            scrollToCurrentPointCloud(next);
+    const onClickPointCloudNavigatorButton = (index) => {
+        return () => {
+            setCurrentPointCloud(index);
+            scrollToCurrentPointCloud(index);
         }
     };
 
-    const decrementPointCloud = () => {
-        if (currentPointCloud > 0) {
-            const prev = currentPointCloud - 1;
-            setCurrentPointCloud(prev);
-            scrollToCurrentPointCloud(prev);
-        }
-    };
+    const onHoverPointCloud = () => {
+        setIsHoveringPointCloud(true);
+    }
+
+    const onLeavePointCloud = () => {
+        setIsHoveringPointCloud(false);
+    }
 
     const scrollToCurrentApplicabilityVideo = (index) => {
         const container = applicabilityVideosRef.current;
@@ -82,6 +85,13 @@ const Project = () => {
         }
     };
 
+    const onClickDataEfficiencyNavigatorButton = (index) => {
+        return () => {
+            setCurrentDataEfficiencyContent(index);
+            scrollToCurrentDataEfficiencyContent(index);
+        }
+    };
+
     const incrementDataEfficiencyContent = () => {
         if (currentDataEfficiencyContent < 4) {
             const next = currentDataEfficiencyContent + 1;
@@ -98,6 +108,34 @@ const Project = () => {
         }
     };
 
+    const scrollToCurrentRealTimeVideo = (index) => {
+        const container = realTimeVideosRef.current;
+        const realTimeVideos = container.querySelectorAll('.project__realtimeVideo');
+        if (realTimeVideos[index]) {
+            realTimeVideos[index].scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest',
+            });
+        }
+    };
+
+    const incrementRealTimeVideo = () => {
+        if (currentRealTimeVideo < 3) {
+            const next = currentRealTimeVideo + 1;
+            setCurrentRealTimeVideo(next);
+            scrollToCurrentRealTimeVideo(next);
+        }
+    };
+
+    const decrementRealTimeVideo = () => {
+        if (currentRealTimeVideo > 0) {
+            const prev = currentRealTimeVideo - 1;
+            setCurrentRealTimeVideo(prev);
+            scrollToCurrentRealTimeVideo(prev);
+        }
+    };
+
     return (
         <div className="project">
             <div className="project__header">
@@ -107,42 +145,41 @@ const Project = () => {
                 </video>
                 <div className="project__headerTitle">
                     <p className="project__headerMainTitle google-sans-semibold white-color">N2M</p>
-                    <p className="project__headerSubTitle google-sans-regular white-color">Bridging Navigation and Manipulation by Learning <br/>Initial Pose Preference from Rollout</p>
+                    <p className="project__headerSubTitle google-sans-regular white-color">Bridging Navigation and Manipulation by Learning Initial Pose Preference from Rollout</p>
                 </div>
                 <div className="project__headerNavigator">
                     <a href="#overview" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Overview</p>
                     </a>
+                    <a href="#method" className="project__headerNavigatorItem">
+                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Method</p>
+                    </a>
                     <a href="#key-features" className="project__headerNavigatorItem">
                         <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Key Features</p>
                     </a>
-                    <a href="#failure-cases" className="project__headerNavigatorItem">
-                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Failure Cases</p>
-                    </a>
                     <a href="#future-work" className="project__headerNavigatorItem">
-                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Future Work</p>
+                        <p className="project__headerNavigatorItemTitle google-sans-regular white-color">Limitations and Future Work</p>
                     </a>
                 </div>
             </div>
             <div className="project__additionalInfo">
                 <div className="project__authors">
-                    <div className="project__authorsOneLine">
-                        <p className="project__author google-sans-regular blue-color"><a href="https://cckaixin.github.io/myWebsite/" target="_blank" rel="noopener noreferrer">Kaixin Chai</a><sup className="black-color">&dagger;1,2</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://hjl1013.github.io/" target="_blank" rel="noopener noreferrer">Hyunjun Lee</a><sup className="black-color">&dagger;1,3</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://jeongjun-kim.github.io/" target="_blank" rel="noopener noreferrer">Jeongjun Kim</a><sup className="black-color">1,3</sup></p>
-                    </div>
-                    <div className="project__authorsOneLine">
-                        <p className="project__author google-sans-regular blue-color"><a href="https://www.linkedin.com/in/sunwoo-kim-299493201/" target="_blank" rel="noopener noreferrer">Sunwoo Kim</a><sup className="black-color">1,3</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://sites.google.com/view/junseunglee/home/about" target="_blank" rel="noopener noreferrer">Junseung Lee</a><sup className="black-color">1,3</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://dhleekr.github.io/" target="_blank" rel="noopener noreferrer">Doohyun Lee</a><sup className="black-color">1</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://minoring.github.io/" target="_blank" rel="noopener noreferrer">Minho Heo</a><sup className="black-color">1</sup></p>
-                        <p className="project__author google-sans-regular blue-color"><a href="https://clvrai.com/web_lim/" target="_blank" rel="noopener noreferrer">Joseph J. Lim</a><sup className="black-color">1</sup></p>
-                    </div>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://cckaixin.github.io/myWebsite/" target="_blank" rel="noopener noreferrer">Kaixin Chai</a><sup className="black-color">&dagger;1,2</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://hjl1013.github.io/" target="_blank" rel="noopener noreferrer">Hyunjun Lee</a><sup className="black-color">&dagger;1,3</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://jeongjun-kim.github.io/" target="_blank" rel="noopener noreferrer">Jeongjun Kim</a><sup className="black-color">1,3</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://www.linkedin.com/in/sunwoo-kim-299493201/" target="_blank" rel="noopener noreferrer">Sunwoo Kim</a><sup className="black-color">1,3</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://sites.google.com/view/junseunglee/home/about" target="_blank" rel="noopener noreferrer">Junseung Lee</a><sup className="black-color">1,3</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://dhleekr.github.io/" target="_blank" rel="noopener noreferrer">Doohyun Lee</a><sup className="black-color">1</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://minoring.github.io/" target="_blank" rel="noopener noreferrer">Minho Heo</a><sup className="black-color">1</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://clvrai.com/web_lim/" target="_blank" rel="noopener noreferrer">Joseph J. Lim</a><sup className="black-color">&Dagger;1</sup></p>
                 </div>
                 <div className="project__affiliations">
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">1</sup>KAIST</p>
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">2</sup>Xi’an Jiaotong University</p>
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
+                </div>
+                <div className="project__symbols">
+                    <p className="project__symbolsText google-sans-regular">&dagger; indicates equal contribution, &Dagger; indicates corresponding author</p>
                 </div>
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
@@ -197,7 +234,7 @@ const Project = () => {
                     </div>
                 </div>
 
-                <div className="project__bodyContent project__method">
+                <div className="project__bodyContent project__method" id="method">
                     <p className="project__bodyContentTitle google-sans-semibold">Method</p>
                     <div className="project__methodContent">
                         <p className="project__methodContentTitle google-sans-semibold">Pipeline</p>
@@ -208,29 +245,26 @@ const Project = () => {
                         <p className="project__methodContentTitle google-sans-semibold">Data Collection</p>
                         <div className="project__methodDataCollectionBody">
                             <img src='./figures/Method_Data_Preparation.png' alt="method_data_preparation" className="project__methodDataCollectionImage" />
-                            <div className="project__methodDataCollectionPointCloudsWrapper">
-                                <div className="project__methodDataCollectionPointCloudsLeftArrow project__methodDataCollectionPointCloudsArrow dark-gray-background" onClick={decrementPointCloud}>
-                                    <ArrowBackIosNewIcon className="white-color" />
+                            <div className="project__methodDataCollectionPointCloudsWrapper" onMouseEnter={onHoverPointCloud} onMouseLeave={onLeavePointCloud}>
+                                <div className="project__methodDataCollectionPointCloudsNavigator">
+                                    <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 0 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(0)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Raw</p></div>
+                                    <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 1 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(1)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Augmented 1</p></div>
+                                    <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 2 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(2)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Augmented 2</p></div>
+                                    <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 3 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(3)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Augmented 3</p></div>
                                 </div>
-                                <div className="project__methodDataCollectionPointCloudsRightArrow project__methodDataCollectionPointCloudsArrow dark-gray-background" onClick={incrementPointCloud}>
-                                    <ArrowForwardIosIcon className="white-color" />
-                                </div>
+                                <div className={`project__methodDataCollection3DHelperWrapper ${isHoveringPointCloud ? '' : 'project__methodDataCollection3DHelperWrapper--visible'}`}><img src='./icons/3d_helper.png' alt="3d_helper" className="project__methodDataCollection3DHelper" /></div>
                                 <div className="project__methodDataCollectionPointClouds" ref={pointCloudsRef}>
                                     <div className="project__methodDataCollectionPointCloud">
                                         <PointCloudViewer pcdPath='./pcls/local_scene.pcd' />
-                                        <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Local Scene</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
                                         <PointCloudViewer pcdPath='./pcls/rendered1.pcd' />
-                                        <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 1</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
                                         <PointCloudViewer pcdPath='./pcls/rendered2.pcd' />
-                                        <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 2</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
                                         <PointCloudViewer pcdPath='./pcls/rendered3.pcd' />
-                                        <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 3</p>
                                     </div>
                                 </div>
                             </div>
@@ -255,7 +289,7 @@ const Project = () => {
                         </div>
                     </div>
 
-                    <div className="project__keyFeature">
+                    {/* <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Real-time</span> Inference</p>
                         <div className="project__realTimeVideos">
                             <video className="project__realtimeVideo" loop muted autoPlay>
@@ -274,6 +308,37 @@ const Project = () => {
                                 <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
+                        </div>
+                        <p className="project__realTimeText google-sans-regular">💎 <span className="google-sans-semibold">Real-time inference</span>: N2M predicts with single forward pass, enabling inference at up to <span className="blue-color google-sans-semibold">30Hz</span></p>
+                    </div> */}
+
+                    <div className="project__keyFeature">
+                        <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Real-time</span> Inference</p>
+                        <div className="project_realTimeVideosWrapper">
+                            <div className="project__realTimeVideosLeftArrow project__realTimeVideosArrow dark-gray-background" onClick={decrementRealTimeVideo}>
+                                <ArrowBackIosNewIcon className="white-color" />
+                            </div>
+                            <div className="project__realTimeVideosRightArrow project__realTimeVideosArrow dark-gray-background" onClick={incrementRealTimeVideo}>
+                                <ArrowForwardIosIcon className="white-color" />
+                            </div>
+                            <div className="project__realTimeVideos" ref={realTimeVideosRef}>
+                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                                <video className="project__realtimeVideo" loop muted autoPlay>
+                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
                         </div>
                         <p className="project__realTimeText google-sans-regular">💎 <span className="google-sans-semibold">Real-time inference</span>: N2M predicts with single forward pass, enabling inference at up to <span className="blue-color google-sans-semibold">30Hz</span></p>
                     </div>
@@ -329,11 +394,12 @@ const Project = () => {
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Data efficiency</span> and <span className="blue-color google-sans-semibold">generalizability</span></p>
                         <div className="project__keyFeatureBody project__dataEfficiencyBodyWrapper">
-                            <div className="project__dataEfficiencyLeftArrow project__dataEfficiencyArrow dark-gray-background" onClick={decrementDataEfficiencyContent}>
-                                <ArrowBackIosNewIcon className="white-color" />
-                            </div>
-                            <div className="project__dataEfficiencyRightArrow project__dataEfficiencyArrow dark-gray-background" onClick={incrementDataEfficiencyContent}>
-                                <ArrowForwardIosIcon className="white-color" />
+                            <div className="project__dataEfficiencyNavigator">
+                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 0 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(0)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">PnP data efficiency</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 1 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(1)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 2 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(2)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Differing scene texture</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 3 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(3)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Taking lamp out of the shelf</p></div>
+                                <div className={`project__dataEfficiencyNavigatorButton light-gray-background ${currentDataEfficiencyContent === 4 ? 'project__dataEfficiencyNavigatorButton--selected' : ''}`} onClick={onClickDataEfficiencyNavigatorButton(4)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Toy box handover</p></div>
                             </div>
                             <div className="project__dataEfficiencyBodyContents" ref={dataEfficiencyContentsRef}>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
@@ -395,9 +461,9 @@ const Project = () => {
                     <div className="project__bodyContent project__failureCases" id="failure-cases">
                         <p className="project__bodyContentTitle google-sans-semibold">Failure Cases</p>
                         <div className="project__failureCasesBody">
-                            <p className="project__failureCasesText google-sans-regular">❌ Our method is not good when the object is small.</p>
-                            <p className="project__failureCasesText google-sans-regular">❌ Prediction is not consistent. (Statistics)</p>
-                            <p className="project__failureCasesText google-sans-regular">❌ Even handover works in unseen scenarios, other tasks not working well. ( but with several in domain data, it will quickly and effectively learn that preference.)</p>
+                            <p className="project__failureCasesText google-sans-regular">⚠️ Our method is not good when the object is small.</p>
+                            <p className="project__failureCasesText google-sans-regular">⚠️ Prediction is not consistent. (Statistics)</p>
+                            <p className="project__failureCasesText google-sans-regular">⚠️ Even handover works in unseen scenarios, other tasks not working well. ( but with several in domain data, it will quickly and effectively learn that preference.)</p>
                         </div>
                     </div>
                 </div>
@@ -405,8 +471,8 @@ const Project = () => {
                 <div className="project__bodyContent project__futureWork" id="future-work">
                     <p className="project__bodyContentTitle google-sans-semibold">Future Work</p>
                     <div className="project__futureWorkBody">
-                        <p className="project__futureWorkText google-sans-regular">❗<span className="google-sans-semibold">Hardware dependency</span>: N2M relies on high quality depth estimation to capture realistic point cloud. Enabling N2M to run with only an RGB camera through monocular depth estimation and scene reconstruction to reduce hardware dependencies.</p>
-                        <p className="project__futureWorkText google-sans-regular">❗<span className="google-sans-semibold">Incorporating failure rollouts</span>: N2M only learns from positive rollouts. This can lead to overestimation failing to avoid failure initial poses. Learning from failure rollouts can prevent overestimation of initial pose preference and help the module find poses where robot can achieve higher success rate</p>
+                        <p className="project__futureWorkText google-sans-regular">🚀 <span className="google-sans-semibold">Hardware dependency</span>: N2M relies on high quality depth estimation to capture realistic point cloud. Enabling N2M to run with only an RGB camera through monocular depth estimation and scene reconstruction to reduce hardware dependencies.</p>
+                        <p className="project__futureWorkText google-sans-regular">🚀 <span className="google-sans-semibold">Incorporating failure rollouts</span>: N2M only learns from positive rollouts. This can lead to overestimation failing to avoid failure initial poses. Learning from failure rollouts can prevent overestimation of initial pose preference and help the module find poses where robot can achieve higher success rate</p>
                     </div>
                 </div>
 
