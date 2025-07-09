@@ -289,29 +289,6 @@ const Project = () => {
                         </div>
                     </div>
 
-                    {/* <div className="project__keyFeature">
-                        <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Real-time</span> Inference</p>
-                        <div className="project__realTimeVideos">
-                            <video className="project__realtimeVideo" loop muted autoPlay>
-                                <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                            <video className="project__realtimeVideo" loop muted autoPlay>
-                                <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                            <video className="project__realtimeVideo" loop muted autoPlay>
-                                <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                            <video className="project__realtimeVideo" loop muted autoPlay>
-                                <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                        <p className="project__realTimeText google-sans-regular">💎 <span className="google-sans-semibold">Real-time inference</span>: N2M predicts with single forward pass, enabling inference at up to <span className="blue-color google-sans-semibold">30Hz</span></p>
-                    </div> */}
-
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Real-time</span> Inference</p>
                         <div className="project_realTimeVideosWrapper">
