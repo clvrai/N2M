@@ -214,7 +214,7 @@ const Project = () => {
             <div className="project__body">
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
-                    <video className="project__overviewVideo" loop muted autoPlay control playsInline>
+                    <video className="project__overviewVideo" loop muted autoPlay controls playsInline>
                         <source src="./videos/RA-L overview.mov" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
