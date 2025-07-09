@@ -207,7 +207,7 @@
 
 .project__methodDataCollectionPointCloud {
     width: 350px;
-    height: 100%;
+    height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -222,7 +222,7 @@
     left: 310px;
 }
 
-.project__methodDataCollectionPointCloudsArrow {
+.project__methodDataCollectionPointCloudsArrow, .project__applicabilityVideosArrow {
     position: absolute;
     width: 30px;
     height: 30px;
@@ -231,14 +231,15 @@
     justify-content: center;
     align-items: center;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    z-index: 1;
 }
 
-.project__methodDataCollectionPointCloudsArrow > svg {
+.project__methodDataCollectionPointCloudsArrow > svg, .project__applicabilityVideosArrow > svg {
     width: 20px;
     height: 20px;
 }
 
-.project__methodDataCollectionPointCloudsArrow:hover {
+.project__methodDataCollectionPointCloudsArrow:hover, .project__applicabilityVideosArrow:hover {
     cursor: pointer;
     background-color: #a3a3a3;
     transition: background-color 0.3s ease;
@@ -257,25 +258,117 @@
     width: 100%;
 }
 
-.project__keyFeatureBody {
+.project__egoCentricBody {
     width: 100%;
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.project__keyFeatureImage {
+.project__egoCentricImage {
     width: 50%;
     border-radius: 15px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-.project__keyFeatureTextBody {
+.project__egoCentricTextBody {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.project__keyFeatureText {
+.project__egoCentricText {
     font-size: 15px;
+}
+
+.project__realTimeVideos {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.project__realtimeVideo {
+    width: 390px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__realTimeText {
+    text-align: center;
+    font-size: 15px;
+}
+
+.project__viewpointRobustnessVideo {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project__viewpointRobustnessText {
+    text-align: center;
+    font-size: 15px;
+}
+
+.project__applicabilityMedias {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project__applicabilityVideoWrapper, .project__applicabilityVideo {
+    width: 400px;
+}
+
+.project__applicabilityVideoWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.project__applicabilityVideosLeftArrow {
+    left: 10px;
+}
+
+.project__applicabilityVideosRightArrow {
+    left: 360px;
+}
+
+.project__applicabilityVideos {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.project__applicabilityVideo {
+    border-radius: 15px;
+}
+
+.project__applicabilityImage {
+    width: 350px;
+}
+
+.project__applicabilityText {
+    text-align: center;
+    font-size: 15px;
+}
+
+.project__applicabilityTextFootnote {
+    font-size: 12px;
+}
+
+.project__futureWorkBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project__futureWorkText {
+    font-size: 15px;
+    text-align: justify;
 }

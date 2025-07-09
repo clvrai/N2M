@@ -9,6 +9,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const Project = () => {
     const [currentPointCloud, setCurrentPointCloud] = useState(0);
     const pointCloudsRef = useRef(null);
+    const [currentApplicabilityVideo, setCurrentApplicabilityVideo] = useState(0);
+    const applicabilityVideosRef = useRef(null);
 
     const scrollToCurrentPointCloud = (index) => {
         const container = pointCloudsRef.current;
@@ -35,6 +37,34 @@ const Project = () => {
             const prev = currentPointCloud - 1;
             setCurrentPointCloud(prev);
             scrollToCurrentPointCloud(prev);
+        }
+    };
+
+    const scrollToCurrentApplicabilityVideo = (index) => {
+        const container = applicabilityVideosRef.current;
+        const applicabilityVideos = container.querySelectorAll('.project__applicabilityVideo');
+        if (applicabilityVideos[index]) {
+            applicabilityVideos[index].scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest',
+            });
+        }
+    };
+
+    const incrementApplicabilityVideo = () => {
+        if (currentApplicabilityVideo < 3) {
+            const next = currentApplicabilityVideo + 1;
+            setCurrentApplicabilityVideo(next);
+            scrollToCurrentApplicabilityVideo(next);
+        }
+    };
+
+    const decrementApplicabilityVideo = () => {
+        if (currentApplicabilityVideo > 0) {
+            const prev = currentApplicabilityVideo - 1;
+            setCurrentApplicabilityVideo(prev);
+            scrollToCurrentApplicabilityVideo(prev);
         }
     };
 
@@ -87,7 +117,7 @@ const Project = () => {
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src="./icons/arxiv.png" alt="paper" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/arxiv.png`} alt="paper" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">arXiv</p>
                         </div>
                     </a>
@@ -99,13 +129,13 @@ const Project = () => {
                     </a>
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src="./icons/youtube.png" alt="youtube" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/youtube.png`} alt="youtube" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Youtube</p>
                         </div>
                     </a>
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src="./icons/bilibili.png" alt="bilibili" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/bilibili.png`} alt="bilibili" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Bilibili</p>
                         </div>
                     </a>
@@ -141,13 +171,13 @@ const Project = () => {
                     <p className="project__bodyContentTitle google-sans-semibold">Method</p>
                     <div className="project__methodContent">
                         <p className="project__methodContentTitle google-sans-semibold">Pipeline</p>
-                        <img src="./figures/Method_System_Overview.png" alt="method_system_overview" className="project__methodPipelineImage" />
+                        <img src={`${process.env.PUBLIC_URL}/figures/Method_System_Overview.png`} alt="method_system_overview" className="project__methodPipelineImage" />
                         <p className="project__methodContentText google-sans-regular">Navigate within task area &rarr; <span className="blue-color google-sans-semibold">Adjust pose with N2M</span> &rarr; Execute manipulation policy</p>
                     </div>
                     <div className="project__methodContent project__methodDataCollection">
                         <p className="project__methodContentTitle google-sans-semibold">Data Collection</p>
                         <div className="project__methodDataCollectionBody">
-                            <img src="./figures/Method_Data_Preparation.png" alt="method_data_preparation" className="project__methodDataCollectionImage" />
+                            <img src={`${process.env.PUBLIC_URL}/figures/Method_Data_Preparation.png`} alt="method_data_preparation" className="project__methodDataCollectionImage" />
                             <div className="project__methodDataCollectionPointCloudsWrapper">
                                 <div className="project__methodDataCollectionPointCloudsLeftArrow project__methodDataCollectionPointCloudsArrow dark-gray-background" onClick={decrementPointCloud}>
                                     <ArrowBackIosNewIcon className="white-color" />
@@ -157,19 +187,19 @@ const Project = () => {
                                 </div>
                                 <div className="project__methodDataCollectionPointClouds" ref={pointCloudsRef}>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath="./pcls/local_scene.pcd" />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/local_scene.pcd`} />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Local Scene</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath="./pcls/rendered1.pcd" />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered1.pcd`} />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 1</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath="./pcls/rendered2.pcd" />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered2.pcd`} />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 2</p>
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath="./pcls/rendered3.pcd" />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered3.pcd`} />
                                         <p className="project__methodDataCollectionPointCloudTitle google-sans-regular">Rendered 3</p>
                                     </div>
                                 </div>
@@ -182,13 +212,13 @@ const Project = () => {
                     <p className="project__bodyContentTitle google-sans-semibold">Key Features</p>
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Ego-centric</span> Prediction</p>
-                        <div className="project__keyFeatureBody">
-                            <img src="./figures/Key_Feature_Ego-centric.png" alt="key_feature_ego-centric" className="project__keyFeatureImage" />
-                            <div className="project__keyFeatureTextBody">
-                                <p className="project__keyFeatureText google-sans-regular">
+                        <div className="project__keyFeatureBody project__egoCentricBody">
+                            <img src={`${process.env.PUBLIC_URL}/figures/Key_Feature_Ego-centric.png`} alt="key_feature_ego-centric" className="project__egoCentricImage" />
+                            <div className="project__egoCentricTextBody">
+                                <p className="project__egoCentricText google-sans-regular">
                                     ✅ N2M only requires ego-centric observations and produces predictions based on ego-centric coordinate
                                 </p>
-                                <p className="project__keyFeatureText google-sans-regular">
+                                <p className="project__egoCentricText google-sans-regular">
                                     ❌ Doesn’t require global / historical information such as pre-built map
                                 </p>
                             </div>
@@ -197,17 +227,96 @@ const Project = () => {
 
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Real-time</span> Inference</p>
-                        <div className="project__keyFeatureBody">
-                            <img src="./figures/Key_Feature_Ego-centric.png" alt="key_feature_ego-centric" className="project__keyFeatureImage" />
-                            <div className="project__keyFeatureTextBody">
-                                <p className="project__keyFeatureText google-sans-regular">
-                                    ✅ N2M only requires ego-centric observations and produces predictions based on ego-centric coordinate
-                                </p>
-                                <p className="project__keyFeatureText google-sans-regular">
-                                    ❌ Doesn’t require global / historical information such as pre-built map
-                                </p>
-                            </div>
+                        <div className="project__realTimeVideos">
+                            <video className="project__realtimeVideo" loop muted autoPlay>
+                                <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <video className="project__realtimeVideo" loop muted autoPlay>
+                                <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <video className="project__realtimeVideo" loop muted autoPlay>
+                                <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <video className="project__realtimeVideo" loop muted autoPlay>
+                                <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
+                        <p className="project__realTimeText google-sans-regular">💎 <span className="google-sans-semibold">Real-time inference</span>: N2M predicts with single forward pass, enabling inference at up to <span className="blue-color google-sans-semibold">30Hz</span></p>
+                    </div>
+
+                    <div className="project__keyFeature">
+                        <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Viewpoint</span> Robustness</p>
+                        <div className="project__keyFeatureBody project__viewpointRobustnessBody">
+                            <video className="project__viewpointRobustnessVideo" loop muted autoPlay>
+                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <p className="project__viewpointRobustnessText google-sans-regular">💎 10 consecutive successful predictions, each N2M prediction generated by the robot from a different pose</p>
+                    </div>
+
+                    <div className="project__keyFeature">
+                        <p className="project__keyFeatureTitle google-sans-semibold">Broad <span className="blue-color google-sans-semibold">applicability</span></p>
+                        <div className="project__applicabilityMedias">
+                            <div className="project__applicabilityVideoWrapper">
+                                <div className="project__applicabilityVideosLeftArrow project__applicabilityVideosArrow dark-gray-background" onClick={decrementApplicabilityVideo}>
+                                    <ArrowBackIosNewIcon className="white-color" />
+                                </div>
+                                <div className="project__applicabilityVideosRightArrow project__applicabilityVideosArrow dark-gray-background" onClick={incrementApplicabilityVideo}>
+                                    <ArrowForwardIosIcon className="white-color" />
+                                </div>
+                                <div className="project__applicabilityVideos" ref={applicabilityVideosRef}>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <video className="project__applicabilityVideo" loop muted autoPlay>
+                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                            <img src={`${process.env.PUBLIC_URL}/figures/Broad_Applicability.png`} alt="key_feature_applicability" className="project__applicabilityImage" />
+                        </div>
+                        <p className="project__applicabilityText google-sans-regular">
+                            💎 <span className="google-sans-semibold">Broad applicability</span>: N2M demonstrates substantial performance gain across various tasks and policies <br/>
+                            <span className="project__applicabilityTextFootnote">*Reachability baseline: Reachabilitiy based naive integration between navigation and manipulation</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div className="project__bodyContentWrapper light-gray-background">
+                    <div className="project__bodyContent project__failureCases">
+                        <p className="project__bodyContentTitle google-sans-semibold">Failure Cases</p>
+                    </div>
+                </div>
+
+                <div className="project__bodyContent project__futureWork">
+                    <p className="project__bodyContentTitle google-sans-semibold">Future Work</p>
+                    <div className="project__futureWorkBody">
+                        <p className="project__futureWorkText google-sans-regular">❗<span className="google-sans-semibold">Hardware dependency</span>: N2M relies on high quality depth estimation to capture realistic point cloud. Enabling N2M to run with only an RGB camera through monocular depth estimation and scene reconstruction to reduce hardware dependencies.</p>
+                        <p className="project__futureWorkText google-sans-regular">❗<span className="google-sans-semibold">Incorporating failure rollouts</span>: N2M only learns from positive rollouts. This can lead to overestimation failing to avoid failure initial poses. Learning from failure rollouts can prevent overestimation of initial pose preference and help the module find poses where robot can achieve higher success rate</p>
+                    </div>
+                </div>
+
+                <div className="project__bodyContent project__bibtex">
+                    <p className="project__bodyContentTitle google-sans-semibold">Bibtex</p>
+                    <div className="project__bibtexBody">
+                        <pre className="project__bibtexText google-sans-regular">
+                            
+                        </pre>
                     </div>
                 </div>
             </div>
