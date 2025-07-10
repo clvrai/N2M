@@ -188,12 +188,12 @@ const Project = () => {
                             <p className="project__materialName google-sans-regular white-color">arXiv (Coming Soon)</p>
                         </div>
                     {/* </a> */}
-                    {/* <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer"> */}
+                    <a href="https://github.com/clvrai/N2M" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <GitHubIcon className="project__materialIcon white-color" />
-                            <p className="project__materialName google-sans-regular white-color">Code (Coming Soon)</p>
+                            <p className="project__materialName google-sans-regular white-color">Code</p>
                         </div>
-                    {/* </a> */}
+                    </a>
                     <a href="https://youtu.be/P-HMQevZOF0" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <img src='./icons/youtube.png' alt="youtube" className="project__materialIcon" />
