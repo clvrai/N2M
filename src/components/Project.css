@@ -376,6 +376,7 @@
 
 .project__egoCentricText {
     font-size: 15px;
+    text-align: center;
 }
 
 .project_realTimeVideosWrapper {
@@ -537,6 +538,26 @@
 .project__dataEfficiencyText {
     text-align: center;
     font-size: 15px;
+}
+
+.project__dataEfficiencyExp4TextMain, .project__dataEfficiencyExp5TextMain {
+    text-align: center;
+    font-size: 18px;
+}
+
+.project__dataEfficiencyExp4TextBody, .project__dataEfficiencyExp5TextBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.project__dataEfficiencyExp4TextResults {
+    width: 80%;
+}
+
+.project__dataEfficiencyExp4TextResult, .project__dataEfficiencyExp5TextExplanation {
+    text-align: justify;
 }
 
 .project__dataEfficiencyMedias {
