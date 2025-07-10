@@ -10,7 +10,7 @@ a {
 }
 
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .google-sans-light {

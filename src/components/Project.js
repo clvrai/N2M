@@ -140,7 +140,7 @@ const Project = () => {
         <div className="project">
             <div className="project__header">
                 <video className="project__headerVideo" loop muted autoPlay playsInline>
-                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/quicktime" />
+                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
                 <div className="project__headerTitle">
@@ -182,25 +182,25 @@ const Project = () => {
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
                 </div>
                 <div className="project__materials">
-                    <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
+                    {/* <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer"> */}
                         <div className="project__material dark-gray-background">
                             <img src='./icons/arxiv.png' alt="paper" className="project__materialIcon" />
-                            <p className="project__materialName google-sans-regular white-color">arXiv</p>
+                            <p className="project__materialName google-sans-regular white-color">arXiv (Coming Soon)</p>
                         </div>
-                    </a>
-                    <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
+                    {/* </a> */}
+                    {/* <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer"> */}
                         <div className="project__material dark-gray-background">
                             <GitHubIcon className="project__materialIcon white-color" />
-                            <p className="project__materialName google-sans-regular white-color">Code</p>
+                            <p className="project__materialName google-sans-regular white-color">Code (Coming Soon)</p>
                         </div>
-                    </a>
-                    <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
+                    {/* </a> */}
+                    <a href="https://youtu.be/P-HMQevZOF0" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <img src='./icons/youtube.png' alt="youtube" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Youtube</p>
                         </div>
                     </a>
-                    <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.bilibili.com/video/BV15zG3zzEAw/?vd_source=0da0b7e545e1a65e82836ac4eff73077" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <img src='./icons/bilibili.png' alt="bilibili" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Bilibili</p>
@@ -213,8 +213,8 @@ const Project = () => {
             <div className="project__body">
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
-                    <video className="project__overviewVideo" loop muted autoPlay controls playsInline>
-                        <source src="./videos/Overview_2k.mov" type="video/quicktime" />
+                    <video className="project__overviewVideo" loop controls playsInline>
+                        <source src="./videos/Overview_2k.mp4" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -300,19 +300,19 @@ const Project = () => {
                             </div>
                             <div className="project__realTimeVideos" ref={realTimeVideosRef}>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/quicktime" />
+                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/quicktime" />
+                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/quicktime" />
+                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/quicktime" />
+                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -324,7 +324,7 @@ const Project = () => {
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Viewpoint</span> Robustness</p>
                         <div className="project__keyFeatureBody project__viewpointRobustnessBody">
                             <video className="project__viewpointRobustnessVideo" loop muted autoPlay playsInline>
-                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/quicktime" />
+                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -343,19 +343,19 @@ const Project = () => {
                                 </div>
                                 <div className="project__applicabilityVideos" ref={applicabilityVideosRef}>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/quicktime" />
+                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/quicktime" />
+                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/quicktime" />
+                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/quicktime" />
+                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
@@ -383,7 +383,7 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
                                     <div className="project__dataEfficiencyExp3aMedias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay playsInline>
-                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/quicktime" />
+                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                         <img src='./figures/Data_Efficiency_Exp3a_graph.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
@@ -426,7 +426,7 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp5">
                                     <div className="project__dataEfficiencyExp5Medias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp5Video" loop muted autoPlay playsInline>
-                                            <source src="./videos/Generalizability_all_in_one_x8_05k_web.mov" type="video/quicktime" />
+                                            <source src="./videos/Generalizability_all_in_one_x8_05k_web.mov" type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                     </div>
@@ -450,14 +450,14 @@ const Project = () => {
                     </div>
                 </div>
 
-                <div className="project__bodyContent project__bibtex">
+                {/* <div className="project__bodyContent project__bibtex">
                     <p className="project__bodyContentTitle google-sans-semibold">Bibtex</p>
                     <div className="project__bibtexBody">
                         <pre className="project__bibtexText google-sans-regular light-gray-background">
                             TBD
                         </pre>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

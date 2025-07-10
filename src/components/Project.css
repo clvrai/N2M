@@ -100,7 +100,7 @@
     justify-content: center;
     flex-wrap: wrap;
     width: 80%;
-    max-width: 800px;
+    max-width: 1200px;
 }
 
 .project__affiliation {
@@ -124,7 +124,7 @@
     justify-content: center;
     align-items: center;
     width: 80%;
-    max-width: 800px;
+    max-width: 1200px;
 }
 
 .project__material {
@@ -135,6 +135,12 @@
     align-items: center;
     padding: 10px 15px;
     border-radius: 100px;
+    transition: background-color 0.3s ease;
+}
+
+.project__material:hover {
+    background-color: #000000bc;
+    cursor: pointer;
 }
 
 .project__materialIcon {
