@@ -179,8 +179,8 @@ const Project = () => {
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
                 </div>
                 <div className="project__symbols">
-                    <p className="project__symbolsText google-sans-regular">&dagger; indicates equal contribution</p>
-                    <p className="project__symbolsText google-sans-regular">&Dagger; indicates corresponding author</p>
+                    <p className="project__symbolsText google-sans-regular">&dagger; equal contribution</p>
+                    <p className="project__symbolsText google-sans-regular">&Dagger; corresponding author</p>
                 </div>
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
@@ -215,7 +215,7 @@ const Project = () => {
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
                     <video className="project__overviewVideo" loop muted autoPlay controls playsInline>
-                        <source src="./videos/RA-L overview.mov" type="video/mp4" />
+                        <source src="./videos/Overview_2k.mov" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -224,13 +224,16 @@ const Project = () => {
                     <div className="project__bodyContent project__abstract">
                         <p className="project__bodyContentTitle google-sans-semibold">Abstract</p>
                         <p className="project__abstractText google-sans-regular">
-                        In mobile manipulation, robots first navigate to a task area and then execute pre-trained manipulation policies to complete the task. 
-                        Due to hardware constraints, environmental factors, and the distribution of training data, the initial pose from which a manipulation policy is executed has a significant impact on the task success rate. 
-                        However, navigation modules typically fail to account for these pose preferences. To address this critical gap, we present N2M, a transition module that guides the robot to a preferable initial pose after reaching the task area, thereby substantially improving task success rates. 
-                        N2M features several key advantages: (1) real-time adaptation to environmental changes; (2) reliance solely on onboard RGB-D camera without requiring global or historical information; 
-                        (3) accurate predictions with high viewpoint robustness; (4) remarkable data efficiency and generalizability; and (5) applicability across diverse tasks, manipulation policies and robot hardware configurations. 
-                        Through extensive experiments in both simulation and real-world settings, we demonstrate the effectiveness of our method. 
-                        In the PnPCounterToCab task, N2M improves success rates from 3% with reachability-based baselines to 54%, and in the Toy Box Handover task, with only 15 data samples collected in one room, N2M can give reliable predictions throughout the whole room and even generalize to entirely unseen environments.
+                        In mobile manipulation, the manipulation policy has strong preferences for initial poses where it is executed. 
+                        However, the navigation module focuses solely on reaching the task area, without considering which initial pose is preferable for downstream manipulation.
+                        To address this misalignment, we present N2M, a transition module that guides the robot to a preferable initial pose after reaching the task area, thereby substantially improving task success rates. 
+                        N2M features several key advantages: (1) reliance solely on ego-centric observation without requiring global or historical information; 
+                        (2) real-time adaptation to environmental changes; 
+                        (3) accurate predictions with high viewpoint robustness; 
+                        (4) broad applicability across diverse tasks, manipulation policies and robot hardware; and 
+                        (5) remarkable data efficiency and generalizability.
+                        We demonstrate the effectiveness of N2M through extensive simulation and real-world experiments. In the PnPCounterToCab task, N2M improves success rates from 3% with reachability-based baselines to 54%, 
+                        and in the Toy Box Handover task, with only 15 data samples collected in one room, N2M can give reliable predictions throughout the whole room and even generalize to entirely unseen environments.
                         </p>
                     </div>
                 </div>
