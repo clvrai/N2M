@@ -528,7 +528,7 @@
 }
 
 .project__dataEfficiencyBody {
-    width: 80vw;
+    width: 75vw;
     max-width: 1200px;
     display: flex;
     flex-direction: column;
@@ -561,7 +561,7 @@
 }
 
 .project__dataEfficiencyMedias {
-    width: 80vw;
+    width: 79vw;
     max-width: 1200px;
     display: flex;
     align-items: center;

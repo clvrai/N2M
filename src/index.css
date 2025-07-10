@@ -9,6 +9,10 @@ a {
   color: inherit;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 .google-sans-light {
   font-family: "Google Sans", sans-serif;
   font-optical-sizing: auto;

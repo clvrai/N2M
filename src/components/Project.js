@@ -171,16 +171,15 @@ const Project = () => {
                     <p className="project__author google-sans-regular blue-color"><a href="https://sites.google.com/view/junseunglee/home/about" target="_blank" rel="noopener noreferrer">Junseung Lee</a><sup className="black-color">1,3</sup></p>
                     <p className="project__author google-sans-regular blue-color"><a href="https://dhleekr.github.io/" target="_blank" rel="noopener noreferrer">Doohyun Lee</a><sup className="black-color">1</sup></p>
                     <p className="project__author google-sans-regular blue-color"><a href="https://minoring.github.io/" target="_blank" rel="noopener noreferrer">Minho Heo</a><sup className="black-color">1</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://clvrai.com/web_lim/" target="_blank" rel="noopener noreferrer">Joseph J. Lim</a><sup className="black-color">&Dagger;1</sup></p>
+                    <p className="project__author google-sans-regular blue-color"><a href="https://clvrai.com/web_lim/" target="_blank" rel="noopener noreferrer">Joseph J. Lim</a><sup className="black-color">1</sup></p>
+                </div>
+                <div className="project__symbols">
+                    <p className="project__symbolsText google-sans-regular">&dagger; equal contribution</p>
                 </div>
                 <div className="project__affiliations">
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">1</sup>KAIST</p>
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">2</sup>Xi’an Jiaotong University</p>
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
-                </div>
-                <div className="project__symbols">
-                    <p className="project__symbolsText google-sans-regular">&dagger; equal contribution</p>
-                    <p className="project__symbolsText google-sans-regular">&Dagger; corresponding author</p>
                 </div>
                 <div className="project__materials">
                     <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer">
@@ -284,10 +283,7 @@ const Project = () => {
                             <img src='./figures/Key_Feature_Ego-centric.png' alt="key_feature_ego-centric" className="project__egoCentricImage" />
                             <div className="project__egoCentricTextBody">
                                 <p className="project__egoCentricText google-sans-regular">
-                                    ✅ N2M only relies on ego-centric observations without requiring global or historical information
-                                </p>
-                                <p className="project__egoCentricText google-sans-regular">
-                                    ❌ Doesn’t require global / historical information such as pre-built map
+                                    N2M only relies on ego-centric observations without requiring global or historical information
                                 </p>
                             </div>
                         </div>
