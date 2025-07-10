@@ -528,7 +528,7 @@
 }
 
 .project__dataEfficiencyBody {
-    width: 75vw;
+    width: 79vw;
     max-width: 1200px;
     display: flex;
     flex-direction: column;
@@ -543,6 +543,10 @@
 .project__dataEfficiencyExp4TextMain, .project__dataEfficiencyExp5TextMain {
     text-align: center;
     font-size: 18px;
+}
+
+.project__dataEfficiencyExp4TextMain {
+    width: 80%;
 }
 
 .project__dataEfficiencyExp4TextBody, .project__dataEfficiencyExp5TextBody {

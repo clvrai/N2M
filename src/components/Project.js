@@ -140,7 +140,7 @@ const Project = () => {
         <div className="project">
             <div className="project__header">
                 <video className="project__headerVideo" loop muted autoPlay playsInline>
-                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/mp4" />
+                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/quicktime" />
                     Your browser does not support the video tag.
                 </video>
                 <div className="project__headerTitle">
@@ -214,7 +214,7 @@ const Project = () => {
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
                     <video className="project__overviewVideo" loop muted autoPlay controls playsInline>
-                        <source src="./videos/Overview_2k.mov" type="video/mp4" />
+                        <source src="./videos/Overview_2k.mov" type="video/quicktime" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -300,19 +300,19 @@ const Project = () => {
                             </div>
                             <div className="project__realTimeVideos" ref={realTimeVideosRef}>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
+                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/quicktime" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
+                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/quicktime" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
+                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/quicktime" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
+                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/quicktime" />
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -324,7 +324,7 @@ const Project = () => {
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Viewpoint</span> Robustness</p>
                         <div className="project__keyFeatureBody project__viewpointRobustnessBody">
                             <video className="project__viewpointRobustnessVideo" loop muted autoPlay playsInline>
-                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/mp4" />
+                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/quicktime" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -343,19 +343,19 @@ const Project = () => {
                                 </div>
                                 <div className="project__applicabilityVideos" ref={applicabilityVideosRef}>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/quicktime" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/mp4" />
+                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/quicktime" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/mp4" />
+                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/quicktime" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/mp4" />
+                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/quicktime" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
@@ -383,7 +383,7 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
                                     <div className="project__dataEfficiencyExp3aMedias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay playsInline>
-                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/quicktime" />
                                             Your browser does not support the video tag.
                                         </video>
                                         <img src='./figures/Data_Efficiency_Exp3a_graph.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
@@ -415,7 +415,7 @@ const Project = () => {
                                         <img src='./figures/Data_Efficiency_Exp4.png' alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
                                     </div>
                                     <div className="project__dataEfficiencyExp4TextBody">
-                                        <p className="project__dataEfficiencyText project__dataEfficiencyExp4TextMain google-sans-semibold">The robot attempts to retrieve a lamp from the shelf. The 3×4 table shows the success rate for each cell. <br/>We collect one rollout from each cell marked in <span className="blue-color">blue</span> for N2M training.</p>
+                                        <p className="project__dataEfficiencyText project__dataEfficiencyExp4TextMain google-sans-semibold">The robot attempts to retrieve a lamp from the shelf. The 3×4 table shows the success rate for each cell. We collect one rollout from each cell marked in <span className="blue-color">blue</span> for N2M training.</p>
                                         <div className="project__dataEfficiencyExp4TextResults">
                                             <p className="project__dataEfficiencyText project__dataEfficiencyExp4TextResult google-sans-regular"><span className="blue-color google-sans-semibold">Result (a)</span>: Simply ensuring reachability is not enough to determine a preferable initial pose.</p>
                                             <p className="project__dataEfficiencyText project__dataEfficiencyExp4TextResult google-sans-regular"><span className="blue-color google-sans-semibold">Result (b) & (c)</span>: Even with rollouts collected from only a subset of cells, N2M can still generate reasonable predictions for unseen cells. <br/></p>
@@ -426,7 +426,7 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp5">
                                     <div className="project__dataEfficiencyExp5Medias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp5Video" loop muted autoPlay playsInline>
-                                            <source src="./videos/Generalizability_all_in_one_x8_05k_web.mov" type="video/mp4" />
+                                            <source src="./videos/Generalizability_all_in_one_x8_05k_web.mov" type="video/quicktime" />
                                             Your browser does not support the video tag.
                                         </video>
                                     </div>
