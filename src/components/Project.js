@@ -166,11 +166,6 @@ const Project = () => {
                 <div className="project__authors">
                     <p className="project__author google-sans-regular blue-color"><a href="https://cckaixin.github.io/myWebsite/" target="_blank" rel="noopener noreferrer">Kaixin Chai</a><sup className="black-color">&dagger;1,2</sup></p>
                     <p className="project__author google-sans-regular blue-color"><a href="https://hjl1013.github.io/" target="_blank" rel="noopener noreferrer">Hyunjun Lee</a><sup className="black-color">&dagger;1,3</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://jeongjun-kim.github.io/" target="_blank" rel="noopener noreferrer">Jeongjun Kim</a><sup className="black-color">1,3</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://www.linkedin.com/in/sunwoo-kim-299493201/" target="_blank" rel="noopener noreferrer">Sunwoo Kim</a><sup className="black-color">1,3</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://sites.google.com/view/junseunglee/home/about" target="_blank" rel="noopener noreferrer">Junseung Lee</a><sup className="black-color">1,3</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://dhleekr.github.io/" target="_blank" rel="noopener noreferrer">Doohyun Lee</a><sup className="black-color">1</sup></p>
-                    <p className="project__author google-sans-regular blue-color"><a href="https://minoring.github.io/" target="_blank" rel="noopener noreferrer">Minho Heo</a><sup className="black-color">1</sup></p>
                     <p className="project__author google-sans-regular blue-color"><a href="https://clvrai.com/web_lim/" target="_blank" rel="noopener noreferrer">Joseph J. Lim</a><sup className="black-color">1</sup></p>
                 </div>
                 <div className="project__symbols">
