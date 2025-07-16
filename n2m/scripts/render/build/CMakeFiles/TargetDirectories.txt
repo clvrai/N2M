@@ -1,3 +1,0 @@
-/home/mm/workbench/sim/nav2man/nav2man/scripts/render/build/CMakeFiles/fpv_render.dir
-/home/mm/workbench/sim/nav2man/nav2man/scripts/render/build/CMakeFiles/edit_cache.dir
-/home/mm/workbench/sim/nav2man/nav2man/scripts/render/build/CMakeFiles/rebuild_cache.dir

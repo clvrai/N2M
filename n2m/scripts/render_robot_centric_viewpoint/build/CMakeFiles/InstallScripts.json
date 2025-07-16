@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/mm/workbench/sim/nav2man/nav2man/scripts/render_robot_centric_viewpoint/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

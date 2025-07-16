@@ -38,23 +38,23 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("loading meta...")
-    meta_path = os.path.join(args.dataset_path, "rollout", "meta.json")
+    meta_path = os.path.join(args.dataset_path, "meta.json")
     with open(meta_path, "r") as f:
         meta = json.load(f)
     episodes = meta['episodes']
     print("meta loaded")
 
-    camera_pose_save_dir = os.path.join(args.dataset_path, "rollout", "camera_poses")
+    camera_pose_save_dir = os.path.join(args.dataset_path, "camera_poses")
     os.makedirs(camera_pose_save_dir, exist_ok=True)
 
     if args.vis:
-        camera_pose_vis_dir = os.path.join(args.dataset_path, "rollout", "camera_poses_vis")
+        camera_pose_vis_dir = os.path.join(args.dataset_path, "camera_poses_vis")
         os.makedirs(camera_pose_vis_dir, exist_ok=True)
 
     camera_poses = []
     base_poses = []
     for episode in tqdm(episodes):
-        pcl_path = os.path.join(args.dataset_path, 'rollout', episode['file_path'])
+        pcl_path = os.path.join(args.dataset_path, episode['file_path'])
         pcl = o3d.io.read_point_cloud(pcl_path)
         se2_origin = episode['meta_info']['se2_origin']
         furniture_pos = episode['meta_info']['furniture_pos']
