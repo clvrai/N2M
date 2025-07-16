@@ -6,7 +6,7 @@ import random
 from torch.utils.data import Dataset
 import open3d as o3d
 
-from nav2man.utils.point_cloud import apply_augmentations, fix_point_cloud_size
+from n2m.utils.point_cloud import apply_augmentations, fix_point_cloud_size
 
 def make_data_module(config):
     """
