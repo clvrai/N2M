@@ -4,9 +4,9 @@ Kaixin Chai*, Hyunjun Lee*, Joseph J. Lim
 🚧 full code will be released soon!
 
 ## TODOs
-[ ] Organize N2M training and inference code
-[ ] Organize robocasa evironment code
-[ ] Clean up README.md file
+<input type="checkbox" disabled> Organize N2M training and inference code<br/>
+<input type="checkbox" disabled> Organize robocasa evironment code<br/>
+<input type="checkbox" disabled> Clean up README.md file
 
 ## Installation
 we use `uv` to manage our environment. click [here](https://docs.astral.sh/uv/) to get tutorial if you are not familiar with this tool.
