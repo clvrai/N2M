@@ -1,0 +1,3 @@
+/home/mm/workbench/sim/nav2man/nav2man/scripts/render_robot_centric_origin/build/CMakeFiles/fpv_render.dir
+/home/mm/workbench/sim/nav2man/nav2man/scripts/render_robot_centric_origin/build/CMakeFiles/edit_cache.dir
+/home/mm/workbench/sim/nav2man/nav2man/scripts/render_robot_centric_origin/build/CMakeFiles/rebuild_cache.dir
