@@ -19,19 +19,9 @@
             "config": {
                 "dropout": 0.1
             },
-            "layers": [
-                512,
-                512,
-                512,
-                512,
-                512,
-                512,
-                512,
-                512
-            ],
-            "num_gaussians": 2,
+            "num_gaussians": 1,
             "output_dim": 3
         },
-        "ckpt": "models/N2M/N2M_CloseDrawer.pth"
+        "ckpt": "models/N2M/N2M_OpenSingleDoor_DP.pth"
     }
 }

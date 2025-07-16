@@ -29,9 +29,9 @@
                 512,
                 512
             ],
-            "num_gaussians": 2,
+            "num_gaussians": 1,
             "output_dim": 3
         },
-        "ckpt": "models/N2M/N2M_CloseDrawer.pth"
+        "ckpt": "models/N2M/N2M_OpenSingleDoor_BCTransformer.pth"
     }
 }
