@@ -6,7 +6,7 @@ import yaml
 import os
 import numpy as np
 
-class SIRPredictor(nn.Module):
+class N2Mnet(nn.Module):
     def __init__(self, config):
         """
         Initialize the SIR Predictor model
@@ -186,65 +186,3 @@ class SIRPredictor(nn.Module):
                     samples[b, component_indices == i] = dist.sample((num_component_samples,))
         
         return samples, means, covs, weights
-    
-
-class SIRValue(nn.Module):
-    def __init__(self, config):
-        """
-        Initialize the SIR Predictor model
-        This is a model that predicts the distribution of SIR points from the point cloud
-        
-        Args:
-            config: Config dict from yaml file
-            num_gaussians: Number of Gaussian components in the mixture
-            output_dim: Dimension of the output (e.g., 3 for xyz coordinates)
-        """
-        super().__init__()
-        self.encoder_config = config['encoder']
-        self.decoder_config = config['decoder']
-        
-        # Load PointBERT config
-        self.point_bert_config = self.encoder_config['point_bert_config']
-        
-        # Initialize PointBERT backbone
-        self.point_bert = PointTransformer(self.point_bert_config)
-        
-        # Load pretrained weights if specified
-        if 'point_bert_weights' in self.encoder_config:
-            self.load_point_bert_weights(self.encoder_config['point_bert_weights'])
-        
-        # Freeze PointBERT weights
-        if self.encoder_config['freeze']:
-            for param in self.point_bert.parameters():
-                param.requires_grad = False
-        
-        # Get the output dimension of PointBERT
-        backbone_output_dim = self.point_bert_config['trans_dim'] * 2  # *2 because of max pooling
-        
-        # MLP layers for predicting GMM parameters
-        # For each Gaussian component, we need:
-        # - mean (output_dim)
-        # - full covariance matrix (output_dim * output_dim)
-        # - mixing coefficient (1)
-        
-        self.mlp = nn.Sequential(
-            nn.Linear(backbone_output_dim + 3, 512),
-            nn.ReLU(),
-            nn.Dropout(self.decoder_config['dropout']),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Dropout(self.decoder_config['dropout']),
-            nn.Linear(256, 1),
-            nn.Sigmoid()
-        )
-
-        if 'ckpt' in config and os.path.exists(config['ckpt']):
-            print(f"Loading model weights from {config['ckpt']}")
-            self.load_state_dict(torch.load(config['ckpt'])['model_state_dict'])
-        
-    def forward(self, point_cloud, pos):
-        features = self.point_bert(point_cloud)  # (B, 1, C)
-        features = features.squeeze(1)  # (B, C)
-        features = torch.cat([features, pos], dim=-1)
-        value = self.mlp(features)
-        return value

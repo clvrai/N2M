@@ -7,8 +7,8 @@ from tqdm import tqdm
 import argparse
 import wandb
 
-from nav2man.data.SIRDataset import make_SIR_data_module
-from nav2man.model.SIRPredictor import SIRPredictor
+from nav2man.data.dataset import make_N2M_data_module
+from nav2man.model.N2Mnet import N2Mnet
 from nav2man.utils.config import *
 from nav2man.utils.visualizer import save_gmm_visualization, save_gmm_visualization_se2, save_gmm_visualization_xythetaz
 from nav2man.utils.loss import Loss

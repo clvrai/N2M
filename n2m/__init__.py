@@ -1,2 +1,2 @@
-from .model.SIRPredictor import SIRPredictor
-from .data.SIRDataset import SIRDataset
+from .model.N2Mnet import SIRPredictor
+from .data.dataset import SIRDataset

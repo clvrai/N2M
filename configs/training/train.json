@@ -27,8 +27,8 @@
         }
     },
     "dataset": {
-        "dataset_path": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600",
-        "anno_path": "rollout/meta_aug_positive_robot_centric_origin_020.json",
+        "dataset_path": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600/rollout",
+        "anno_path": "meta_aug_positive_robot_centric_origin_020.json",
         "pointnum": 8192,
         "train_val_ratio": 0.999,
         "augmentations": {
