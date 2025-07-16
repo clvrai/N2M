@@ -1,0 +1,66 @@
+{
+    "exp_name": "SIR-PnPCounterToCab-BCT-wo-PTR-pos-robot-centric-020-scene3",
+    "model": {
+        "encoder": {
+            "name": "PointBERT",
+            "config": {
+                "NAME": "PointTransformer",
+                "trans_dim": 384,
+                "depth": 12,
+                "drop_path_rate": 0.1,
+                "cls_dim": 40,
+                "num_heads": 6,
+                "group_size": 32,
+                "num_group": 512,
+                "encoder_dims": 256
+            },
+            "ckpt": "models/PointBERT/PointTransformer_ModelNet8192points.pth",
+            "freeze": false
+        },
+        "decoder": {
+            "name": "mlp",
+            "config": {
+                "dropout": 0.1
+            },
+            "num_gaussians": 1,
+            "output_dim": 3
+        }
+    },
+    "dataset": {
+        "dataset_path": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600",
+        "anno_path": "rollout/meta_aug_positive_robot_centric_origin_020.json",
+        "pointnum": 8192,
+        "train_val_ratio": 0.999,
+        "augmentations": {
+            "rotation_se2": {
+                "min_angle": -180,
+                "max_angle": 180
+            },
+            "translation_xy": {
+                "radius": 1
+            }
+        }
+    },
+    "train": {
+        "batch_size": 32,
+        "num_epochs": 300,
+        "learning_rate": 1e-4,
+        "num_workers": 4,
+        "val_freq": 50,
+        "loss": {
+            "name": "mle",
+            "config": {
+                "neg_weight": 1.0,
+                "lam_weight": 5.0,
+                "lam_dist": 0.0,
+                "min_logprob": -4.0
+            }
+        },
+        "wandb": {
+            "name": "SIR-PnPCounterToCab-BCT-wo-PTR-pos-robot-centric-020-scene3",
+            "project": "Nav2Manip",
+            "entity": "clvr"
+        },
+        "output_dir": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600/SIR/SIR_wo_PTR_pos_robot_centric_020"
+    }
+}
