@@ -3,9 +3,9 @@ import os
 import numpy as np
 from torch.distributions import MultivariateNormal
 
-from nav2man.utils.point_cloud import fix_point_cloud_size
-from nav2man.utils.visualizer import save_gmm_visualization_se2
-from nav2man.utils.point_cloud import translate_se2_point_cloud, translate_se2_target
+from n2m.utils.point_cloud import fix_point_cloud_size
+from n2m.utils.visualizer import save_gmm_visualization_se2
+from n2m.utils.point_cloud import translate_se2_point_cloud, translate_se2_target
 
 def predict_SIR_target_point(
     SIR_predictor,
