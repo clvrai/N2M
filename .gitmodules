@@ -1,0 +1,3 @@
+[submodule "robocasa"]
+    path = robocasa
+    url = https://github.com/cckaixin/robocasa.git
