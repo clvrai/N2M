@@ -7,11 +7,11 @@ from tqdm import tqdm
 import argparse
 import wandb
 
-from nav2man.data.dataset import make_N2M_data_module
-from nav2man.model.N2Mnet import N2Mnet
-from nav2man.utils.config import *
-from nav2man.utils.visualizer import save_gmm_visualization, save_gmm_visualization_se2, save_gmm_visualization_xythetaz
-from nav2man.utils.loss import Loss
+from n2m.data.dataset import make_data_module
+from n2m.model.N2Mnet import N2Mnet
+from n2m.utils.config import *
+from n2m.utils.visualizer import save_gmm_visualization, save_gmm_visualization_se2, save_gmm_visualization_xythetaz
+from n2m.utils.loss import Loss
 import random
 import numpy as np
 
@@ -34,45 +34,24 @@ def train_one_epoch(model, train_loader, loss_fn, optimizer, epoch, device, trai
     total_loss = 0
     pbar = tqdm(train_loader, desc=f'Epoch {epoch}')
     
-    if 'PTR' not in train_config:
-        for batch in pbar:
-            # Move data to device
-            point_cloud = batch['point_cloud'].to(device)
-            target_point = batch['target_point'].to(device)
-            label = batch['label'].to(device)
-            
-            # Forward pass
-            means, covs, weights = model(point_cloud)
-            loss = loss_fn(means, covs, weights, target_point, label)
-            
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            
-            # Update metrics
-            total_loss += loss.item()
-            pbar.set_postfix({'loss': loss.item()})
-    else:
-        for batch in pbar:
-            # Move data to device
-            point_cloud = batch['point_cloud'].to(device)
-            target_point = batch['target_point'].to(device)
-            label = batch['label'].to(device)
-            task_idx = batch['task_idx'].to(device)
-            
-            # Forward pass
-            means, covs, weights = model(point_cloud, task_idx)
-            loss = loss_fn(means, covs, weights, target_point, label)
-            
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            
-            # Update metrics
-            total_loss += loss.item()
-            pbar.set_postfix({'loss': loss.item()})
+    for batch in pbar:
+        # Move data to device
+        point_cloud = batch['point_cloud'].to(device)
+        target_point = batch['target_point'].to(device)
+        label = batch['label'].to(device)
+        
+        # Forward pass
+        means, covs, weights = model(point_cloud)
+        loss = loss_fn(means, covs, weights, target_point, label)
+        
+        # Backward pass
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        # Update metrics
+        total_loss += loss.item()
+        pbar.set_postfix({'loss': loss.item()})
             
     
     avg_loss = total_loss / len(train_loader)
@@ -88,79 +67,42 @@ def validate(model, val_loader, loss_fn, epoch, device, train_config):
     os.makedirs(vis_dir, exist_ok=True)
     
     with torch.no_grad():
-        if 'PTR' not in train_config:
-            for batch_idx, batch in enumerate(tqdm(val_loader, desc='Validation')):
-                # Move data to device
-                point_cloud = batch['point_cloud'].to(device)
-                target_point = batch['target_point'].to(device)
-                label = batch['label'].to(device)
-                
-                # Forward pass
-                means, covs, weights = model(point_cloud)
-                loss = loss_fn(means, covs, weights, target_point, label)
-                
-                # Update metrics
-                total_loss += loss.item()
-                
-                # Generate visualization for first item in batch
-                for i in range(len(batch['point_cloud'])):
-                    if target_point[i].shape[0] == 3:
-                        save_gmm_visualization_se2(
-                            point_cloud[i].cpu().numpy(),
-                            target_point[i].cpu().numpy(),
-                            label[i].cpu().numpy(),
-                            means[i].cpu().numpy(),
-                            covs[i].cpu().numpy(),
-                            weights[i].cpu().numpy(),
-                            os.path.join(vis_dir, f'batch_{batch_idx}_{i}.ply')
-                        )
-                    elif target_point[i].shape[0] == 4:
-                        save_gmm_visualization_xythetaz(
-                            point_cloud[i].cpu().numpy(),
-                            target_point[i].cpu().numpy(),
-                            label[i].cpu().numpy(),
-                            means[i].cpu().numpy(),
-                            covs[i].cpu().numpy(),
-                            weights[i].cpu().numpy(),
-                            os.path.join(vis_dir, f'batch_{batch_idx}_{i}.ply')
-                        )
-        else:
-            for batch_idx, batch in enumerate(tqdm(val_loader, desc='Validation')):
-                # Move data to device
-                point_cloud = batch['point_cloud'].to(device)
-                target_point = batch['target_point'].to(device)
-                label = batch['label'].to(device)
-                task_idx = batch['task_idx'].to(device)
-                
-                # Forward pass
-                means, covs, weights = model(point_cloud, task_idx)
-                loss = loss_fn(means, covs, weights, target_point, label)
-                
-                # Update metrics
-                total_loss += loss.item()
-                
-                # Generate visualization for first item in batch
-                for i in range(len(batch['point_cloud'])):
-                    if target_point[i].shape[0] == 3:
-                        save_gmm_visualization_se2(
-                            point_cloud[i].cpu().numpy(),
-                            target_point[i].cpu().numpy(),
-                            label[i].cpu().numpy(),
-                            means[i].cpu().numpy(),
-                            covs[i].cpu().numpy(),
-                            weights[i].cpu().numpy(),
-                            os.path.join(vis_dir, f'batch_{batch_idx}_{i}.ply')
-                        )
-                    elif target_point[i].shape[0] == 4:
-                        save_gmm_visualization_xythetaz(
-                            point_cloud[i].cpu().numpy(),
-                            target_point[i].cpu().numpy(),
-                            label[i].cpu().numpy(),
-                            means[i].cpu().numpy(),
-                            covs[i].cpu().numpy(),
-                            weights[i].cpu().numpy(),
-                            os.path.join(vis_dir, f'batch_{batch_idx}_{i}.ply')
-                        )
+        for batch_idx, batch in enumerate(tqdm(val_loader, desc='Validation')):
+            # Move data to device
+            point_cloud = batch['point_cloud'].to(device)
+            target_point = batch['target_point'].to(device)
+            label = batch['label'].to(device)
+            
+            # Forward pass
+            means, covs, weights = model(point_cloud)
+            loss = loss_fn(means, covs, weights, target_point, label)
+            
+            # Update metrics
+            total_loss += loss.item()
+            
+            # Generate visualization for first item in batch
+            for i in range(len(batch['point_cloud'])):
+                if target_point[i].shape[0] == 3:
+                    save_gmm_visualization_se2(
+                        point_cloud[i].cpu().numpy(),
+                        target_point[i].cpu().numpy(),
+                        label[i].cpu().numpy(),
+                        means[i].cpu().numpy(),
+                        covs[i].cpu().numpy(),
+                        weights[i].cpu().numpy(),
+                        os.path.join(vis_dir, f'batch_{batch_idx}_{i}.pcd')
+                    )
+                elif target_point[i].shape[0] == 4:
+                    save_gmm_visualization_xythetaz(
+                        point_cloud[i].cpu().numpy(),
+                        target_point[i].cpu().numpy(),
+                        label[i].cpu().numpy(),
+                        means[i].cpu().numpy(),
+                        covs[i].cpu().numpy(),
+                        weights[i].cpu().numpy(),
+                        os.path.join(vis_dir, f'batch_{batch_idx}_{i}.pcd')
+                    )
+        
     
     avg_loss = total_loss / len(val_loader)
     
@@ -214,7 +156,7 @@ def main():
     print(f'Using device: {device}')
     
     # Create model
-    model = SIRPredictor(
+    model = N2Mnet(
         config=model_config
     ).to(device)
 
@@ -222,8 +164,7 @@ def main():
     wandb.watch(model, log="all", log_freq=100)
     
     # Create data loaders
-    PTR = train_config['PTR'] if 'PTR' in train_config else None
-    train_dataset, val_dataset = make_SIR_data_module(dataset_config, PTR)
+    train_dataset, val_dataset = make_data_module(dataset_config)
     
     train_loader = DataLoader(
         train_dataset,
