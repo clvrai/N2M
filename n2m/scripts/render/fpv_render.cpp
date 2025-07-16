@@ -347,7 +347,7 @@ int main(int argc, char** argv) {
 
     std::string dataset_path = argv[1];
     std::string pcl_dir = dataset_path + "/rollout/pcl";
-    std::string meta_path = dataset_path + "/rollout/meta_positive.json";
+    std::string meta_path = dataset_path + "/rollout/meta.json";
     std::string output_pcl_dir = dataset_path + "/rollout/pcl_aug_positive_robot_centric_origin";
     std::string output_meta_path = dataset_path + "/rollout/meta_aug_positive_robot_centric_origin.json";
     std::string camera_poses_path = dataset_path + "/rollout/camera_poses/camera_poses.json";

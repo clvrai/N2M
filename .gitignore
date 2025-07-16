@@ -1,2 +1,7 @@
 models
 datasets
+training
+**build**
+**.egg-info
+**__pycache__**
+wandb

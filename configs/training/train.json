@@ -1,5 +1,5 @@
 {
-    "exp_name": "SIR-PnPCounterToCab-BCT-wo-PTR-pos-robot-centric-020-scene3",
+    "exp_name": "N2M_training",
     "model": {
         "encoder": {
             "name": "PointBERT",
@@ -27,10 +27,10 @@
         }
     },
     "dataset": {
-        "dataset_path": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600/rollout",
-        "anno_path": "meta_aug_positive_robot_centric_origin_020.json",
+        "dataset_path": "datasets/test",
+        "anno_path": "meta.json",
         "pointnum": 8192,
-        "train_val_ratio": 0.999,
+        "train_val_ratio": 0.9,
         "augmentations": {
             "rotation_se2": {
                 "min_angle": -180,
@@ -57,10 +57,10 @@
             }
         },
         "wandb": {
-            "name": "SIR-PnPCounterToCab-BCT-wo-PTR-pos-robot-centric-020-scene3",
-            "project": "Nav2Manip",
-            "entity": "clvr"
+            "name": null,
+            "project": null,
+            "entity": null
         },
-        "output_dir": "datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene3/rollouts_600/SIR/SIR_wo_PTR_pos_robot_centric_020"
+        "output_dir": "training/test"
     }
 }

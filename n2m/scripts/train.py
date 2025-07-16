@@ -6,14 +6,16 @@ import json
 from tqdm import tqdm
 import argparse
 import wandb
+import time
+import datetime
+import random
+import numpy as np
 
 from n2m.data.dataset import make_data_module
 from n2m.model.N2Mnet import N2Mnet
 from n2m.utils.config import *
 from n2m.utils.visualizer import save_gmm_visualization, save_gmm_visualization_se2, save_gmm_visualization_xythetaz
 from n2m.utils.loss import Loss
-import random
-import numpy as np
 
 def set_seed(seed):
     torch.manual_seed(seed)
@@ -58,13 +60,12 @@ def train_one_epoch(model, train_loader, loss_fn, optimizer, epoch, device, trai
     wandb.log({"train/loss": avg_loss, "epoch": epoch})
     return avg_loss
 
-def validate(model, val_loader, loss_fn, epoch, device, train_config):
+def validate(model, val_loader, loss_fn, epoch, device, val_dir,train_config):
     model.eval()
     total_loss = 0
     
     # Create visualization directory
-    vis_dir = os.path.join(train_config['output_dir'], 'visualizations', f'val')
-    os.makedirs(vis_dir, exist_ok=True)
+    os.makedirs(val_dir, exist_ok=True)
     
     with torch.no_grad():
         for batch_idx, batch in enumerate(tqdm(val_loader, desc='Validation')):
@@ -90,7 +91,7 @@ def validate(model, val_loader, loss_fn, epoch, device, train_config):
                         means[i].cpu().numpy(),
                         covs[i].cpu().numpy(),
                         weights[i].cpu().numpy(),
-                        os.path.join(vis_dir, f'batch_{batch_idx}_{i}.pcd')
+                        os.path.join(val_dir, f'batch_{batch_idx}_{i}.pcd')
                     )
                 elif target_point[i].shape[0] == 4:
                     save_gmm_visualization_xythetaz(
@@ -100,7 +101,7 @@ def validate(model, val_loader, loss_fn, epoch, device, train_config):
                         means[i].cpu().numpy(),
                         covs[i].cpu().numpy(),
                         weights[i].cpu().numpy(),
-                        os.path.join(vis_dir, f'batch_{batch_idx}_{i}.pcd')
+                        os.path.join(val_dir, f'batch_{batch_idx}_{i}.pcd')
                     )
         
     
@@ -120,6 +121,23 @@ def save_checkpoint(model, optimizer, epoch, loss, save_path):
     }
     torch.save(checkpoint, save_path)
 
+def get_exp_dir(train_config):
+    t_now = time.time()
+    time_str = datetime.datetime.fromtimestamp(t_now).strftime('%Y%m%d%H%M%S')
+    output_dir = os.path.join(train_config['output_dir'], time_str)
+
+    ckpt_dir = os.path.join(output_dir, 'ckpts')
+    val_dir = os.path.join(output_dir, 'val')
+    log_dir = os.path.join(output_dir, 'logs')
+
+    # create output directory
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(ckpt_dir, exist_ok=True)
+    os.makedirs(val_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
+
+    return output_dir, ckpt_dir, val_dir, log_dir
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='cfgs/test.yml')
@@ -132,10 +150,7 @@ def main():
     dataset_config = config['dataset']
 
     # Create output directory
-    os.makedirs(train_config['output_dir'], exist_ok=True)
-    os.makedirs(os.path.join(train_config['output_dir'], 'ckpts'), exist_ok=True)
-    os.makedirs(os.path.join(train_config['output_dir'], 'visualizations'), exist_ok=True)
-    os.makedirs(os.path.join(train_config['output_dir'], 'logs'), exist_ok=True)
+    output_dir, ckpt_dir, val_dir, log_dir = get_exp_dir(train_config)
 
     # Initialize wandb
     wandb_config = train_config['wandb']
@@ -143,11 +158,12 @@ def main():
         project=wandb_config['project'],
         entity=wandb_config['entity'],
         name=wandb_config['name'],
-        config=config
+        config=config,
+        mode="online" if wandb_config['entity'] is not None else "disabled"
     )
 
     # save config
-    config_save_path = os.path.join(train_config['output_dir'], 'config.json')
+    config_save_path = os.path.join(output_dir, 'config.json')
     with open(config_save_path, 'w') as f:
         json.dump(config, f, indent=4)
     
@@ -204,7 +220,7 @@ def main():
         
         # Validate
         if (epoch + 1) % train_config['val_freq'] == 0:
-            val_loss = validate(model, val_loader, loss_fn, epoch, device, train_config)
+            val_loss = validate(model, val_loader, loss_fn, epoch, device, val_dir, train_config)
             print(f'Epoch {epoch}: Val Loss = {val_loss:.4f}')
             
             # Save best model
@@ -215,14 +231,14 @@ def main():
                     optimizer,
                     epoch,
                     val_loss,
-                    os.path.join(train_config['output_dir'], 'ckpts', 'best_model.pth')
+                    os.path.join(ckpt_dir, 'best_model.pth')
                 )
             save_checkpoint(
                 model,
                 optimizer,
                 epoch,
                 train_loss,
-                os.path.join(train_config['output_dir'], 'ckpts', f'model_{epoch}.pth')
+                os.path.join(ckpt_dir, f'model_{epoch}.pth')
             )
         
         # Step scheduler
@@ -234,7 +250,7 @@ def main():
         optimizer,
         train_config['num_epochs'],
         train_loss,
-        os.path.join(train_config['output_dir'], 'ckpts', 'final_model.pth')
+        os.path.join(ckpt_dir, 'final_model.pth')
     )
     
     wandb.finish()
