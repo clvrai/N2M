@@ -5,3 +5,4 @@ training
 **.egg-info
 **__pycache__**
 wandb
+**.DS_Store
