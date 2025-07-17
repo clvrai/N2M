@@ -5,7 +5,7 @@ import open3d as o3d
 import numpy as np
 from tqdm import tqdm
 
-from robomimic.utils.sample_utils import TargetHelper
+from n2m.utils.sample_utils import TargetHelper
 
 def save_pose_visualization(pcl, poses, furniture_pos, save_path):
     # Create point cloud for the scene

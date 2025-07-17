@@ -346,12 +346,12 @@ int main(int argc, char** argv) {
     }
 
     std::string dataset_path = argv[1];
-    std::string pcl_dir = dataset_path + "/rollout/pcl";
-    std::string meta_path = dataset_path + "/rollout/meta.json";
-    std::string output_pcl_dir = dataset_path + "/rollout/pcl_aug_positive_robot_centric_origin";
-    std::string output_meta_path = dataset_path + "/rollout/meta_aug_positive_robot_centric_origin.json";
-    std::string camera_poses_path = dataset_path + "/rollout/camera_poses/camera_poses.json";
-    std::string base_poses_path = dataset_path + "/rollout/camera_poses/base_poses.json";
+    std::string pcl_dir = dataset_path + "/pcl";
+    std::string meta_path = dataset_path + "/meta.json";
+    std::string output_pcl_dir = dataset_path + "/pcl_aug";
+    std::string output_meta_path = dataset_path + "/meta_aug.json";
+    std::string camera_poses_path = dataset_path + "/camera_poses/camera_poses.json";
+    std::string base_poses_path = dataset_path + "/camera_poses/base_poses.json";
 
     // Create output directory if it doesn't exist
     fs::create_directories(output_pcl_dir);
@@ -379,7 +379,7 @@ int main(int argc, char** argv) {
     auto timeStart = std::chrono::high_resolution_clock::now();
     for (const auto& episode : meta["episodes"]) {
         // Load point cloud
-        std::string pcl_path = fs::path(dataset_path) / "rollout" / episode["file_path"];
+        std::string pcl_path = fs::path(dataset_path) / episode["file_path"];
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
         if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(pcl_path, *pointCloud) == -1) {
             std::cerr << "Failed to load point cloud file: " << pcl_path << std::endl;
