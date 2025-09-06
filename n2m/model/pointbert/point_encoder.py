@@ -52,7 +52,7 @@ class Attention(nn.Module):
         x = (attn @ v).transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
-        return x
+        return x, attn
 
 
 class Block(nn.Module):
@@ -71,9 +71,10 @@ class Block(nn.Module):
             dim, num_heads=num_heads, qkv_bias=qkv_bias, qk_scale=qk_scale, attn_drop=attn_drop, proj_drop=drop)
 
     def forward(self, x):
-        x = x + self.drop_path(self.attn(self.norm1(x)))
+        attn_out, attn_weights = self.attn(self.norm1(x))
+        x = x + self.drop_path(attn_out)
         x = x + self.drop_path(self.mlp(self.norm2(x)))
-        return x
+        return x, attn_weights
 
 
 class TransformerEncoder(nn.Module):
@@ -93,9 +94,11 @@ class TransformerEncoder(nn.Module):
             for i in range(depth)])
 
     def forward(self, x, pos):
-        for _, block in enumerate(self.blocks):
-            x = block(x + pos)
-        return x
+        for i, block in enumerate(self.blocks):
+            x, attn_weights = block(x + pos)
+            if i == len(self.blocks) - 1:
+                final_attn_weights = attn_weights
+        return x, final_attn_weights
 
 
 class PointTransformer(nn.Module):
@@ -176,9 +179,9 @@ class PointTransformer(nn.Module):
         x = torch.cat((cls_tokens, group_input_tokens), dim=1)
         pos = torch.cat((cls_pos, pos), dim=1)
         # transformer
-        x = self.blocks(x, pos)
+        x, final_attn_weights = self.blocks(x, pos)
         x = self.norm(x) # * B, G + 1(cls token)(513), C(384)
         if not self.use_max_pool:
-            return x
+            return x, final_attn_weights
         concat_f = torch.cat([x[:, 0], x[:, 1:].max(1)[0]], dim=-1).unsqueeze(1) # * concat the cls token and max pool the features of different tokens, make it B, 1, C
-        return concat_f # * B, 1, C(384 + 384)
+        return concat_f, final_attn_weights # * B, 1, C(384 + 384)

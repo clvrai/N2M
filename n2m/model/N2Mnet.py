@@ -141,7 +141,8 @@ class N2Mnet(nn.Module):
                 - weights (torch.Tensor): GMM mixing weights (B, K).
         """
         # Encode point cloud to a global feature vector
-        features = self.encoder(point_cloud).squeeze(1)  # (B, encoder_output_dim)
+        features, _ = self.encoder(point_cloud)
+        features = features.squeeze(1)  # (B, encoder_output_dim)
 
         # Decode features into a flat tensor of GMM parameters
         gmm_params = self.decoder(features)
