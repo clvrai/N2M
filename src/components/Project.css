@@ -628,6 +628,16 @@
     text-align: justify;
 }
 
+.project__acknowledgementsBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project__acknowledgementsText {
+    font-size: 15px;
+}
+
 .project__bibtexBody {
     width: 100%;
     display: flex;

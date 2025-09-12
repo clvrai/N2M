@@ -5,7 +5,6 @@ import PointCloudViewer from './PointCloudViewer';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import Button from '@mui/material/Button';
 
 const Project = () => {
     const [currentPointCloud, setCurrentPointCloud] = useState(0);
@@ -140,7 +139,7 @@ const Project = () => {
         <div className="project">
             <div className="project__header">
                 <video className="project__headerVideo" loop muted autoPlay playsInline>
-                    <source src="./videos/Teaser_x8_1k_web.mov" type="video/mp4" />
+                    <source src={`${process.env.PUBLIC_URL}/videos/Teaser_x8_1k_web.mov`} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
                 <div className="project__headerTitle">
@@ -173,13 +172,13 @@ const Project = () => {
                 </div>
                 <div className="project__affiliations">
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">1</sup>KAIST</p>
-                    <p className="project__affiliation google-sans-regular"><sup className="black-color">2</sup>Xi’an Jiaotong University</p>
+                    <p className="project__affiliation google-sans-regular"><sup className="black-color">2</sup>Chinese University of Hong Kong</p>
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
                 </div>
                 <div className="project__materials">
                     {/* <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer"> */}
                         <div className="project__material dark-gray-background">
-                            <img src='./icons/arxiv.png' alt="paper" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/arxiv.png`} alt="paper" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">arXiv (Coming Soon)</p>
                         </div>
                     {/* </a> */}
@@ -191,13 +190,13 @@ const Project = () => {
                     </a>
                     <a href="https://youtu.be/P-HMQevZOF0" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src='./icons/youtube.png' alt="youtube" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/youtube.png`} alt="youtube" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Youtube</p>
                         </div>
                     </a>
                     <a href="https://www.bilibili.com/video/BV15zG3zzEAw/?vd_source=0da0b7e545e1a65e82836ac4eff73077" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
-                            <img src='./icons/bilibili.png' alt="bilibili" className="project__materialIcon" />
+                            <img src={`${process.env.PUBLIC_URL}/icons/bilibili.png`} alt="bilibili" className="project__materialIcon" />
                             <p className="project__materialName google-sans-regular white-color">Bilibili</p>
                         </div>
                     </a>
@@ -209,7 +208,7 @@ const Project = () => {
                 <div className="project__bodyContent project__overview" id="overview">
                     <p className="project__bodyContentTitle project__overview google-sans-semibold">Overview</p>
                     <video className="project__overviewVideo" loop controls playsInline>
-                        <source src="./videos/Overview_2k.mp4" type="video/mp4" />
+                        <source src={`${process.env.PUBLIC_URL}/videos/Overview_2k.mp4`} type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -236,13 +235,13 @@ const Project = () => {
                     <p className="project__bodyContentTitle google-sans-semibold">Method</p>
                     <div className="project__methodContent">
                         <p className="project__methodContentTitle google-sans-semibold">Pipeline</p>
-                        <img src='./figures/Method_System_Overview.png' alt="method_system_overview" className="project__methodPipelineImage" />
+                        <img src={`${process.env.PUBLIC_URL}/figures/Method_System_Overview.png`} alt="method_system_overview" className="project__methodPipelineImage" />
                         <p className="project__methodContentText google-sans-regular">Navigate to task area &rarr; <span className="blue-color google-sans-semibold">Adjust pose with N2M</span> &rarr; Execute manipulation policy</p>
                     </div>
                     <div className="project__methodContent project__methodDataCollection">
                         <p className="project__methodContentTitle google-sans-semibold">Data Collection</p>
                         <div className="project__methodDataCollectionBody">
-                            <img src='./figures/Method_Data_Preparation.png' alt="method_data_preparation" className="project__methodDataCollectionImage" />
+                            <img src={`${process.env.PUBLIC_URL}/figures/Method_Data_Preparation.png`} alt="method_data_preparation" className="project__methodDataCollectionImage" />
                             <div className="project__methodDataCollectionPointCloudsWrapper" onMouseEnter={onHoverPointCloud} onMouseLeave={onLeavePointCloud}>
                                 <div className="project__methodDataCollectionPointCloudsNavigator">
                                     <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 0 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(0)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Raw</p></div>
@@ -250,19 +249,19 @@ const Project = () => {
                                     <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 2 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(2)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Augmented 2</p></div>
                                     <div className={`project__methodDataCollectionPointCloudsNavigatorButton light-gray-background ${currentPointCloud === 3 ? 'project__methodDataCollectionPointCloudsNavigatorButton--selected' : ''}`} onClick={onClickPointCloudNavigatorButton(3)}><p className="project__methodDataCollectionPointCloudsNavigatorButtonText google-sans-regular">Augmented 3</p></div>
                                 </div>
-                                <div className={`project__methodDataCollection3DHelperWrapper ${isHoveringPointCloud ? '' : 'project__methodDataCollection3DHelperWrapper--visible'}`}><img src='./icons/3d_helper.png' alt="3d_helper" className="project__methodDataCollection3DHelper" /></div>
+                                <div className={`project__methodDataCollection3DHelperWrapper ${isHoveringPointCloud ? '' : 'project__methodDataCollection3DHelperWrapper--visible'}`}><img src={`${process.env.PUBLIC_URL}/icons/3d_helper.png`} alt="3d_helper" className="project__methodDataCollection3DHelper" /></div>
                                 <div className="project__methodDataCollectionPointClouds" ref={pointCloudsRef}>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath='./pcls/local_scene.pcd' />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/local_scene.pcd`} />
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath='./pcls/rendered1.pcd' />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered1.pcd`} />
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath='./pcls/rendered2.pcd' />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered2.pcd`} />
                                     </div>
                                     <div className="project__methodDataCollectionPointCloud">
-                                        <PointCloudViewer pcdPath='./pcls/rendered3.pcd' />
+                                        <PointCloudViewer pcdPath={`${process.env.PUBLIC_URL}/pcls/rendered3.pcd`} />
                                     </div>
                                 </div>
                             </div>
@@ -275,7 +274,7 @@ const Project = () => {
                     <div className="project__keyFeature">
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Ego-centric</span> Prediction</p>
                         <div className="project__keyFeatureBody project__egoCentricBody">
-                            <img src='./figures/Key_Feature_Ego-centric.png' alt="key_feature_ego-centric" className="project__egoCentricImage" />
+                            <img src={`${process.env.PUBLIC_URL}/figures/Key_Feature_Ego-centric.png`} alt="key_feature_ego-centric" className="project__egoCentricImage" />
                             <div className="project__egoCentricTextBody">
                                 <p className="project__egoCentricText google-sans-regular">
                                     N2M only relies on ego-centric observations without requiring global or historical information
@@ -295,19 +294,19 @@ const Project = () => {
                             </div>
                             <div className="project__realTimeVideos" ref={realTimeVideosRef}>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_pushchair_x8_05k_web.mov" type="video/mp4" />
+                                    <source src={`${process.env.PUBLIC_URL}/videos/Realtime_pushchair_x8_05k_web.mov`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_laptop_x8_05k_web.mov" type="video/mp4" />
+                                    <source src={`${process.env.PUBLIC_URL}/videos/Realtime_laptop_x8_05k_web.mov`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_microwave_x8_5k_web.mov" type="video/mp4" />
+                                    <source src={`${process.env.PUBLIC_URL}/videos/Realtime_microwave_x8_5k_web.mov`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                                 <video className="project__realtimeVideo" loop muted autoPlay playsInline>
-                                    <source src="./videos/Realtime_TBH_x8_05k_web.mov" type="video/mp4" />
+                                    <source src={`${process.env.PUBLIC_URL}/videos/Realtime_TBH_x8_05k_web.mov`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -319,7 +318,7 @@ const Project = () => {
                         <p className="project__keyFeatureTitle google-sans-semibold"><span className="blue-color google-sans-semibold">Viewpoint</span> Robustness</p>
                         <div className="project__keyFeatureBody project__viewpointRobustnessBody">
                             <video className="project__viewpointRobustnessVideo" loop muted autoPlay playsInline>
-                                <source src="./videos/Robustness_lamp_x8_05k_web.mov" type="video/mp4" />
+                                <source src={`${process.env.PUBLIC_URL}/videos/Robustness_lamp_x8_05k_web.mov`} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>
@@ -338,24 +337,24 @@ const Project = () => {
                                 </div>
                                 <div className="project__applicabilityVideos" ref={applicabilityVideosRef}>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                        <source src={`${process.env.PUBLIC_URL}/videos/Applicability_pnp_x8_05k_web.mov`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedoubledoors_x8_05k_web.mov" type="video/mp4" />
+                                        <source src={`${process.env.PUBLIC_URL}/videos/Applicability_closedoubledoors_x8_05k_web.mov`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_opensingledoor_x8_05k_web.mov" type="video/mp4" />
+                                        <source src={`${process.env.PUBLIC_URL}/videos/Applicability_opensingledoor_x8_05k_web.mov`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     <video className="project__applicabilityVideo" loop muted autoPlay playsInline>
-                                        <source src="./videos/Applicability_closedrawer_x8_05k_web.mov" type="video/mp4" />
+                                        <source src={`${process.env.PUBLIC_URL}/videos/Applicability_closedrawer_x8_05k_web.mov`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                             </div>
-                            <img src='./figures/Broad_applicability.png' alt="key_feature_applicability" className="project__applicabilityImage" />
+                            <img src={`${process.env.PUBLIC_URL}/figures/Broad_applicability.png`} alt="key_feature_applicability" className="project__applicabilityImage" />
                         </div>
                         <p className="project__applicabilityText google-sans-regular">
                             N2M doesn’t rely on any assumptions about tasks, policies, and hardware, which makes it widely applicable <br/>
@@ -378,10 +377,10 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3a">
                                     <div className="project__dataEfficiencyExp3aMedias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp3aVideo" loop muted autoPlay playsInline>
-                                            <source src="./videos/Applicability_pnp_x8_05k_web.mov" type="video/mp4" />
+                                            <source src={`${process.env.PUBLIC_URL}/videos/Applicability_pnp_x8_05k_web.mov`} type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
-                                        <img src='./figures/Data_Efficiency_Exp3a_graph.png' alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3a_graph.png`} alt="data_efficiency_exp3a" className="project__dataEfficiencyExp3aImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3aText google-sans-regular">
                                         With just around 10 data, N2M learns the initial pose preference of apple pick and place task.
@@ -389,8 +388,8 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3b">
                                     <div className="project__dataEfficiencyExp3bMedias project__dataEfficiencyMedias">
-                                        <img src='./figures/Data_Efficiency_Exp3b_scenes.png' alt="data_efficiency_exp3b_scenes" className="project__dataEfficiencyExp3bScenesImage" />
-                                        <img src='./figures/Data_Efficiency_Exp3b_graph.png' alt="data_efficiency_exp3b_graph" className="project__dataEfficiencyExp3bGraphImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_scenes.png`} alt="data_efficiency_exp3b_scenes" className="project__dataEfficiencyExp3bScenesImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3b_graph.png`} alt="data_efficiency_exp3b_graph" className="project__dataEfficiencyExp3bGraphImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3bText google-sans-regular">
                                         For the same task, even when the furniture <span className="blue-color google-sans-semibold">texture</span> in the test scene is unseen during training, N2M still learns preferences and generalizes effectively.
@@ -398,8 +397,8 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp3c">
                                     <div className="project__dataEfficiencyExp3cMedias project__dataEfficiencyMedias">
-                                        <img src='./figures/Data_Efficiency_Exp3c_scenes.png' alt="data_efficiency_exp3c_scenes" className="project__dataEfficiencyExp3cScenesImage" />
-                                        <img src='./figures/Data_Efficiency_Exp3c_graph.png' alt="data_efficiency_exp3c_graph" className="project__dataEfficiencyExp3cGraphImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_scenes.png`} alt="data_efficiency_exp3c_scenes" className="project__dataEfficiencyExp3cScenesImage" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp3c_graph.png`} alt="data_efficiency_exp3c_graph" className="project__dataEfficiencyExp3cGraphImage" />
                                     </div>
                                     <p className="project__dataEfficiencyText project__dataEfficiencyExp3cText google-sans-regular">
                                         For the same task, even when the furniture <span className="blue-color google-sans-semibold">layout</span> in the test scene is unseen during training, N2M still learns preferences and generalizes effectively.
@@ -407,7 +406,7 @@ const Project = () => {
                                 </div>
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp4">
                                     <div className="project__dataEfficiencyExp4Medias project__dataEfficiencyMedias">
-                                        <img src='./figures/Data_Efficiency_Exp4.png' alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
+                                        <img src={`${process.env.PUBLIC_URL}/figures/Data_Efficiency_Exp4.png`} alt="data_efficiency_exp4" className="project__dataEfficiencyExp4Image" />
                                     </div>
                                     <div className="project__dataEfficiencyExp4TextBody">
                                         <p className="project__dataEfficiencyText project__dataEfficiencyExp4TextMain google-sans-semibold">The robot attempts to retrieve a lamp from the shelf. The 3×4 table shows the success rate for each cell. We collect one rollout from each cell marked in <span className="blue-color">blue</span> for N2M training.</p>
@@ -421,7 +420,7 @@ const Project = () => {
                                 <div className="project__dataEfficiencyBody project__dataEfficiencyExp5">
                                     <div className="project__dataEfficiencyExp5Medias project__dataEfficiencyMedias">
                                         <video className="project__dataEfficiencyExp5Video" loop muted autoPlay playsInline>
-                                            <source src="./videos/Generalizability_all_in_one_x8_05k_web.mov" type="video/mp4" />
+                                            <source src={`${process.env.PUBLIC_URL}/videos/Generalizability_all_in_one_x8_05k_web.mov`} type="video/mp4" />
                                             Your browser does not support the video tag.
                                         </video>
                                     </div>
@@ -442,6 +441,14 @@ const Project = () => {
                             <p className="project__futureWorkText google-sans-regular">🚀 <span className="google-sans-semibold">Hardware dependency</span>: N2M relies on high quality depth estimation to capture realistic point cloud. Enabling N2M to run with only an RGB camera through monocular depth estimation and scene reconstruction to reduce hardware dependencies.</p>
                             <p className="project__futureWorkText google-sans-regular">🚀 <span className="google-sans-semibold">Incorporating failure rollouts</span>: N2M only learns from positive rollouts. This can lead to overestimation failing to avoid failure initial poses. Learning from failure rollouts can prevent overestimation of initial pose preference and help the module find poses where robot can achieve higher success rate</p>
                         </div>
+                    </div>
+                </div>
+
+                <div className="project__bodyContent project__acknowledgements" id="acknowledgements">
+                    <p className="project__bodyContentTitle google-sans-semibold">Acknowledgements</p>
+                    <div className="project__acknowledgementsBody">
+                        <p className="project__acknowledgementsText google-sans-regular">🙌 The authors would like to thank Jeongjun Kim, Sunwoo Kim, Junseung Lee, Doohyun Lee, and Minho Heo for discussions throughout the project.</p>
+                        <p className="project__acknowledgementsText google-sans-regular">🙌 This paper was supported by Korea Institute for Advancement of Technology(KIAT) grant funded by the Korea Government(Ministry of Education) (P0025681-G02P22450002201-10054408, "Semiconductor"-Specialized University)</p>
                     </div>
                 </div>
 
