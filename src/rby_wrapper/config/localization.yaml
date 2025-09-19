@@ -1,0 +1,65 @@
+slam_toolbox:
+  ros__parameters:
+    # ROS Parameters
+    odom_frame: odom
+    map_frame: map
+    base_frame: base
+    scan_topic: /scan
+    mode: localization  # Changed from mapping to localization
+    map_start_at_dock: true
+
+    particles_count: 60 
+    particles_max_distance: 0.4  
+    particles_min_distance: 0.1 
+    particle_resample_interval: 1  
+    particle_random_rate: 0.1  
+    initial_pose_x: 0.0  
+    initial_pose_y: 0.0  
+    initial_pose_z: 0.0  
+    initial_pose_yaw: 0.0  
+
+    # Message Filter Parameters
+    transform_timeout: 0.5
+    tf_buffer_duration: 30.0
+    message_filter_queue_size: 20
+
+    # SLAM Algorithm Parameters
+    use_scan_matching: true
+    use_scan_barycenter: true
+    ceres_loss_function: HuberLoss
+    resolution: 0.01
+    max_laser_range: 20.0
+    minimum_time_interval: 0.5
+    max_covariance_size: 0.01
+    minimum_travel_distance: 0.5
+    minimum_travel_heading: 0.5
+    scan_buffer_size: 30
+    scan_buffer_maximum_scan_distance: 10.0
+    link_match_minimum_response_fine: 0.1
+    link_scan_maximum_distance: 1.5
+    loop_search_maximum_distance: 3.0
+    do_loop_closing: true
+    loop_match_minimum_chain_size: 10
+    loop_match_maximum_variance_coarse: 3.0
+    loop_match_minimum_response_coarse: 0.35
+    loop_match_minimum_response_fine: 0.45
+    
+    # Correlation Parameters
+    correlation_search_space_dimension: 0.5
+    correlation_search_space_resolution: 0.01
+    correlation_search_space_smear_deviation: 0.1
+    
+    # Correlation Parameters - Loop Closure
+    loop_search_space_dimension: 8.0
+    loop_search_space_resolution: 0.05
+    loop_search_space_smear_deviation: 0.03
+    
+    # Scan Matcher Parameters
+    distance_variance_penalty: 0.5
+    angle_variance_penalty: 1.0
+    fine_search_angle_offset: 0.00349
+    coarse_search_angle_offset: 0.349
+    coarse_angle_resolution: 0.0349
+    minimum_angle_penalty: 0.9
+    minimum_distance_penalty: 0.5
+    use_response_expansion: true 

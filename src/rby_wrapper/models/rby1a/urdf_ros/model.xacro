@@ -1,0 +1,689 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="RB_Y1_V1.0.1">
+    
+    <!-- Robot name prefix for namespacing -->
+    <xacro:arg name="robot_name" default=""/>
+    <xacro:property name="robot_prefix" value="$(arg robot_name)"/>
+    <xacro:property name="prefix_slash" value="${'^$' != robot_prefix ? '${robot_prefix}/' : ''}"/>
+    
+    <!-- Root link - base -->
+    <link name="${robot_prefix}base">
+        <inertial>
+            <mass value="60.08042639"/>
+            <origin rpy="0 0 0" xyz="-0.06157942 -0.00142271 0.13513861"/>
+            <inertia ixx="1.37742174" ixy="0.02521789" ixz="0.18565467" iyy="2.99386515" iyz="-0.00641869"
+                     izz="3.76085052"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/base.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <!-- Right wheel -->
+    <link name="${robot_prefix}wheel_r">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/WHEEL.dae"/>
+            </geometry>
+        </visual>
+        
+        <collision>
+            <geometry>
+                <cylinder radius="0.1" length="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Left wheel -->
+    <link name="${robot_prefix}wheel_l">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/WHEEL.dae"/>
+            </geometry>
+        </visual>
+        
+        <collision>
+            <geometry>
+                <cylinder radius="0.1" length="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Torso links -->
+    <link name="${robot_prefix}link_torso_0">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_1.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_torso_1">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_2.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_torso_2">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_3.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_torso_3">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_4.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_torso_4">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_5.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_torso_5">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_6.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    
+    <!-- Right arm links -->
+    <link name="${robot_prefix}link_right_arm_0">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_7.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_1">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_8.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_2">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_9.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_3">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_10.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_4">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_11.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_5">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_12.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_right_arm_6">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_13.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <!-- Left arm links -->
+    <link name="${robot_prefix}link_left_arm_0">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_14.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_1">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_15.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_2">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_16.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_3">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_17.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_4">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_18.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_5">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_19.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}link_left_arm_6">
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/LINK_20.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    
+    <link name="${robot_prefix}FT_sensor_R">
+        <inertial>
+            <mass value="0.49078507"/>
+            <origin rpy="0 0 0" xyz="0.00010423 0.00108019 -0.01880676"/>
+            <inertia ixx="0.00028587" ixy="-0.00000146" ixz="-0.00000026" iyy="0.00030459"
+                     iyz="-0.00000772" izz="0.00036377"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/FT_SENSOR_R.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}FT_sensor_L">
+        <inertial>
+            <mass value="0.49078507"/>
+            <origin rpy="0 0 0" xyz="-0.00010423 -0.00108019 -0.01880676"/>
+            <inertia ixx="0.00028587" ixy="-0.00000146" ixz="0.00000026" iyy="0.00030459" iyz="0.00000772"
+                     izz="0.00036377"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/FT_SENSOR_L.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}ee_right">
+        <inertial>
+            <mass value="0.46704998"/>
+            <origin rpy="0 0 0" xyz="0.00212703 0.00000615 -0.04287176"/>
+            <inertia ixx="0.00032067" ixy="0.00002383" ixz="-0.00000785" iyy="0.00059559"
+                     iyz="-0.00000007" izz="0.00052732"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/EE_BODY.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <material name="orange_material">
+        <color rgba="0.987 0.4 0.012 1.0"/>
+    </material>
+
+    <link name="${robot_prefix}ee_finger_r1">
+        <inertial>
+            <mass value="0.03326999"/>
+            <origin rpy="0 0 0" xyz="0.00278346 -0.00000329 -0.02570112"/>
+            <inertia ixx="0.00001231" ixy="0.0" ixz="-0.00000042" iyy="0.00001066" iyz="0.0"
+                     izz="0.00000224"/>
+        </inertial>
+
+        <visual>
+            <origin rpy="0 0 0" xyz="0.0 0.014 -0.0"/>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/soft_gripper_finger.stl"/>
+            </geometry>
+            <material name="orange_material"/>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}ee_finger_r2">
+        <inertial>
+            <mass value="0.03326999"/>
+            <origin rpy="0 0 0" xyz="0.00278346 -0.00000329 -0.02570112"/>
+            <inertia ixx="0.00001231" ixy="0.0" ixz="-0.00000042" iyy="0.00001066" iyz="0.0"
+                     izz="0.00000224"/>
+        </inertial>
+
+        <visual>
+            <origin rpy="0 0 0" xyz="0.0 0.014 -0.0"/>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/soft_gripper_finger.stl"/>
+            </geometry>
+            <material name="orange_material"/>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}ee_left">
+        <inertial>
+            <mass value="0.46704998"/>
+            <origin rpy="0 0 0" xyz="0.00212703 0.00000615 -0.04287176"/>
+            <inertia ixx="0.00032067" ixy="0.00002383" ixz="-0.00000785" iyy="0.00059559"
+                     iyz="-0.00000007" izz="0.00052732"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/rby1a/urdf/meshes/EE_BODY.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}ee_finger_l1">
+        <inertial>
+            <mass value="0.03326999"/>
+            <origin rpy="0 0 0" xyz="0.00278346 -0.00000329 -0.02570112"/>
+            <inertia ixx="0.00001231" ixy="0.0" ixz="-0.00000042" iyy="0.00001066" iyz="0.0"
+                     izz="0.00000224"/>
+        </inertial>
+
+        <visual>
+            <origin rpy="0 0 0" xyz="0.0 0.014 -0.0"/>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/soft_gripper_finger.stl"/>
+            </geometry>
+            <material name="orange_material"/>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}ee_finger_l2">
+        <inertial>
+            <mass value="0.03326999"/>
+            <origin rpy="0 0 0" xyz="0.00278346 -0.00000329 -0.02570112"/>
+            <inertia ixx="0.00001231" ixy="0.0" ixz="-0.00000042" iyy="0.00001066" iyz="0.0"
+                     izz="0.00000224"/>
+        </inertial>
+
+        <visual>
+            <origin rpy="0 0 0" xyz="0.0 0.014 -0.0"/>
+            <geometry>
+                <mesh filename="package://rby_wrapper/models/soft_gripper_finger.stl"/>
+            </geometry>
+            <material name="orange_material"/>
+        </visual>
+    </link>
+    
+
+
+    <!-- Left and right lidar links -->
+    <link name="${robot_prefix}lidar_left">
+        <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.1 0.1 0.1 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="${robot_prefix}lidar_right">
+        <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.1 0.1 0.1 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Torso joints -->
+    <joint name="${robot_prefix}base_to_torso_0" type="fixed">
+        <parent link="${robot_prefix}base"/>
+        <child link="${robot_prefix}link_torso_0"/>
+        <origin xyz="0.0 0.0 0.2805" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="${robot_prefix}joint_torso_0" type="revolute">
+        <parent link="${robot_prefix}link_torso_0"/>
+        <child link="${robot_prefix}link_torso_1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.14" upper="3.14" effort="100" velocity="1.0"/>
+    </joint>
+
+    <joint name="${robot_prefix}joint_torso_1" type="revolute">
+        <parent link="${robot_prefix}link_torso_1"/>
+        <child link="${robot_prefix}link_torso_2"/>
+        <origin xyz="0 0 0.3" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-2.617993878" upper="1.570796327" effort="100" velocity="1.0"/>
+    </joint>
+
+    <joint name="${robot_prefix}joint_torso_2" type="revolute">
+        <parent link="${robot_prefix}link_torso_2"/>
+        <child link="${robot_prefix}link_torso_3"/>
+        <origin xyz="0 0 0.350" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-0.785398163" upper="1.570796327" effort="100" velocity="1.0"/>
+    </joint>
+
+    <joint name="${robot_prefix}joint_torso_3" type="revolute">
+        <parent link="${robot_prefix}link_torso_3"/>
+        <child link="${robot_prefix}link_torso_4"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-0.523598776" upper="0.523598776" effort="100" velocity="1.0"/>
+    </joint>
+
+    <joint name="${robot_prefix}joint_torso_4" type="revolute">
+        <parent link="${robot_prefix}link_torso_4"/>
+        <child link="${robot_prefix}link_torso_5"/>
+        <origin xyz="0 0 0.309426548461" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-2.35619449" upper="2.35619449" effort="100" velocity="1.0"/>
+    </joint>
+    
+    <!-- Right arm joints -->
+    <joint name="${robot_prefix}right_arm_0" type="revolute">
+        <parent link="${robot_prefix}link_torso_5"/>
+        <child link="${robot_prefix}link_right_arm_0"/>
+        <origin xyz="0 -0.220 0.080073451539" rpy="-0.349065850 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_1" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_0"/>
+        <child link="${robot_prefix}link_right_arm_1"/>
+        <origin xyz="0 0 0" rpy="0.349065850 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-3.141592654" upper="0.017453293" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_2" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_1"/>
+        <child link="${robot_prefix}link_right_arm_2"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_3" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_2"/>
+        <child link="${robot_prefix}link_right_arm_3"/>
+        <origin xyz="0.031 0 -0.276" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-2.617993878" upper="0.017453293" effort="40.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_4" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_3"/>
+        <child link="${robot_prefix}link_right_arm_4"/>
+        <origin xyz="-0.031 0 -0.256" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="10.0" velocity="6.283185308"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_5" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_4"/>
+        <child link="${robot_prefix}link_right_arm_5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-1.570796327" upper="1.919862177" effort="10.0" velocity="6.283185308"/>
+    </joint>
+
+    <joint name="${robot_prefix}right_arm_6" type="revolute">
+        <parent link="${robot_prefix}link_right_arm_5"/>
+        <child link="${robot_prefix}link_right_arm_6"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-2.705260340" upper="2.705260340" effort="8.0" velocity="2.094395102"/>
+    </joint>
+
+    <joint name="${robot_prefix}tool_right" type="fixed">
+        <parent link="${robot_prefix}link_right_arm_6"/>
+        <child link="${robot_prefix}FT_sensor_R"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.1087"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="${robot_prefix}FT_Sensor_END_right" type="fixed">
+        <parent link="${robot_prefix}FT_sensor_R"/>
+        <child link="${robot_prefix}ee_right"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.0461"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="${robot_prefix}gripper_finger_r1" type="fixed">
+        <parent link="${robot_prefix}ee_right"/>
+        <child link="${robot_prefix}ee_finger_r1"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.033 0.0 -0.073"/>
+        <axis xyz="-1 0 0"/>
+    </joint>
+
+    <joint name="${robot_prefix}gripper_finger_r2" type="fixed">
+        <parent link="${robot_prefix}ee_right"/>
+        <child link="${robot_prefix}ee_finger_r2"/>
+        <origin rpy="0.0 0.0 3.1415926535" xyz="-0.033 0.0 -0.073"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+    <joint name="${robot_prefix}tool_left" type="fixed">
+        <parent link="${robot_prefix}link_left_arm_6"/>
+        <child link="${robot_prefix}FT_sensor_L"/>
+        <origin rpy="0.0 0.0 0" xyz="0.0 0.0 -0.1087"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="${robot_prefix}FT_Sensor_END_left" type="fixed">
+        <parent link="${robot_prefix}FT_sensor_L"/>
+        <child link="${robot_prefix}ee_left"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.0461"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <joint name="${robot_prefix}gripper_finger_l1" type="fixed">
+        <parent link="${robot_prefix}ee_left"/>
+        <child link="${robot_prefix}ee_finger_l1"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.033 0.0 -0.073"/>
+        <axis xyz="-1 0 0"/>
+    </joint>
+
+    <joint name="${robot_prefix}gripper_finger_l2" type="fixed">
+        <parent link="${robot_prefix}ee_left"/>
+        <child link="${robot_prefix}ee_finger_l2"/>
+        <origin rpy="0.0 0.0 3.1415926535" xyz="-0.033 0.0 -0.073"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1000" velocity="0.05" lower="0" upper="0.05"/>
+    </joint>
+    
+    <!-- Left arm joints -->
+    <joint name="${robot_prefix}left_arm_0" type="revolute">
+        <parent link="${robot_prefix}link_torso_5"/>
+        <child link="${robot_prefix}link_left_arm_0"/>
+        <origin xyz="0 0.220 0.080073452" rpy="0.349065850 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_1" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_0"/>
+        <child link="${robot_prefix}link_left_arm_1"/>
+        <origin xyz="0 0 0" rpy="-0.349065850 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-0.017453293" upper="3.141592654" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_2" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_1"/>
+        <child link="${robot_prefix}link_left_arm_2"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="70.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_3" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_2"/>
+        <child link="${robot_prefix}link_left_arm_3"/>
+        <origin xyz="0.031 0 -0.276" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-2.617993878" upper="0.017453293" effort="40.0" velocity="3.141592654"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_4" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_3"/>
+        <child link="${robot_prefix}link_left_arm_4"/>
+        <origin xyz="-0.031 0 -0.256" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.141592654" upper="3.141592654" effort="10.0" velocity="6.283185308"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_5" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_4"/>
+        <child link="${robot_prefix}link_left_arm_5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-1.570796327" upper="1.919862177" effort="10.0" velocity="6.283185308"/>
+    </joint>
+
+    <joint name="${robot_prefix}left_arm_6" type="revolute">
+        <parent link="${robot_prefix}link_left_arm_5"/>
+        <child link="${robot_prefix}link_left_arm_6"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-2.705260340" upper="2.705260340" effort="8.0" velocity="2.094395102"/>
+    </joint>
+    
+    <!-- Wheel joints -->
+    <joint name="${robot_prefix}right_wheel" type="fixed">
+        <parent link="${robot_prefix}base"/>
+        <child link="${robot_prefix}wheel_r"/>
+        <origin xyz="0.228 -0.265 0.1" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="100" velocity="100"/>
+    </joint>
+    
+    <joint name="${robot_prefix}left_wheel" type="fixed">
+        <parent link="${robot_prefix}base"/>
+        <child link="${robot_prefix}wheel_l"/>
+        <origin xyz="0.228 0.265 0.1" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="100" velocity="100"/>
+    </joint>
+
+    <!-- laser sensor joint --> <!-- +/-54.38 degree -->
+    <joint name="${robot_prefix}lidar_left_joint" type="fixed">
+        <parent link="${robot_prefix}base"/>
+        <child link="${robot_prefix}lidar_left"/>
+        <!-- <origin xyz="0.228 0.1765 0.22282" rpy="0 0 2.530727415391778"/> -->
+        <origin xyz="0.230 0.177 0.22282" rpy="0 0 0.9491100472345164"/>    
+    </joint>
+    
+    <joint name="${robot_prefix}lidar_right_joint" type="fixed">
+        <parent link="${robot_prefix}base"/>
+        <child link="${robot_prefix}lidar_right"/>
+        <!-- <origin xyz="0.228 -0.1765 0.22282" rpy="0 0 0.6108652381980153"/> -->
+        <origin xyz="0.228 -0.1765 0.22282" rpy="0 0 -0.9491100472345164"/>
+    </joint>
+
+    <!-- cams -->
+    <!-- <link name="${robot_prefix}head_cam">
+        <visual>
+            <geometry>
+                <box size="0.05 0.05 0.05"/>
+            </geometry>
+        </visual>
+    </link>
+    
+    <joint name="${robot_prefix}head_cam" type="fixed">
+        <parent link="${robot_prefix}link_torso_5"/>
+        <child link="${robot_prefix}head_cam"/>
+        <origin xyz="0.1 0.03 0.22" rpy="0 0.50 0"/>
+    </joint> -->
+
+    <link name="${robot_prefix}head_cam">
+        <visual>
+            <origin xyz="0 -0.03 -0.03" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.05 0.20 0.05"/>
+            </geometry>
+            <material name="dark_grey_material">
+                <color rgba="0.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="${robot_prefix}neck">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.03 0.06 0.05"/>
+            </geometry>
+            <material name="grey_material">
+                <color rgba="0.5 0.5 0.5 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <joint name="${robot_prefix}head_cam_joint" type="fixed">
+        <origin xyz="0 -0.03 -0.075" rpy="0 0 0"/>
+        <parent link="${robot_prefix}head_cam"/>
+        <child link="${robot_prefix}neck"/>
+    </joint>
+    
+    <joint name="${robot_prefix}head_cam" type="fixed">
+        <parent link="${robot_prefix}link_torso_5"/>
+        <child link="${robot_prefix}head_cam"/>
+        <origin xyz="0.1 0.03 0.22" rpy="0 0.50 0"/>
+    </joint>
+
+</robot> 
+
+

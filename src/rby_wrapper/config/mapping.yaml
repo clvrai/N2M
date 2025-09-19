@@ -1,0 +1,61 @@
+slam_toolbox:
+  ros__parameters:
+    # ROS Parameters
+    odom_frame: odom
+    map_frame: map
+    base_frame: base
+    scan_topic: /scan
+    mode: mapping
+
+    # Message Filter Parameters
+    transform_timeout: 0.5
+    tf_buffer_duration: 30.0
+    message_filter_queue_size: 10
+
+    # SLAM Algorithm Parameters
+    use_scan_matching: true
+    use_scan_barycenter: true
+    ceres_loss_function: HuberLoss
+    resolution: 0.5
+    max_laser_range: 20.0
+    minimum_time_interval: 0.05
+    max_covariance_size: 0.005
+    minimum_travel_distance: 0.05
+    minimum_travel_heading: 0.05
+    scan_buffer_size: 30
+    scan_buffer_maximum_scan_distance: 10.0
+    link_match_minimum_response_fine: 0.15
+    link_scan_maximum_distance: 1.5
+    loop_search_maximum_distance: 3.0
+    do_loop_closing: true
+    loop_match_minimum_chain_size: 10
+    loop_match_maximum_variance_coarse: 2.0
+    loop_match_minimum_response_coarse: 0.45
+    loop_match_minimum_response_fine: 0.65
+    
+    # Correlation Parameters
+    correlation_search_space_dimension: 0.5
+    correlation_search_space_resolution: 0.005
+    correlation_search_space_smear_deviation: 0.05
+    
+    # Correlation Parameters - Loop Closure
+    loop_search_space_dimension: 8.0
+    loop_search_space_resolution: 0.01
+    loop_search_space_smear_deviation: 0.01
+    
+    # Scan Matcher Parameters
+    distance_variance_penalty: 1.0
+    angle_variance_penalty: 2.0
+    fine_search_angle_offset: 0.001
+    coarse_search_angle_offset: 0.2
+    coarse_angle_resolution: 0.01
+    minimum_angle_penalty: 0.95
+    minimum_distance_penalty: 0.7
+    use_response_expansion: true
+
+    # Advanced options for processing latest frames
+    # use_latest_scan_only: true
+    # threads: 4
+    # real_time_correlative_scan_matching: true
+    # process_near_pose_only: true
+    # max_sequential_pose_failures: 10
