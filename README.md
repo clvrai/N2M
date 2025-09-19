@@ -1,7 +1,7 @@
 # N2M: Bridging Navigation and Manipulation by Learning Initial Pose Preference from Rollout
 Kaixin Chai*, Hyunjun Lee*, Joseph J. Lim
 
-🚧 full code will be released soon!
+![System Demonstration](doc/Teaser_sim.gif)
 
 ## TODOs
 - Organize N2M training and inference code
