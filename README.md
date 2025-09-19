@@ -2,7 +2,7 @@
 
 This repository contains the complete codebase for N2M (Navigation to Manipulation) real-world experiments. The system is built on ROS2 framework for distributed robotics applications.
 
-[Watch our system demonstration video](doc/Teaser_real.mov)
+![System Demonstration](doc/Teaser_real.gif)
 
 
 ## System Architecture
