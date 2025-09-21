@@ -191,8 +191,8 @@ zsh n2m_manager.sh
 # N2M inference with SIR (Sequential Importance Resampling) prediction
 zsh n2m_manager.sh
 
-# Run manipulation policy
-mamba activate craft
+# Execute manipulation policy (Follow the instructions in openpi)
+mamba activate openpi
 zsh run_client_manipulation_policy.sh
 ```
 
@@ -238,8 +238,8 @@ zsh n2m_manager.sh
 # N2M inference with SIR prediction
 zsh n2m_manager.sh --inference
 
-# Execute manipulation policy
-mamba activate craft
+# Execute manipulation policy (Follow the instructions in openpi)
+mamba activate openpi
 zsh run_client_manipulation_policy.sh
 ```
 
