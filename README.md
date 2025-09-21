@@ -1,5 +1,5 @@
 # N2M: Bridging Navigation and Manipulation by Learning Pose Preference from Rollout
-<a>Kaixin Chai</a>*, Hyunjun Lee*, Joseph J. Lim
+<p><a href="https://cckaixin.github.io/myWebsite/">Kaixin Chai</a>*, <a href="https://hjl1013.github.io">Hyunjun Lee</a>*, Joseph J. Lim</p>
 
 ![System Overview](doc/System_Overview.png)
 
@@ -13,12 +13,13 @@ This is an official implementation of N2M. We provided detailed instructions to 
 
 ## Installation
 Clone and install necessary packages
-```
+```bash
 git clone --single-branch --branch main https://github.com/clvrai/N2M.git
 cd N2M
 
 # install mamba environment
 mamba create -n n2m python==3.11
+mamba activate n2m
 pip install -r requirements.txt
 pip install -e .
 
@@ -56,7 +57,7 @@ Replace `{dataset name}` with your own dataset name. `pcl/` folder should includ
             [ 4.00391906e-02, -8.19385767e-01, -5.71842485e-01,  1.64310488e-00],
             [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
         ],
-        "camera_instrinsic": [
+        "camera_intrinsic": [
             100.6919557412736, 100.6919557412736, 160.0, 120.0, 320, 240
         ]
     },
@@ -65,14 +66,14 @@ Replace `{dataset name}` with your own dataset name. `pcl/` folder should includ
             "id": 0,
             "file_path": "pcl/0.pcd",
             "pose": [
-                3.07151444879416, // x
-                -0.9298766226100992, // y
-                1.5782995419534618 // theta
+                3.07151444879416,
+                -0.9298766226100992,
+                1.5782995419534618
             ],
-            "object_position": [ // (optional)
-                3.2, // x
-                -0.2, // y
-                1.85 // z
+            "object_position": [
+                3.2,
+                -0.2,
+                1.85
             ]
         },
         ...
@@ -93,7 +94,7 @@ Example dataset can be downloaded from this <a href="https://clvrai.github.io/N2
 
 ## 🛠️ Data Processing
 Now we are ready to process the data. Run the following command to process the data.
-```zsh
+```bash
 sh scripts/process_dataset.sh "path/to/dataset"
 ```
 This will apply viewpoint augmentation and generate augmented point clouds with new transformed labels corresponding to them. The file structure of the dataset will now look like this:

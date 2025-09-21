@@ -3,7 +3,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
-#include <librealsense2/rs.hpp>
+
 #include <filesystem>
 #include <fstream>
 #include <json.hpp>
@@ -52,17 +52,6 @@ public:
 
     CameraIntrinsics(float fx, float fy, float cx, float cy, int width, int height)
         : fx(fx), fy(fy), cx(cx), cy(cy), width(width), height(height) {}
-
-    static CameraIntrinsics fromRealsense(const rs2_intrinsics& intrinsics) {
-        return CameraIntrinsics(
-            intrinsics.fx,
-            intrinsics.fy,
-            intrinsics.ppx,
-            intrinsics.ppy,
-            intrinsics.width,
-            intrinsics.height
-        );
-    }
 };
 
 template<typename PointT>
@@ -89,106 +78,41 @@ typename pcl::PointCloud<PointT>::Ptr translatePointCloud(
     return transformedCloud;
 }
 
-template<typename PointT>
-struct TranslatedTarget {
-    Eigen::Vector3f position;
-    Eigen::Vector4f quaternion;
-    Eigen::Vector3f se2_pose;
-};
+
 
 template<typename PointT>
-TranslatedTarget<PointT> translateTarget(
-    const Eigen::Vector3f& target_position,
-    const Eigen::Vector4f& target_quaternion,
+Eigen::Vector3f translateTarget(
     const Eigen::Vector3f& target_se2,
     const Eigen::Matrix4f& basePose
 ) {
-    // Create inverse transformation matrix to move base pose to origin
-    Eigen::Matrix4f inverseTransform = basePose.inverse();
-    
-    // Transform target position
-    Eigen::Vector4f target_pos_homogeneous(target_position.x(), target_position.y(), target_position.z(), 1.0f);
-    Eigen::Vector4f transformed_pos = inverseTransform * target_pos_homogeneous;
-    Eigen::Vector3f translated_position = transformed_pos.head<3>();
-    
-    // Transform target quaternion
-    // First convert quaternion to rotation matrix
-    float qw = target_quaternion(0), qx = target_quaternion(1), qy = target_quaternion(2), qz = target_quaternion(3);
-    Eigen::Matrix3f target_rot;
-    target_rot << 1 - 2*qy*qy - 2*qz*qz, 2*qx*qy - 2*qw*qz, 2*qx*qz + 2*qw*qy,
-                  2*qx*qy + 2*qw*qz, 1 - 2*qx*qx - 2*qz*qz, 2*qy*qz - 2*qw*qx,
-                  2*qx*qz - 2*qw*qy, 2*qy*qz + 2*qw*qx, 1 - 2*qx*qx - 2*qy*qy;
-    
-    // Get base rotation matrix
-    Eigen::Matrix3f base_rot = basePose.block<3,3>(0,0);
-    
-    // Transform rotation matrix
-    Eigen::Matrix3f transformed_rot = base_rot.transpose() * target_rot;
-    
-    // Convert back to quaternion
-    float trace = transformed_rot.trace();
-    Eigen::Vector4f translated_quaternion;
-    if (trace > 0) {
-        float S = sqrt(trace + 1.0) * 2;
-        translated_quaternion(0) = 0.25 * S;
-        translated_quaternion(1) = (transformed_rot(2,1) - transformed_rot(1,2)) / S;
-        translated_quaternion(2) = (transformed_rot(0,2) - transformed_rot(2,0)) / S;
-        translated_quaternion(3) = (transformed_rot(1,0) - transformed_rot(0,1)) / S;
-    } else if (transformed_rot(0,0) > transformed_rot(1,1) && transformed_rot(0,0) > transformed_rot(2,2)) {
-        float S = sqrt(1.0 + transformed_rot(0,0) - transformed_rot(1,1) - transformed_rot(2,2)) * 2;
-        translated_quaternion(0) = (transformed_rot(2,1) - transformed_rot(1,2)) / S;
-        translated_quaternion(1) = 0.25 * S;
-        translated_quaternion(2) = (transformed_rot(0,1) + transformed_rot(1,0)) / S;
-        translated_quaternion(3) = (transformed_rot(0,2) + transformed_rot(2,0)) / S;
-    } else if (transformed_rot(1,1) > transformed_rot(2,2)) {
-        float S = sqrt(1.0 + transformed_rot(1,1) - transformed_rot(0,0) - transformed_rot(2,2)) * 2;
-        translated_quaternion(0) = (transformed_rot(0,2) - transformed_rot(2,0)) / S;
-        translated_quaternion(1) = (transformed_rot(0,1) + transformed_rot(1,0)) / S;
-        translated_quaternion(2) = 0.25 * S;
-        translated_quaternion(3) = (transformed_rot(1,2) + transformed_rot(2,1)) / S;
-    } else {
-        float S = sqrt(1.0 + transformed_rot(2,2) - transformed_rot(0,0) - transformed_rot(1,1)) * 2;
-        translated_quaternion(0) = (transformed_rot(1,0) - transformed_rot(0,1)) / S;
-        translated_quaternion(1) = (transformed_rot(0,2) + transformed_rot(2,0)) / S;
-        translated_quaternion(2) = (transformed_rot(1,2) + transformed_rot(2,1)) / S;
-        translated_quaternion(3) = 0.25 * S;
-    }
-    
-    // Transform SE(2) pose
     // SE(2) pose is [x, y, theta]
     float x = target_se2(0);
     float y = target_se2(1);
     float theta = target_se2(2);
-    
+
     // Create SE(2) transformation matrix
     Eigen::Matrix3f se2_transform;
     se2_transform << cos(theta), -sin(theta), x,
                      sin(theta), cos(theta), y,
                      0, 0, 1;
-    
+
     // Get base SE(2) transformation
     float base_theta = atan2(basePose(1,0), basePose(0,0));
     Eigen::Matrix3f base_se2;
     base_se2 << cos(base_theta), -sin(base_theta), basePose(0,3),
                 sin(base_theta), cos(base_theta), basePose(1,3),
                 0, 0, 1;
-    
+
     // Transform SE(2) pose
     Eigen::Matrix3f transformed_se2 = base_se2.inverse() * se2_transform;
-    
+
     // Extract transformed SE(2) parameters
     Eigen::Vector3f translated_se2;
     translated_se2(0) = transformed_se2(0,2);
     translated_se2(1) = transformed_se2(1,2);
     translated_se2(2) = atan2(transformed_se2(1,0), transformed_se2(0,0));
-    
-    // Return all transformed parameters
-    TranslatedTarget<PointT> result;
-    result.position = translated_position;
-    result.quaternion = translated_quaternion;
-    result.se2_pose = translated_se2;
-    
-    return result;
+
+    return translated_se2;
 }
 
 template<typename PointT>
@@ -291,26 +215,7 @@ typename pcl::PointCloud<PointT>::Ptr renderPointCloudWithOcclusion(
     return renderedCloud;
 }
 
-CameraIntrinsics getRealsenseIntrinsics() {
-    // Initialize RealSense pipeline
-    rs2::pipeline pipe;
-    rs2::config cfg;
-    
-    // Configure and start the pipeline
-    cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
-    pipe.start(cfg);
-    
-    // Get depth sensor intrinsics
-    rs2::pipeline_profile profile = pipe.get_active_profile();
-    rs2::video_stream_profile depthProfile = profile.get_stream(RS2_STREAM_DEPTH)
-                                                   .as<rs2::video_stream_profile>();
-    rs2_intrinsics intrinsics = depthProfile.get_intrinsics();
-    
-    // Stop the pipeline
-    pipe.stop();
-    
-    return CameraIntrinsics::fromRealsense(intrinsics);
-}
+
 
 Eigen::Matrix4f createCameraPoseFromTranslationQuaternion(
     float tx, float ty, float tz,
@@ -368,8 +273,22 @@ int main(int argc, char** argv) {
     json base_poses;
     base_poses_file >> base_poses;
 
+    // Read camera intrinsics from meta.json
+    std::vector<float> cam_intr;
+    if (meta["meta"].contains("camera_intrinsic")) {
+        for (const auto& v : meta["meta"]["camera_intrinsic"]) {
+            cam_intr.push_back(v.get<float>());
+        }
+    } else {
+        std::cerr << "camera_intrinsic not found in meta.json, using default values." << std::endl;
+        cam_intr = {100.6919557412736, 100.6919557412736, 160.0, 120.0, 320, 240};
+    }
+    if (cam_intr.size() != 6) {
+        std::cerr << "camera_intrinsic in meta.json must have 6 values (fx, fy, cx, cy, width, height)." << std::endl;
+        return 1;
+    }
     CameraIntrinsics intrinsics(
-        100.6919557412736, 100.6919557412736, 160.0, 120.0, 320, 240
+        cam_intr[0], cam_intr[1], cam_intr[2], cam_intr[3], (int)cam_intr[4], (int)cam_intr[5]
     );
 
     json meta_aug;
@@ -426,21 +345,17 @@ int main(int argc, char** argv) {
             auto translatedCloud = translatePointCloud<pcl::PointXYZRGB>(renderedCloud, basePose);
 
             // translate target
-            auto pose = episode_aug["pose"];
-            auto translatedTarget = translateTarget<pcl::PointXYZRGB>(
-                pose["pos"],
-                pose["quat"],
-                pose["se2"],
-                basePose
-            );
-            episode_aug["pose"]["pos"] = translatedTarget.position;
-            episode_aug["pose"]["quat"] = translatedTarget.quaternion;
-            episode_aug["pose"]["se2"] = translatedTarget.se2_pose;
+            Eigen::Vector3f pose_se2;
+            for (int idx = 0; idx < 3; ++idx) {
+                pose_se2(idx) = episode_aug["pose"][idx].get<float>();
+            }
+            auto translated_se2 = translateTarget<pcl::PointXYZRGB>(pose_se2, basePose);
+            episode_aug["pose"] = translated_se2;
 
             // Save rendered point cloud
             pcl::io::savePCDFile(output_path, *translatedCloud);
 
-            episode_aug["file_path"] = "pcl_aug_positive_robot_centric_origin/" + file_name;
+            episode_aug["file_path"] = "pcl_aug/" + file_name;
             meta_aug["episodes"].push_back(episode_aug);
 
             auto timeEnd = std::chrono::high_resolution_clock::now();

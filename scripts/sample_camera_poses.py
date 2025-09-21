@@ -44,6 +44,9 @@ if __name__ == "__main__":
     episodes = meta['episodes']
     print("meta loaded")
 
+    T_base_to_cam = meta["meta"]["T_base_to_cam"]
+    camera_intrinsic = meta["meta"]["camera_intrinsic"]
+
     camera_pose_save_dir = os.path.join(args.dataset_path, "camera_poses")
     os.makedirs(camera_pose_save_dir, exist_ok=True)
 
@@ -56,22 +59,29 @@ if __name__ == "__main__":
     for episode in tqdm(episodes):
         pcl_path = os.path.join(args.dataset_path, episode['file_path'])
         pcl = o3d.io.read_point_cloud(pcl_path)
-        se2_origin = episode['meta_info']['se2_origin']
-        furniture_pos = episode['meta_info']['furniture_pos']
-        furniture_pos = np.array(furniture_pos)
+        pose = episode['pose']
+        se2_origin = pose
 
-        target_helper = TargetHelper(pcl, se2_origin, x_half_range=2, y_half_range=2, theta_half_range_deg=60, vis=False)
+        # load object position if exists, otherwise set it in front of the robot
+        if "object_position" in episode:
+            object_position = episode['object_position']
+        else:
+            object_position = pose + [0.5 * np.cos(pose[2]), 0.5 * np.sin(pose[2]), 0]
+        object_position = np.array(object_position)
+
+        target_helper = TargetHelper(pcl, origin_se2=se2_origin, x_half_range=2, y_half_range=2, theta_half_range_deg=60, vis=False, camera_intrinsic=camera_intrinsic)
+        target_helper.T_base_cam = np.array(T_base_to_cam)
         episode_camera_poses = []
         episode_base_poses = []
         for _ in range(args.num_poses):
-            rel_base_se2, camera_extrinsic = target_helper.get_random_target_se2_with_visibility_check(furniture_pos[:2])
-            abs_base_se2 = [x + y for x, y in zip(rel_base_se2, se2_origin)]
+            rel_base_se2, camera_extrinsic = target_helper.get_random_target_se2_with_visibility_check(object_position[:2])
+            abs_base_se2 = [x + y for x, y in zip(rel_base_se2, pose)]
             matrix_base_se3 = target_helper.calculate_target_se3(abs_base_se2)
             episode_base_poses.append(matrix_base_se3.tolist())
             episode_camera_poses.append(camera_extrinsic.tolist())
 
         if args.vis:
-            save_pose_visualization(pcl, episode_camera_poses, furniture_pos, os.path.join(camera_pose_vis_dir, f"{episode['id']}.pcd"))
+            save_pose_visualization(pcl, episode_camera_poses, object_position, os.path.join(camera_pose_vis_dir, f"{episode['id']}.pcd"))
 
         camera_poses.append(episode_camera_poses)
         base_poses.append(episode_base_poses)

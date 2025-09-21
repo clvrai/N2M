@@ -7,7 +7,6 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Find packages
 find_package(PCL 1.8 REQUIRED)
-find_package(realsense2 REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 # Include PCL definitions and directories
@@ -21,7 +20,6 @@ add_executable(fpv_render fpv_render.cpp)
 # Link libraries
 target_link_libraries(fpv_render 
     ${PCL_LIBRARIES}
-    ${realsense2_LIBRARY}
     Eigen3::Eigen
     stdc++fs  # Add filesystem library
 )
@@ -29,7 +27,6 @@ target_link_libraries(fpv_render
 # Include directories
 target_include_directories(fpv_render PRIVATE
     ${PCL_INCLUDE_DIRS}
-    ${realsense2_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR}/include
 )
