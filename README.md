@@ -256,7 +256,7 @@ We developed a simple UI that publishes specific ROS2 topics through keyboard in
 
 ### Rollout Collection
 Using the UI, follow these steps to collect rollout data:
-1. Launch corresponding code described [above](#Step-2_Rollout_Data_Collection). Click inside the UI window. The Status indicator changes from yellow to green, meaning the UI is **`ACTIVE`**. While **`ACTIVE`**, key inputs send commands to the robot. When the cursor leaves the UI, the Status turns yellow, inputs are ignored, and the robot’s base velocity is set to zero for safety.
+1. Launch corresponding code described in `Step 2 Rollout Data Collection`. Click inside the UI window. The Status indicator changes from yellow to green, meaning the UI is **`ACTIVE`**. While **`ACTIVE`**, key inputs send commands to the robot. When the cursor leaves the UI, the Status turns yellow, inputs are ignored, and the robot’s base velocity is set to zero for safety.
 2. Use the **`↑/↓/←/→`** arrow keys to control the mobile base’s direction and speed.
 3. Use **`0/1/2`** to move the torso to preset heights, or **`i/k`** to fine-tune the torso height.
 4. With steps 2 and 3, drive the robot to different poses within the **task area**.
@@ -269,7 +269,7 @@ Using the UI, follow these steps to collect rollout data:
 
 ### N2M Inference
 Using the UI, follow these steps to run N2M inference:
-1. Launch corresponding code described [above](#Step-3_N2M_Inference_and_Deployment). Click inside the UI window. The Status turns from yellow to green (**`ACTIVE`**). While **`ACTIVE`**, key inputs control the robot. When the cursor leaves the UI, the Status turns yellow, inputs are ignored, and the base velocity is zeroed for safety.
+1. Launch corresponding code described `Step 3 N2M Inference and Deployment`. Click inside the UI window. The Status turns from yellow to green (**`ACTIVE`**). While **`ACTIVE`**, key inputs control the robot. When the cursor leaves the UI, the Status turns yellow, inputs are ignored, and the base velocity is zeroed for safety.
 2. Press **`o`** to sample a random robot pose within the **task area**; this pose serves as the **navigation end pose**. Press **`h`** to invoke the **motion planning** module so the robot navigates to this pose. Alternatively, use **`↑/↓/←/→`** and **`i/k`** to manually place the robot at any pose, ensuring the target object is visible. The two options are equivalent; we use the former in benchmarks to control evaluation variables and the latter in qualitative evaluations for convenience.
 3. Press **`s`** to have the N2M module predict a **preferable initial pose** for executing the **manipulation policy**.
 4. Press **`h`** and **`e`** to call the **motion planning** module to move the robot to the predicted pose and align the **torso height** with the prediction.
