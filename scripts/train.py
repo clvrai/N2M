@@ -140,7 +140,7 @@ def get_exp_dir(train_config):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='cfgs/test.yml')
+    parser.add_argument('--config', type=str, default='configs/training/config.json', help='Path to the config file.')
     args = parser.parse_args()
     
     # Load configuration
