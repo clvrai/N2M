@@ -1,5 +1,5 @@
 {
-    "model": {
+    "n2mnet": {
         "encoder": {
             "name": "PointBERT",
             "config": {
@@ -29,9 +29,22 @@
                 512,
                 512
             ],
-            "num_gaussians": 1,
+            "num_gaussians": 2,
             "output_dim": 3
         },
-        "ckpt": "models/N2M/N2M_OpenSingleDoor_BCTransformer.pth"
+        "ckpt": "models/N2M/N2Mnet.pth"
+    },
+    "preprocess": {
+        "pointnum": 8192
+    },
+    "postprocess": {
+        "num_samples": 100,
+        "collision_checker": {
+            "ground_z": 0.05,
+            "filter_noise": true,
+            "resolution": 0.02,
+            "robot_width": 0.5,
+            "robot_length": 0.63
+        }
     }
 }
