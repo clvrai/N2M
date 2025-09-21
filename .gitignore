@@ -1,6 +1,6 @@
 models
 datasets
-training
+/training/
 **build**
 **.egg-info
 **__pycache__**
