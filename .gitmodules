@@ -1,7 +1,0 @@
-[submodule "realsense"]
-    path = realsense
-    url = https://github.com/IntelRealSense/realsense-ros
-
-[submodule "zed"]
-    path = zed
-    url = https://github.com/stereolabs/zed-ros2-wrapper

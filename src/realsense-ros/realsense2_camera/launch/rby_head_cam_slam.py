@@ -1,0 +1,138 @@
+# Copyright 2023 Intel Corporation. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# DESCRIPTION #
+# ----------- #
+# Use this launch file to launch the head camera.
+# The Parameters available for definition in the command line are described in rs_launch.configurable_parameters
+# command line example:
+# ros2 launch realsense2_camera head_camera_launch.py
+
+"""Launch realsense2_camera node for head camera."""
+import os
+import yaml
+from launch import LaunchDescription
+import launch_ros.actions
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.substitutions import LaunchConfiguration
+
+# Define the head camera serial number
+HEAD_CAMERA_SN = "233522070688"  # Head camera serial number (D435)
+
+# Define resolution and fps
+WIDTH = "640"
+HEIGHT = "480"
+FPS = "5"
+RESOLUTION = f"{WIDTH},{HEIGHT},{FPS}"
+
+configurable_parameters = [{'name': 'camera_name',                  'default': 'head_camera', 'description': 'camera unique name'},
+                           {'name': 'camera_namespace',             'default': 'head_camera', 'description': 'namespace for camera'},
+                           {'name': 'serial_no',                    'default': f'"{HEAD_CAMERA_SN}"', 'description': 'choose device by serial number'},
+                           {'name': 'usb_port_id',                  'default': "''", 'description': 'choose device by usb port id'},
+                           {'name': 'device_type',                  'default': "'d4..'", 'description': 'choose device by type'},
+                           {'name': 'config_file',                  'default': "''", 'description': 'yaml config file'},
+                           {'name': 'json_file_path',               'default': "''", 'description': 'allows advanced configuration'},
+                           {'name': 'initial_reset',                'default': 'true', 'description': "''"},
+                           {'name': 'accelerate_gpu_with_glsl',     'default': "false", 'description': 'enable GPU acceleration with GLSL'},
+                           {'name': 'rosbag_filename',              'default': "''", 'description': 'A realsense bagfile to run from as a device'},
+                           {'name': 'log_level',                    'default': 'info', 'description': 'debug log level [DEBUG|INFO|WARN|ERROR|FATAL]'},
+                           {'name': 'output',                       'default': 'screen', 'description': 'pipe node output [screen|log]'},
+                           {'name': 'enable_color',                 'default': 'true', 'description': 'enable color stream'},
+                           {'name': 'rgb_camera.color_profile',     'default': RESOLUTION, 'description': 'color stream profile'},
+                           {'name': 'rgb_camera.color_format',      'default': 'RGB8', 'description': 'color stream format'},
+                           {'name': 'rgb_camera.enable_auto_exposure', 'default': 'true', 'description': 'enable/disable auto exposure for color image'},
+                           {'name': 'rgb_camera.power_line_frequency', 'default': '1', 'description': 'power line frequency for anti-flicker'},
+                           {'name': 'enable_depth',                 'default': 'true', 'description': 'enable depth stream - required for alignment'},
+                           {'name': 'enable_infra',                 'default': 'true', 'description': 'enable infra0 stream - required for stereo'},
+                           {'name': 'enable_infra1',                'default': 'true', 'description': 'enable infra1 stream - required for stereo'},
+                           {'name': 'enable_infra2',                'default': 'false', 'description': 'enable infra2 stream'},
+                           {'name': 'depth_module.depth_profile',   'default': RESOLUTION, 'description': 'depth stream profile'},
+                           {'name': 'depth_module.depth_format',    'default': 'Z16', 'description': 'depth stream format'},
+                           {'name': 'depth_module.infra_profile',   'default': RESOLUTION, 'description': 'infra streams (0/1/2) profile'},
+                           {'name': 'depth_module.infra_format',    'default': 'Y8', 'description': 'infra0 stream format'},
+                           {'name': 'depth_module.infra1_format',   'default': 'Y8', 'description': 'infra1 stream format'},
+                           {'name': 'depth_module.infra2_format',   'default': 'Y8', 'description': 'infra2 stream format'},
+                           {'name': 'depth_module.exposure',        'default': '8500', 'description': 'Depth module manual exposure value'},
+                           {'name': 'depth_module.gain',            'default': '16', 'description': 'Depth module manual gain value'},
+                           {'name': 'depth_module.hdr_enabled',     'default': 'false', 'description': 'Depth module hdr enablement flag. Used for hdr_merge filter'},
+                           {'name': 'depth_module.enable_auto_exposure', 'default': 'true', 'description': 'enable/disable auto exposure for depth image'},
+                           {'name': 'depth_module.power_line_frequency', 'default': '1', 'description': 'power line frequency for depth module anti-flicker'},
+                           {'name': 'enable_sync',                  'default': 'true', 'description': "'enable sync mode'"},
+                           {'name': 'enable_rgbd',                  'default': 'false', 'description': "'enable rgbd topic'"},
+                           {'name': 'enable_gyro',                  'default': 'true', 'description': "'enable gyro stream'"},
+                           {'name': 'enable_accel',                 'default': 'true', 'description': "'enable accel stream'"},
+                           {'name': 'gyro_fps',                     'default': '200', 'description': "gyro fps for SLAM"},
+                           {'name': 'accel_fps',                    'default': '200', 'description': "accel fps for SLAM"},
+                           {'name': 'unite_imu_method',             'default': "1", 'description': '[0-None, 1-copy, 2-linear_interpolation]'},
+                           {'name': 'clip_distance',                'default': '-2.', 'description': "''"},
+                           {'name': 'angular_velocity_cov',         'default': '0.01', 'description': "''"},
+                           {'name': 'linear_accel_cov',             'default': '0.01', 'description': "''"},
+                           {'name': 'diagnostics_period',           'default': '0.0', 'description': 'Rate of publishing diagnostics. 0=Disabled'},
+                           {'name': 'publish_tf',                   'default': 'true', 'description': '[bool] enable/disable publishing static & dynamic TF'},
+                           {'name': 'tf_publish_rate',              'default': '30.0', 'description': '[double] rate in Hz for publishing dynamic TF'},
+                           {'name': 'pointcloud.enable',            'default': 'false', 'description': 'enable pointcloud'},
+                           {'name': 'pointcloud.stream_filter',     'default': '0', 'description': 'texture stream for pointcloud (0=color)'},
+                           {'name': 'pointcloud.stream_index_filter','default': '0', 'description': 'texture stream index for pointcloud'},
+                           {'name': 'pointcloud.ordered_pc',        'default': 'false', 'description': 'Generate an ordered pointcloud'},
+                           {'name': 'pointcloud.allow_no_texture_points', 'default': 'false', 'description': "''"},
+                           {'name': 'align_depth.enable',           'default': 'true', 'description': 'enable align depth filter'},
+                           {'name': 'colorizer.enable',             'default': 'false', 'description': 'enable colorizer filter'},
+                           {'name': 'decimation_filter.enable',     'default': 'false', 'description': 'enable_decimation_filter'},
+                           {'name': 'spatial_filter.enable',        'default': 'false', 'description': 'enable_spatial_filter'},
+                           {'name': 'temporal_filter.enable',       'default': 'false', 'description': 'enable_temporal_filter'},
+                           {'name': 'disparity_filter.enable',      'default': 'false', 'description': 'enable_disparity_filter'},
+                           {'name': 'hole_filling_filter.enable',   'default': 'false', 'description': 'enable_hole_filling_filter'},
+                           {'name': 'hdr_merge.enable',             'default': 'false', 'description': 'hdr_merge filter enablement flag'},
+                           {'name': 'wait_for_device_timeout',      'default': '10.0', 'description': 'Timeout for waiting for device to connect (Seconds)'},
+                           {'name': 'reconnect_timeout',            'default': '6.', 'description': 'Timeout(seconds) between consequtive reconnection attempts'},
+                          ]
+
+def declare_configurable_parameters(parameters):
+    return [DeclareLaunchArgument(param['name'], default_value=param['default'], description=param['description']) for param in parameters]
+
+def set_configurable_parameters(parameters):
+    return dict([(param['name'], LaunchConfiguration(param['name'])) for param in parameters])
+
+def yaml_to_dict(path_to_yaml):
+    with open(path_to_yaml, "r") as f:
+        return yaml.load(f, Loader=yaml.SafeLoader)
+
+def launch_setup(context, params={}):
+    _config_file = LaunchConfiguration('config_file').perform(context)
+    params_from_file = {} if _config_file == "''" else yaml_to_dict(_config_file)
+
+    _output = LaunchConfiguration('output')
+    if(os.getenv('ROS_DISTRO') == 'foxy'):
+        # Foxy doesn't support output as substitution object (LaunchConfiguration object)
+        # but supports it as string, so we fetch the string from this substitution object
+        # see related PR that was merged for humble, iron, rolling: https://github.com/ros2/launch/pull/577
+        _output = context.perform_substitution(_output)
+
+    return [
+        launch_ros.actions.Node(
+            package='realsense2_camera',
+            namespace=LaunchConfiguration('camera_namespace'),
+            name=LaunchConfiguration('camera_name'),
+            executable='realsense2_camera_node',
+            parameters=[params, params_from_file],
+            output=_output,
+            arguments=['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+            emulate_tty=True,
+            )
+    ]
+
+def generate_launch_description():
+    return LaunchDescription(declare_configurable_parameters(configurable_parameters) + [
+        OpaqueFunction(function=launch_setup, kwargs = {'params' : set_configurable_parameters(configurable_parameters)})
+    ]) 

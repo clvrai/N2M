@@ -7,3 +7,10 @@ training
 wandb
 **.DS_Store
 test_codes
+devel/
+logs/
+build/
+log/
+install/
+bin/
+lib/

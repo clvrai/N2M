@@ -1,0 +1,76 @@
+# config/zed2i_yaml
+# Parameters for Stereolabs zed2i camera
+---
+/**:
+    ros__parameters:
+        general:
+            camera_model: 'zed2i'
+            camera_name: 'zed2i' # usually overwritten by launch file
+            grab_resolution: 'HD2K' # The native camera grab resolution. 'HD2K', 'HD1080', 'HD720', 'VGA', 'AUTO'
+            # grab_resolution: 'HD720' # The native camera grab resolution. 'HD2K', 'HD1080', 'HD720', 'VGA', 'AUTO'
+            grab_frame_rate: 15 # ZED SDK internal grabbing rate
+
+        depth:
+            min_depth: 0.3 # Min: 0.3, Max: 3.0
+            max_depth: 10.0 # Max: 40.0
+
+
+#  Zed2i, left camera, HD1080
+# header:
+#   stamp:
+#     sec: 1747185082
+#     nanosec: 950753122
+#   frame_id: zed_left_camera_optical_frame
+# height: 540
+# width: 960
+# distortion_model: rational_polynomial
+# d:
+# - 0.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 0.0
+# k:
+# - 529.5737915039062
+# - 0.0
+# - 492.3726806640625
+# - 0.0
+# - 529.5737915039062
+# - 271.3863220214844
+# - 0.0
+# - 0.0
+# - 1.0
+# r:
+# - 1.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 1.0
+# - 0.0
+# - 0.0
+# - 0.0
+# - 1.0
+# p:
+# - 529.5737915039062
+# - 0.0
+# - 492.3726806640625
+# - 0.0
+# - 0.0
+# - 529.5737915039062
+# - 271.3863220214844
+# - 0.0
+# - 0.0
+# - 0.0
+# - 1.0
+# - 0.0
+# binning_x: 0
+# binning_y: 0
+# roi:
+#   x_offset: 0
+#   y_offset: 0
+#   height: 0
+#   width: 0
+#   do_rectify: false
