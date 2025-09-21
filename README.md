@@ -1,25 +1,29 @@
 # N2M Real-World Robotics System
 
-This repository contains the complete codebase for N2M (Navigation to Manipulation) real-world experiments. The system is built on ROS2 framework for distributed robotics applications.
+This repository contains the full implementation of our real-world experiments. We use ROS2(Humble) to organize the whole system.
 
-![System Demonstration](doc/Teaser_real.gif)
-
+<p align="center">
+  <img src="doc/Teaser_real.gif" alt="System Demonstration">
+  <br>
+  <em>Real-world experiments in N2M</em>
+</p>
 
 ## System Architecture
 
 Our system consists of a distributed architecture with two main components:
 
-### Hardware Configuration
-- **Desktop PC**: High-performance workstation for computation-intensive tasks
-- **Onboard Computer (Jetson AGX)**: Embedded system for real-time sensor data processing and robot control
-- **Communication**: Ethernet-based networking using ROS2 multi-machine communication protocol
+### Hardware
+- **Desktop**: High-performance workstation for computation-intensive tasks.
+- **Onboard (Jetson AGX)**: Embedded system for real-time sensor data processing and robot control.
+- **Communication**: Ethernet-based networking using ROS2 multi-machine communication protocol.
+- **Mobile Manipulator**: Rainbow Robotics RB-Y1. Check [manual](https://rainbowrobotics.github.io/rby1-dev/) for more info.
 
-### Software Architecture
-- **Onboard Computer**: 
+### Software
+- **Onboard (Jetson AGX)**: 
   - Sensor data acquisition and preprocessing
   - Real-time execution of motion commands
   - Low-level robot control interfaces
-- **Desktop PC**: 
+- **Desktop (Ubuntu 22.04 LTS)**: 
   - N2M neural network training and inference
   - Navigation planning and path optimization
   - Manipulation policy learning and execution
@@ -28,8 +32,8 @@ Our system consists of a distributed architecture with two main components:
 
 ### System Requirements
 - **Operating System**: Ubuntu 22.04 LTS
-- **ROS2 Distribution**: Humble Hawksbill
-- **Python**: 3.10+
+- **ROS2 Distribution**: 
+- **Python**: 3.10
 
 ### ROS2 Installation
 Ensure ROS2 Humble is properly installed on both Desktop PC and Onboard Computer. Configure your shell environment by adding ROS2 setup to your `~/.zshrc`:
@@ -76,6 +80,14 @@ colcon build --symlink-install \
 
 This step collects expert demonstration data for manipulation policy training through teleoperation.
 
+<p align="center">
+  <img src="doc/UI_expert_data_collection.png" 
+       alt="System Demonstration"
+       width="80%">
+  <br>
+  <em>User Inferface for Collecting Expert Demonstrations</em>
+</p>
+
 #### Onboard Computer (Jetson AGX)
 ```bash
 cd workbench/real
@@ -90,6 +102,8 @@ taskset -c 0,1,2,3 ros2 run rby_wrapper server_teleoperation.py
 
 #### Desktop PC (Client)
 ```bash
+cd workbench/real
+
 # Source ROS2 environment
 source install/setup.zsh
 
@@ -107,6 +121,14 @@ h5dump -H data.h5
 ### Step 2: Rollout Data Collection
 
 This step collects rollout trajectories for N2M training by running the robot in various scenarios.
+
+<p align="center">
+  <img src="doc/tf_tree_rollout.jpg" 
+       alt="System Demonstration"
+       width="50%">
+  <br>
+  <em>TF tree during N2M rollout</em>
+</p>
 
 #### Onboard Computer (Jetson AGX)
 ```bash
@@ -128,7 +150,7 @@ taskset -c 0,1,2 ros2 run rby_wrapper server_rby1_robot.py
 zsh n2m_manager.sh
 
 # N2M inference with SIR (Sequential Importance Resampling) prediction
-zsh n2m_manager.sh --inference
+zsh n2m_manager.sh
 
 # Run manipulation policy
 mamba activate craft
@@ -136,8 +158,25 @@ zsh run_client_manipulation_policy.sh
 ```
 
 ### Step 3: N2M Inference and Deployment
-
 This step runs the trained N2M model for real-time navigation and manipulation tasks.
+
+<p align="center">
+  <img src="doc/N2M_inference.png" 
+       alt="System Demonstration"
+       width="80%">
+  <br>
+  <em>Rosgraph during N2M inference</em>
+</p>
+
+
+<p align="center">
+  <img src="doc/tf_tree_inference.jpg" 
+       alt="System Demonstration"
+       width="80%">
+  <br>
+  <em>TF tree during N2M inference</em>
+</p>
+
 
 #### Onboard Computer (Jetson AGX)
 ```bash
@@ -165,6 +204,17 @@ zsh n2m_manager.sh --inference
 mamba activate craft
 zsh run_client_manipulation_policy.sh
 ```
+
+## User Interface
+We developed a simple UI that publishes specific ROS2 topics through keyboard inputs, enabling robot state transitions via callbacks to achieve specific functionalities. This interface program is invoked when executing the `n2m_manager.sh` script during rollout collection and N2M inference. The UI is shown in the figure below:
+<p align="center">
+  <img src="doc/UI_rollout_collection_N2M_inference.png" 
+       alt="System Demonstration"
+       width="80%">
+  <br>
+  <em>User Inferface for Rollout Collection and N2M Inference</em>
+</p>
+
 <!-- # Acknowledgement -->
 
 
