@@ -1,31 +1,36 @@
-# N2M: Bridging Navigation and Manipulation by Learning Initial Pose Preference from Rollout
+# N2M: Bridging Navigation and Manipulation by Learning Pose Preference from Rollout
 Kaixin Chai*, Hyunjun Lee*, Joseph J. Lim
 
-![System Demonstration](doc/Teaser_sim.gif)
+![System Overview](doc/System_Overview.png)
 
-## TODOs
-- Organize N2M training and inference code
-- Organize robocasa evironment code
-- Clean up README.md file
+This is an official implementation of N2M. `main` branch includes the use of n2m module only. For examples use cases in simulation and real world, please refer to `sim` and `real` branches respectively.
+
+## TODO
+- Organize README
+- Check installation
+- Check Training
 
 ## Installation
-we use `uv` to manage our environment. click [here](https://docs.astral.sh/uv/) to get tutorial if you are not familiar with this tool.
+Clone and install necessary packages
 ```
-git clone --single-branch --branch main --recurse-submodules https://github.com/clvrai/N2M.git
-
+git clone --single-branch --branch main https://github.com/clvrai/N2M.git
 cd N2M
-uv python install 3.10
-uv venv --python=3.10
-source .venv/bin/activate
 
-cd ../robosuite
-uv pip install -e .
+mamba create -n n2m python==3.11
+pip install -r requirements.txt
+pip install -e .
+```
 
-cd ../robocasa
-uv pip install -e .
-python robocasa/scripts/download_kitchen_assets.py
-python robocasa/scripts/setup_macros.py
+## Training
+We provided detailed instructions to train N2M module.
 
-cd ../robomimic
-uv pip install -e .
+### Data preparation
+
+![Data Preparation](doc/Data_Preparation.png)
+
+You should first prepare raw data with pairs of local scene and preferable initial pose. Local scene is a point cloud of a scene and you may stitch point clouds using multiple calibrated cameras. In this repo, we do not provide code for capturing the local scene.
+
+The format of raw data should be placed under `dataset` folder in the format below
+```
+
 ```
