@@ -90,7 +90,7 @@ Replace `{dataset name}` with your own dataset name. `pcl/` folder should includ
 
 `object position`: Position of the object of interest. We later used this to check the visibility of the object when we sample viewpoints. This element is not mandatory as we estimate it as a position 0.5m infront of `pose` with height 1m if it is empty.
 
-Example dataset can be downloaded from this <a href="https://clvrai.github.io/N2M">link</a>
+Example dataset can be downloaded from this <a href="https://drive.google.com/file/d/1Qd7ImoUXLwbmB8Or8aRH7oPP8tn6YAdf/view?usp=sharing">link</a>
 
 ## 🛠️ Data Processing
 Now we are ready to process the data. Run the following command to process the data.
@@ -117,6 +117,7 @@ Before running training, download pretrained PointBERT weight and save it under 
 ```bash
 python scripts/train.py --config configs/training/config.json
 ```
+Your training log will saved under `training/{dataset name}`
 
 ## 🏃🏻‍♂️‍➡️ Inference
 To use N2M, you have to import N2Mmodule from `n2m/module/N2Mmodule.py`. This is a wrapper for N2Mnet with data pre-processing and post-processing. This also contains collision checking for sampling valid initial pose from predicted distribution. Example code is as follows
