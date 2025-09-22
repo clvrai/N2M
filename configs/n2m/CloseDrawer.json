@@ -1,0 +1,77 @@
+{
+    "exp_name": "SIR-kernel_2-CloseDrawer-BCT-wo-PTR-pos-robot-centric-right-lam_weight_0.0-mle_max-090-scene1",
+    "model": {
+        "encoder": {
+            "name": "PointBERT",
+            "config": {
+                "NAME": "PointTransformer",
+                "trans_dim": 384,
+                "depth": 12,
+                "drop_path_rate": 0.1,
+                "cls_dim": 40,
+                "num_heads": 6,
+                "group_size": 32,
+                "num_group": 512,
+                "encoder_dims": 256
+            },
+            "ckpt": "models/PointBERT/PointTransformer_ModelNet8192points.pth",
+            "freeze": false
+        },
+        "decoder": {
+            "name": "mlp",
+            "config": {
+                "dropout": 0.1
+            },
+            "layers": [
+                512,
+                512,
+                512,
+                512,
+                512,
+                512,
+                512,
+                512
+            ],
+            "num_gaussians": 2,
+            "output_dim": 3
+        },
+        "ckpt": "models/CloseDrawer/BCtransformer/n2m/CloseDrawer.pth"
+    },
+    "dataset": {
+        "dataset_path": "datasets/rollouts/CloseDrawer_BCtransformer_rollouts/CloseDrawer_BCtransformer_rollout_scene1/rollouts_sir",
+        "anno_path": "rollout/meta_aug_positive_robot_centric_origin_right_090.json",
+        "pointnum": 8192,
+        "train_val_ratio": 0.999,
+        "augmentations": {
+            "rotation_se2": {
+                "min_angle": -180,
+                "max_angle": 180
+            },
+            "translation_xy": {
+                "radius": 1
+            }
+        }
+    },
+    "train": {
+        "batch_size": 32,
+        "num_epochs": 67,
+        "learning_rate": 0.0001,
+        "num_workers": 4,
+        "val_freq": 5,
+        "loss": {
+            "name": "mle",
+            "config": {
+                "neg_weight": 1.0,
+                "lam_weight": 0.0,
+                "lam_dist": 2.0,
+                "min_logprob": -4.0
+            }
+        },
+        "wandb": {
+            "name": "SIR-kernel_2-CloseDrawer-BCT-wo-PTR-pos-robot-centric-right-lam_weight_0.0-mle_max-090-scene1",
+            "project": "Nav2Manip",
+            "entity": "clvr"
+        },
+        "output_dir": "datasets/rollouts/CloseDrawer_BCtransformer_rollouts/CloseDrawer_BCtransformer_rollout_scene1/rollouts_sir/SIR_kernel_2/SIR_wo_PTR_pos_robot_centric_right_lam_weight_0.0_mle_max_090"
+    }
+}
