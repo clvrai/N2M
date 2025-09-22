@@ -5,12 +5,6 @@
 
 This is an official implementation of N2M. We provided detailed instructions to train and inference N2M. For examples in simulation and real world, please refer to `sim` and `real` branches.
 
-## TODO
-- Organize README
-- Revise code according to the README instruction
-- Check installation
-- Check Training
-
 ## Installation
 Clone and install necessary packages
 ```bash
