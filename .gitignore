@@ -1,0 +1,8 @@
+datasets
+models
+output
+slurm*
+run*
+.vscode
+wandb
+__pycache__
