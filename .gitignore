@@ -6,3 +6,4 @@ run*
 .vscode
 wandb
 __pycache__
+readme.md
