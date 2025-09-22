@@ -1,7 +1,7 @@
 # N2M: Bridging Navigation and Manipulation by Learning Pose Preference from Rollout
 <p><a href="https://cckaixin.github.io/myWebsite/">Kaixin Chai</a>*, <a href="https://hjl1013.github.io">Hyunjun Lee</a>*, Joseph J. Lim</p>
 
-<img src="doc/System_Overview.png" style="padding-bottom:10px;"/>
+![System Overview](doc/System_Overview.png)
 
 This is an official implementation of N2M. We provided detailed instructions to train and inference N2M. For examples in simulation and real world, please refer to `sim` and `real` branches.
 
@@ -26,7 +26,7 @@ make
 
 ## 📊 Data preparation
 
-<div style="display:flex; justify-content:center; padding-bottom:20px;"><img src="doc/Data_Preparation.png" style="width:100%; max-width: 600px;"/></div>
+![Data Preparation](doc/Data_Preparation.png)
 
 You should first prepare raw data with pairs of local scene and preferable initial pose. Local scene is a point cloud of a scene and you may stitch point clouds using multiple calibrated cameras. In this repo, we do not provide code for capturing the local scene.
 
