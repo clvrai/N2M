@@ -111,9 +111,11 @@ datasets/
 You will find the visualization of sampled camera poses per each scene in `camera_poses_vis/`. Augmented point cloud and corresponding labels will be saved in `pcl_aug/` and `meta_aug.json` respectively.
 
 ## 🚀 Training
-You will be using `configs/training/config.json` as training configuration. Change `dataset_path: "datasets/{dataset name}"` and additional training settings related to your taste and run:
+You will be using `configs/training/config.json` as training configuration. Change `dataset_path: "datasets/{dataset name}"` and additional training settings related to your taste
+
+Before running training, download pretrained PointBERT weight and save it under `models/PointBERT` folder.
 ```bash
-python scripts/train.py --config training/config.json
+python scripts/train.py --config configs/training/config.json
 ```
 
 ## 🏃🏻‍♂️‍➡️ Inference

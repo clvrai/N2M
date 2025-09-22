@@ -88,8 +88,8 @@ class N2MDataset(Dataset):
 
         # Load point cloud and target point
         point_cloud = self._load_point_cloud(file_path)
-        target_point = np.array(data['pose']['se2'], dtype=np.float32)
-        label = 1 if data['is_success'] else 0
+        target_point = np.array(data['pose'], dtype=np.float32)
+        label = 1
 
         # Ensure point cloud has consistent size
         point_cloud = fix_point_cloud_size(point_cloud, self.pointnum)
