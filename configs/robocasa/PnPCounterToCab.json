@@ -31,7 +31,7 @@
         "env": null,
         "additional_envs": null,
         "render": true,
-        "render_video": true,
+        "render_video": false,
         "keep_all_videos": false,
         "video_skip": 5,
         "rollout": {
