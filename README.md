@@ -15,6 +15,9 @@ pip install -e .
 cd robocasa
 pip install -e .
 
+cd robomimic
+pip install -e .
+
 cd nav2man
 pip install -e .
 
