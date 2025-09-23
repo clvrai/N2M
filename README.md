@@ -6,16 +6,13 @@ We provide the code to run N2M in robocasa environment. Note that this code is f
 
 ## Installation
 ```bash
-mamba create -n robocasa python=3.10
+conda create -c conda-forge -n robocasa python=3.10
 mamba activate robocasa
 
-cd robocasa
-pip install -e .
-
-cd robomimic
-pip install -e .
-
 cd robosuite
+pip install -e .
+
+cd robocasa
 pip install -e .
 
 cd nav2man
