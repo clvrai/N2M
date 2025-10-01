@@ -176,12 +176,12 @@ const Project = () => {
                     <p className="project__affiliation google-sans-regular"><sup className="black-color">3</sup>Seoul National University</p>
                 </div>
                 <div className="project__materials">
-                    {/* <a href="https://arxiv.org/abs/2507.03303" target="_blank" rel="noopener noreferrer"> */}
+                    <a href="https://arxiv.org/abs/2509.18671" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <img src={`${process.env.PUBLIC_URL}/icons/arxiv.png`} alt="paper" className="project__materialIcon" />
-                            <p className="project__materialName google-sans-regular white-color">arXiv (Coming Soon)</p>
+                            <p className="project__materialName google-sans-regular white-color">arXiv</p>
                         </div>
-                    {/* </a> */}
+                    </a>
                     <a href="https://github.com/clvrai/N2M" target="_blank" rel="noopener noreferrer">
                         <div className="project__material dark-gray-background">
                             <GitHubIcon className="project__materialIcon white-color" />
@@ -447,8 +447,17 @@ const Project = () => {
                 <div className="project__bodyContent project__acknowledgements" id="acknowledgements">
                     <p className="project__bodyContentTitle google-sans-semibold">Acknowledgements</p>
                     <div className="project__acknowledgementsBody">
-                        <p className="project__acknowledgementsText google-sans-regular">🙌 The authors would like to thank Jeongjun Kim, Sunwoo Kim, Junseung Lee, Doohyun Lee, and Minho Heo for discussions throughout the project.</p>
-                        <p className="project__acknowledgementsText google-sans-regular">🙌 This paper was supported by Korea Institute for Advancement of Technology(KIAT) grant funded by the Korea Government(Ministry of Education) (P0025681-G02P22450002201-10054408, "Semiconductor"-Specialized University)</p>
+                        <p className="project__acknowledgementsText google-sans-regular">
+                            🙌 This work was supported by Institute of Information & communications Technology Planning &
+                            Evaluation (IITP) grant (No.RS2019-II190075, Artificial Intelligence Graduate School Program,
+                            KAIST), National Research Foundation of Korea (NRF) grant funded by the Korea government
+                            (MSIT) (NRF-2021H1D3A2A03103683, Brain Pool Research Program), and the Technology Innovation Program(or Industrial Strategic Technology Development Program-Robot Industry Technology Development)(RS-2024-00427719, Dexterous and Agile Humanoid Robots for Industrial
+                            Applications) funded by the Ministry of Trade Industry & Energy(MOTIE, Korea)
+                        </p>
+                        <p className="project__acknowledgementsText google-sans-regular">
+                            🙌 The authors are deeply grateful to Jeongjun Kim, Sunwoo Kim, Junseung Lee, Doohyun Lee, and
+                            Minho Heo for their insightful discussions and continuous support throughout this project. We also
+                            sincerely thank RAINBOW ROBOTICS for their generous hardware support, which made our real world experiments possible.</p>
                     </div>
                 </div>
 
