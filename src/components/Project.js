@@ -144,7 +144,7 @@ const Project = () => {
                 </video>
                 <div className="project__headerTitle">
                     <p className="project__headerMainTitle google-sans-semibold white-color">N2M</p>
-                    <p className="project__headerSubTitle google-sans-regular white-color">Bridging Navigation and Manipulation by Learning Initial Pose Preference from Rollout</p>
+                    <p className="project__headerSubTitle google-sans-regular white-color">Bridging Navigation and Manipulation by Learning Pose Preference from Rollout</p>
                 </div>
                 <div className="project__headerNavigator">
                     <a href="#overview" className="project__headerNavigatorItem">
