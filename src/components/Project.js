@@ -461,14 +461,16 @@ const Project = () => {
                     </div>
                 </div>
 
-                {/* <div className="project__bodyContent project__bibtex">
+                <div className="project__bodyContent project__bibtex">
                     <p className="project__bodyContentTitle google-sans-semibold">Bibtex</p>
                     <div className="project__bibtexBody">
                         <pre className="project__bibtexText google-sans-regular light-gray-background">
-                            TBD
+                            <code>
+                                {`@article{chai2025n2m,\n\ttitle={N2M: Bridging Navigation and Manipulation by Learning Pose Preference from Rollout},\n\tauthor={Chai, Kaixin and Lee, Hyunjun and Lim, Joseph J},\n\tjournal={arXiv preprint arXiv:2509.18671},\n\tyear={2025}\n}`}
+                            </code>
                         </pre>
                     </div>
-                </div> */}
+                </div>
             </div>
         </div>
     );
