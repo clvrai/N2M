@@ -5,6 +5,11 @@
 
 This is an official implementation of N2M. We provided detailed instructions to train and inference N2M. For examples in simulation and real world, please refer to `sim` and `real` branches.
 
+## TODOs
+- Organize N2M training / inference code ✅
+- Organize N2M real world code ✅
+- Organize N2M simulation code 
+
 ## Installation
 Clone and install necessary packages
 ```bash
@@ -107,7 +112,7 @@ You will find the visualization of sampled camera poses per each scene in `camer
 ## 🚀 Training
 You will be using `configs/training/config.json` as training configuration. Change `dataset_path: "datasets/{dataset name}"` and additional training settings related to your taste
 
-Before running training, download pretrained PointBERT weight and save it under `models/PointBERT` folder.
+Before running training, download pretrained PointBERT weight from this <a href="https://drive.google.com/file/d/1NquLPcZQcjh4C69EfZLuVlxgVtd6nTf0/view?usp=sharing">link</a> and save it under `models/PointBERT` folder.
 ```bash
 python scripts/train.py --config configs/training/config.json
 ```
