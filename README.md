@@ -125,7 +125,7 @@ import json
 import o3d
 import numpy as np
 
-import N2Mmodule from n2m.module.N2Mmodule
+import N2Mmodule from n2m.module
 
 # initialize n2m module
 config = json.load("configs/inference/config.json")
