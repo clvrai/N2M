@@ -112,7 +112,7 @@ You will find the visualization of sampled camera poses per each scene in `camer
 ## 🚀 Training
 You will be using `configs/training/config.json` as training configuration. Change `dataset_path: "datasets/{dataset name}"` and additional training settings related to your taste
 
-Before running training, download pretrained PointBERT weight from this <a href="https://drive.google.com/file/d/1TasbVohHB7NmU6irBAn8qUqzitVF4bBI/view?usp=sharing">link</a> and save it under `models/PointBERT` folder.
+Before running training, download pretrained PointBERT weight from this <a href="https://drive.google.com/file/d/1yhTQ2QojhEOrZDOLW5W3AcPkwx5_LeXK/view?usp=sharing">link</a> and save it under `models/PointBERT` folder.
 ```bash
 python scripts/train.py --config configs/training/config.json
 ```
