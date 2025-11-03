@@ -19,7 +19,6 @@ cd N2M
 # install mamba environment
 mamba create -n n2m python==3.11
 mamba activate n2m
-pip install -r requirements.txt
 pip install -e .
 
 # compile c++ file
