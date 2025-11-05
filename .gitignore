@@ -1,5 +1,6 @@
 datasets
-models
+/models/
+assets
 output
 slurm*
 run*
