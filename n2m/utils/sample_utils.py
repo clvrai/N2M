@@ -18,22 +18,11 @@ class CollisionChecker:
         self.robot_length = config.get("robot_length", 0.63) # Robot length in meters
 
     def filter_point_cloud(self, pcd):
-        """
-        Filter noisy points from the point cloud using Open3D filtering methods.
-        
-        Args:
-            pcd: Open3D point cloud object
-            
-        Returns:
-            Filtered Open3D point cloud object
-        """
+        """Filter noisy points from the point cloud using Open3D filtering methods."""
         try:
-            print(f"Original point cloud has {len(pcd.points)} points")
-            
             # 1. Voxel downsampling to reduce noise and density
             voxel_size = 0.02  # 2cm voxel size
             pcd_downsampled = pcd.voxel_down_sample(voxel_size=voxel_size)
-            print(f"After voxel downsampling: {len(pcd_downsampled.points)} points")
             
             # 2. Remove statistical outliers
             # This removes points that are too far from their neighbors
@@ -41,7 +30,6 @@ class CollisionChecker:
                 nb_neighbors=20,  # Number of neighbors to analyze
                 std_ratio=2.0     # Standard deviation ratio threshold
             )
-            print(f"After statistical outlier removal: {len(pcd_cleaned.points)} points")
             
             # 3. Remove radius outliers (optional, can be commented out if too aggressive)
             # This removes points that have too few neighbors within a radius
@@ -49,7 +37,6 @@ class CollisionChecker:
                 nb_points=16,     # Minimum number of points within radius
                 radius=0.05       # Radius to search for neighbors (5cm)
             )
-            print(f"After radius outlier removal: {len(pcd_cleaned.points)} points")
             
             return pcd_cleaned
             
@@ -92,10 +79,9 @@ class CollisionChecker:
         else:
             self.pcd = pcd
 
-        self.pcd_points = pcd.points
-        self.pcd_colors = pcd.colors
+        self.pcd_points = np.asarray(self.pcd.points)
+        self.pcd_colors = np.asarray(self.pcd.colors)
 
-        print("Generating occupancy grid map")
         self.set_occupancy_grid()
 
     def check_collision(self, pose):
@@ -198,21 +184,9 @@ def get_target_helper_for_rollout_collection(inference_mode=False, all_pcd=None,
 
 class TargetHelper:
     def __init__(self, pcd, origin_se2, x_half_range, y_half_range, theta_half_range_deg, vis=False, camera_intrinsic=None, filter_noise=True):
-        self.resolution = 0.02
         self.width = 0.5
         self.length = 0.63
         self.ground_z = 0.05
-        # self.T_base_cam = np.array([
-        #     [ 5.83445639e-03,  5.87238353e-01, -8.09393072e-01,  4.49474752e-02],
-        #     [-9.99982552e-01,  2.64855534e-03, -5.28670366e-03, -1.88012307e-02],
-        #     [-9.60832741e-04,  8.09409739e-01,  5.87243519e-01,  1.64493829e-00],
-        #     [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]])  # this is just for DETECT mode and 
-        # self.T_base_cam = np.array(
-        #     [[-8.14932746e-02, -5.73355454e-01,  8.15243714e-01,  9.75590401e-04],
-        #     [-9.95079241e-01,  5.53813432e-04, -9.90804744e-02, -2.56451598e-02],
-        #     [ 5.63568407e-02, -8.19306535e-01, -5.70579275e-01,  1.64368076e-01],
-        #     [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]
-        # )
         self.T_base_cam = np.array([
             [-8.25269110e-02, -5.73057816e-01,  8.15348841e-01,  6.05364230e-04],
             [-9.95784041e-01,  1.45464862e-02, -9.05661474e-02, -3.94417736e-02],
@@ -221,12 +195,22 @@ class TargetHelper:
         ])
         self.arm_length = 1
         
-        # Filter noise from point cloud if requested
-        if filter_noise:
-            self.pcd = self.filter_point_cloud(pcd)
-        else:
-            self.pcd = pcd
-            
+        collision_config = {
+            "filter_noise": filter_noise,
+            "ground_z": self.ground_z,
+            "resolution": 0.02,
+            "robot_width": self.width,
+            "robot_length": self.length
+        }
+        self.collision_checker = CollisionChecker(collision_config)
+    
+        self.pcd = pcd
+        
+        pcd_for_collision = o3d.geometry.PointCloud()
+        pcd_for_collision.points = self.pcd.points
+        pcd_for_collision.colors = self.pcd.colors
+        self.collision_checker.set_pcd(pcd_for_collision)
+        
         self.origin_se2 = origin_se2
         self.x_half_range = x_half_range
         self.y_half_range = y_half_range
@@ -243,165 +227,10 @@ class TargetHelper:
             self.cam_intrinsic = np.array(camera_intrinsic)
         else:
             self.cam_intrinsic = np.array([100.6919557412736, 100.6919557412736, 160.0, 120.0, 320, 240])
-        # Initialize occupancy grid in constructor
-        self.get_occupancy_grid()
-    
-    def filter_point_cloud(self, pcd):
-        """
-        Filter noisy points from the point cloud using Open3D filtering methods.
         
-        Args:
-            pcd: Open3D point cloud object
-            
-        Returns:
-            Filtered Open3D point cloud object
-        """
-        try:
-            print(f"Original point cloud has {len(pcd.points)} points")
-            
-            # 1. Voxel downsampling to reduce noise and density
-            voxel_size = 0.02  # 2cm voxel size
-            pcd_downsampled = pcd.voxel_down_sample(voxel_size=voxel_size)
-            print(f"After voxel downsampling: {len(pcd_downsampled.points)} points")
-            
-            # 2. Remove statistical outliers
-            # This removes points that are too far from their neighbors
-            pcd_cleaned, _ = pcd_downsampled.remove_statistical_outlier(
-                nb_neighbors=20,  # Number of neighbors to analyze
-                std_ratio=2.0     # Standard deviation ratio threshold
-            )
-            print(f"After statistical outlier removal: {len(pcd_cleaned.points)} points")
-            
-            # 3. Remove radius outliers (optional, can be commented out if too aggressive)
-            # This removes points that have too few neighbors within a radius
-            pcd_cleaned, _ = pcd_cleaned.remove_radius_outlier(
-                nb_points=16,     # Minimum number of points within radius
-                radius=0.05       # Radius to search for neighbors (5cm)
-            )
-            print(f"After radius outlier removal: {len(pcd_cleaned.points)} points")
-            
-            return pcd_cleaned
-            
-        except Exception as e:
-            print(f"Error during point cloud filtering: {e}")
-            print("Returning original point cloud without filtering")
-            return pcd
-    
-    def filter_point_cloud_custom(self, pcd, voxel_size=0.02, nb_neighbors=20, std_ratio=2.0, 
-                                 nb_points=16, radius=0.05, use_radius_filter=True):
-        """
-        Filter noisy points from the point cloud with custom parameters.
-        
-        Args:
-            pcd: Open3D point cloud object
-            voxel_size: Size of voxels for downsampling (in meters)
-            nb_neighbors: Number of neighbors for statistical outlier removal
-            std_ratio: Standard deviation ratio threshold for statistical outlier removal
-            nb_points: Minimum number of points within radius for radius outlier removal
-            radius: Radius to search for neighbors (in meters)
-            use_radius_filter: Whether to apply radius outlier removal
-            
-        Returns:
-            Filtered Open3D point cloud object
-        """
-        try:
-            print(f"Original point cloud has {len(pcd.points)} points")
-            
-            # 1. Voxel downsampling
-            pcd_downsampled = pcd.voxel_down_sample(voxel_size=voxel_size)
-            print(f"After voxel downsampling: {len(pcd_downsampled.points)} points")
-            
-            # 2. Remove statistical outliers
-            pcd_cleaned, _ = pcd_downsampled.remove_statistical_outlier(
-                nb_neighbors=nb_neighbors,
-                std_ratio=std_ratio
-            )
-            print(f"After statistical outlier removal: {len(pcd_cleaned.points)} points")
-            
-            # 3. Remove radius outliers (optional)
-            if use_radius_filter:
-                pcd_cleaned, _ = pcd_cleaned.remove_radius_outlier(
-                    nb_points=nb_points,
-                    radius=radius
-                )
-                print(f"After radius outlier removal: {len(pcd_cleaned.points)} points")
-            
-            return pcd_cleaned
-            
-        except Exception as e:
-            print(f"Error during point cloud filtering: {e}")
-            print("Returning original point cloud without filtering")
-            return pcd
-    
-    def visualize_filtering_comparison(self, original_pcd):
-        """
-        Visualize the comparison between original and filtered point clouds.
-        
-        Args:
-            original_pcd: Original Open3D point cloud object
-        """
-        try:
-            # Create visualization window
-            vis = o3d.visualization.Visualizer()
-            vis.create_window(window_name="Point Cloud Filtering Comparison", width=1200, height=800)
-            
-            # Add original point cloud (white)
-            original_pcd.paint_uniform_color([1, 1, 1])  # White
-            vis.add_geometry(original_pcd)
-            
-            # Add filtered point cloud (red)
-            filtered_pcd = self.pcd
-            filtered_pcd.paint_uniform_color([1, 0, 0])  # Red
-            vis.add_geometry(filtered_pcd)
-            
-            # Add coordinate frame
-            coord_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.5)
-            vis.add_geometry(coord_frame)
-            
-            # Set view options
-            opt = vis.get_render_option()
-            opt.background_color = np.asarray([0, 0, 0])  # Black background
-            opt.point_size = 2.0
-            
-            print("Visualizing point cloud filtering comparison...")
-            print("White points: Original point cloud")
-            print("Red points: Filtered point cloud")
-            print("Press 'Q' to close the visualization")
-            
-            # Run visualization
-            vis.run()
-            vis.destroy_window()
-            
-        except Exception as e:
-            print(f"Error during visualization: {e}")
-    
-    def get_occupancy_grid(self):
-        """Create occupancy grid from point cloud, filtering out ground points below ground_z"""
-        # Filter out ground points
-        non_ground_points = self.pcd_np[self.pcd_np[:, 2] >= self.ground_z]
-        
-        # Get min and max coordinates
-        min_coords = np.min(non_ground_points, axis=0)
-        max_coords = np.max(non_ground_points, axis=0)
-        
-        # Calculate grid dimensions
-        width = int(np.ceil((max_coords[0] - min_coords[0]) / self.resolution))
-        height = int(np.ceil((max_coords[1] - min_coords[1]) / self.resolution))
-        
-        # Initialize occupancy grid
-        occupancy_grid = np.zeros((height, width))
-        
-        # Project points to grid
-        for point in non_ground_points:
-            x_idx = int((point[0] - min_coords[0]) / self.resolution)
-            y_idx = int((point[1] - min_coords[1]) / self.resolution)
-            
-            if 0 <= x_idx < width and 0 <= y_idx < height:
-                occupancy_grid[y_idx, x_idx] = 1
-        
-        self.occupancy_grid = occupancy_grid
-        self.min_coords = min_coords
-        self.max_coords = max_coords
+        self.occupancy_grid = self.collision_checker.occupancy_grid
+        self.min_coords = self.collision_checker.min_coords
+        self.max_coords = self.collision_checker.max_coords
 
     def check_boundary(self, se2_pose):
         """Check if the target is within the boundary"""
@@ -412,77 +241,7 @@ class TargetHelper:
     
     def check_collision(self, se2_pose):
         """Check if all grids intersected by the rectangle are empty"""
-        x, y, theta = se2_pose
-        # Get rectangle corners in world frame
-        corners = np.array([
-            [-self.length*0.83, -self.width/2],          # Bottom left
-            [self.length*0.17, -self.width/2],           # Bottom right
-            [self.length*0.17, self.width/2],            # Top right
-            [-self.length*0.83, self.width/2]            # Top left
-        ])
-        # Rotate corners
-        rot_matrix = np.array([
-            [np.cos(theta), -np.sin(theta)],
-            [np.sin(theta), np.cos(theta)]
-        ])
-        rotated_corners = (rot_matrix @ corners.T).T
-        
-        # Translate corners
-        world_corners = rotated_corners + np.array([x, y])  
-        
-        # Get min and max coordinates of the rectangle
-        rect_min = np.min(world_corners, axis=0)
-        rect_max = np.max(world_corners, axis=0)
-        
-        # Convert to grid indices
-        min_x_idx = int((rect_min[0] - self.min_coords[0]) / self.resolution)
-        min_y_idx = int((rect_min[1] - self.min_coords[1]) / self.resolution)
-        max_x_idx = int((rect_max[0] - self.min_coords[0]) / self.resolution) + 1
-        max_y_idx = int((rect_max[1] - self.min_coords[1]) / self.resolution) + 1
-        
-        # Ensure indices are within grid bounds
-        min_x_idx = max(0, min_x_idx)
-        min_y_idx = max(0, min_y_idx)
-        max_x_idx = min(self.occupancy_grid.shape[1], max_x_idx)
-        max_y_idx = min(self.occupancy_grid.shape[0], max_y_idx)
-        
-        # Check each grid cell in the bounding box
-        for y_idx in range(min_y_idx, max_y_idx):
-            for x_idx in range(min_x_idx, max_x_idx):
-                if self.occupancy_grid[y_idx, x_idx] == 1:
-                    # Get grid cell corners in world coordinates
-                    grid_min_x = self.min_coords[0] + x_idx * self.resolution
-                    grid_min_y = self.min_coords[1] + y_idx * self.resolution
-                    grid_max_x = grid_min_x + self.resolution
-                    grid_max_y = grid_min_y + self.resolution
-                    
-                    # Check if grid cell intersects with rectangle
-                    # Convert grid corners to rectangle's local frame
-                    grid_corners = np.array([
-                        [grid_min_x, grid_min_y],
-                        [grid_max_x, grid_min_y],
-                        [grid_max_x, grid_max_y],
-                        [grid_min_x, grid_max_y]
-                    ])
-                    
-                    # Translate and rotate grid corners to rectangle's local frame
-                    translated_corners = grid_corners - np.array([x, y])
-                    local_corners = (rot_matrix.T @ translated_corners.T).T
-                    
-                    # Check if any grid corner is inside rectangle
-                    # Rectangle bounds in local frame
-                    rect_min_x = -self.length*0.83
-                    rect_max_x = self.length*0.17
-                    rect_min_y = -self.width/2
-                    rect_max_y = self.width/2
-                    
-                    # Check if any grid corner is inside rectangle
-                    for corner in local_corners:
-                        if (rect_min_x <= corner[0] <= rect_max_x and 
-                            rect_min_y <= corner[1] <= rect_max_y):
-                            return False
-        
-        return True
+        return self.collision_checker.check_collision(se2_pose)
     
     def visualize_occupancy_and_rectangle(self, target_se2, object_pos=None):
         """Visualize occupancy grid and rectangle"""
@@ -702,7 +461,6 @@ class TargetHelper:
                 self.origin_se2[2] + se2_delta[2]
             ]
             if self.check_collision(se2_pose):
-                # print("collision, break", se2_pose)
                 break
         
         if self.vis:

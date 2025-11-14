@@ -23,20 +23,20 @@
                 "dropout": 0.1
             },
             "num_gaussians": 1,
-            "output_dim": 3
+            "output_dim": 4
         }
     },
     "dataset": {
-        "dataset_path": "datasets/test",
+        "dataset_path": "datasets/lamp",
         "anno_path": "meta_aug.json",
         "pointnum": 8192,
         "train_val_ratio": 0.9,
         "augmentations": {
-            "rotation_se2": {
+            "rotation_xythetaz": {
                 "min_angle": -180,
                 "max_angle": 180
             },
-            "translation_xy": {
+            "translation_xythetaz": {
                 "radius": 1
             }
         }
@@ -45,7 +45,7 @@
         "batch_size": 32,
         "num_epochs": 300,
         "learning_rate": 1e-4,
-        "num_workers": 4,
+        "num_workers": 8,
         "val_freq": 50,
         "loss": {
             "name": "mle",

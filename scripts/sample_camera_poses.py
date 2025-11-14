@@ -34,6 +34,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, default="datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene1/20250430230003")
     parser.add_argument("--num_poses", type=int, default=10)
+    parser.add_argument("--x_half_range", type=float, default=2)
+    parser.add_argument("--y_half_range", type=float, default=2)
+    parser.add_argument("--theta_half_range_deg", type=float, default=60)
     parser.add_argument("--vis", action="store_true")
     args = parser.parse_args()
 
@@ -69,7 +72,15 @@ if __name__ == "__main__":
             object_position = pose + [0.5 * np.cos(pose[2]), 0.5 * np.sin(pose[2]), 0]
         object_position = np.array(object_position)
 
-        target_helper = TargetHelper(pcl, origin_se2=se2_origin, x_half_range=2, y_half_range=2, theta_half_range_deg=60, vis=False, camera_intrinsic=camera_intrinsic)
+        target_helper = TargetHelper(
+            pcl, 
+            origin_se2=se2_origin, 
+            x_half_range=args.x_half_range, 
+            y_half_range=args.y_half_range, 
+            theta_half_range_deg=args.theta_half_range_deg, 
+            vis=False, 
+            camera_intrinsic=camera_intrinsic
+        )
         target_helper.T_base_cam = np.array(T_base_to_cam)
         episode_camera_poses = []
         episode_base_poses = []

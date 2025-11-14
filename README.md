@@ -93,12 +93,13 @@ Example dataset can be downloaded from this <a href="https://drive.google.com/fi
 ## 🛠️ Data Processing
 Now we are ready to process the data. Run the following command to process the data.
 ```bash
-sh scripts/process_dataset.sh "path/to/dataset"
+python scripts/sample_camera_poses.py --dataset_path <path-to-dataset> --num_poses 300 --vis
+scripts/render/build/fpv_render <path-to-dataset> 
 ```
 This will apply viewpoint augmentation and generate augmented point clouds with new transformed labels corresponding to them. The file structure of the dataset will now look like this:
 ```
 datasets/
-└── {dataset name}/
+└── {dataset-name}/
     ├── camera_poses/
     ├── camera_poses_vis/
     ├── pcl/

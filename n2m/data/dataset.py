@@ -10,7 +10,7 @@ from n2m.utils.point_cloud import apply_augmentations, fix_point_cloud_size
 
 def make_data_module(config):
     """
-    Make training dataset for SIR predictor.
+    Make training dataset N2M.
 
     input(config):
         data_path: str
@@ -48,7 +48,7 @@ def make_data_module(config):
         raise ValueError(f"Invalid config: {config}")
 
 class N2MDataset(Dataset):
-    """Dataset for SIR predictor."""
+    """Dataset for N2M"""
     def __init__(self, config, anno):
         self.anno = anno
         self.pointnum = config['pointnum']

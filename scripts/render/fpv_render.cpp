@@ -346,11 +346,24 @@ int main(int argc, char** argv) {
 
             // translate target
             Eigen::Vector3f pose_se2;
+            bool has_z = episode_aug["pose"].size() == 4;
+            float z_value = 0.0f;
+            
             for (int idx = 0; idx < 3; ++idx) {
                 pose_se2(idx) = episode_aug["pose"][idx].get<float>();
             }
+            
+            if (has_z) {
+                z_value = episode_aug["pose"][3].get<float>();
+            }
+            
             auto translated_se2 = translateTarget<pcl::PointXYZRGB>(pose_se2, basePose);
-            episode_aug["pose"] = translated_se2;
+            
+            if (has_z) {
+                episode_aug["pose"] = json::array({translated_se2(0), translated_se2(1), translated_se2(2), z_value});
+            } else {
+                episode_aug["pose"] = translated_se2;
+            }
 
             // Save rendered point cloud
             pcl::io::savePCDFile(output_path, *translatedCloud);

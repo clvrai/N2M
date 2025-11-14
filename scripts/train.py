@@ -187,7 +187,8 @@ def main():
         batch_size=train_config['batch_size'],
         shuffle=True,
         num_workers=train_config['num_workers'],
-        pin_memory=True
+        pin_memory=True,
+        prefetch_factor=4
     )
     
     val_loader = DataLoader(
@@ -195,7 +196,8 @@ def main():
         batch_size=train_config['batch_size'],
         shuffle=False,
         num_workers=train_config['num_workers'],
-        pin_memory=True
+        pin_memory=True,
+        prefetch_factor=4
     )
     if len(val_loader) == 0:
         val_loader = train_loader
