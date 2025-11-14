@@ -1,0 +1,11 @@
+datasets
+/models/
+output
+slurm*
+run*
+.vscode
+wandb
+__pycache__
+readme.md
+inference
+MUJOCO_LOG.TXT
