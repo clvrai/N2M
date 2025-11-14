@@ -17,7 +17,7 @@ git clone --single-branch --branch main https://github.com/clvrai/N2M.git
 cd N2M
 
 # install mamba environment
-mamba create -n n2m python==3.11
+mamba create -n n2m python==3.10
 mamba activate n2m
 pip install -e .
 
