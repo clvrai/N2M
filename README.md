@@ -41,8 +41,8 @@ This benchmark provides a standardized framework to compare different approaches
 
 1. Create a conda environment:
 ```bash
-conda create -c conda-forge -n benchmark python=3.10
-conda activate benchmark
+mamba create -c conda-forge -n benchmark python=3.10
+mamba activate benchmark
 ```
 
 2. Clone this repository with submodules:

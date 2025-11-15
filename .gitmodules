@@ -1,21 +1,24 @@
-[submodule "env/robocasa"]
-	path = env/robocasa
-	url = git@github.com:cckaixin/robocasa.git
-[submodule "env/robosuite"]
-	path = env/robosuite
-	url = https://github.com/ARISE-Initiative/robosuite.git
-[submodule "env/mimicgen"]
-	path = env/mimicgen
-	url = https://github.com/NVlabs/mimicgen.git
-	branch = experimental/robocasa
-[submodule "policy/robomimic"]
-	path = policy/robomimic
-	url = git@github.com:cckaixin/robomimic.git
-[submodule "baseline/n2m"]
-	path = baseline/n2m
+[submodule "predictor/N2M"]
+	path = predictor/N2M
 	url = git@github.com:clvrai/N2M.git
 	branch = main
-[submodule "baseline/mobipi"]
-	path = baseline/mobipi
-	url = git@github.com:yjy0625/mobipi.git
-
+[submodule "predictor/N2M-mobipi"]
+	path = predictor/mobipi
+	url = git@github.com:cckaixin/N2M-mobipi.git
+[submodule "predictor/N2M-lelan"]
+	path = predictor/lelan
+	url = git@github.com:cckaixin/N2M-lelan.git
+[submodule "env/N2M-robocasa"]
+	path = env/robocasa
+	url = git@github.com:cckaixin/N2M-robocasa.git
+[submodule "env/N2M-robosuite"]
+	path = env/robosuite
+	url = git@github.com:cckaixin/N2M-robosuite.git
+[submodule "env/N2M-mimicgen"]
+	path = env/mimicgen
+	url = git@github.com:cckaixin/N2M-mimicgen.git
+	branch = experimental/robocasa
+[submodule "policy/N2M-robomimic"]
+	path = policy/robomimic
+	url = git@github.com:cckaixin/N2M-robomimic.git
+	branch = robocasa

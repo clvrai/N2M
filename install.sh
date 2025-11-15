@@ -18,19 +18,23 @@ git submodule update --init --recursive
 echo "✅ Installing dependencies..."
 
 # Install robosuite first (required by robocasa)
+# echo "➡️  Installing robosuite..."
+# pip install robosuite==1.5.0
+
+# Install robosuite
 echo "➡️  Installing robosuite..."
-pip install robosuite==1.5.0
+pip install -e env/robosuite
 
 # Install robocasa
 echo "➡️  Installing robocasa..."
 pip install -e env/robocasa
-(
-    cd env/robocasa
-    pip install pre-commit
-    pre-commit install || true  # Continue if pre-commit fails
-    echo "y" | python robocasa/scripts/download_kitchen_assets.py || true
-    python robocasa/scripts/setup_macros.py || true
-)
+# (
+#     cd env/robocasa
+#     pip install pre-commit
+#     pre-commit install || true  # Continue if pre-commit fails
+#     echo "y" | python robocasa/scripts/download_kitchen_assets.py || true
+#     python robocasa/scripts/setup_macros.py || true
+# )
 
 # Install mimicgen
 echo "➡️  Installing mimicgen..."
