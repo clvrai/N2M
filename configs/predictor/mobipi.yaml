@@ -1,0 +1,20 @@
+# Mobipi predictor configuration
+
+name: mobipi
+type: mobipi
+
+# Path to 3DGS scene model
+scene_model_path: ${paths.predictor_data.mobipi}/scene_models/task_scene
+
+# Path to manipulation policy (for feature extraction)
+policy_checkpoint_path: ${paths.policy_data.robomimic.checkpoints}/model_epoch_100.pth
+
+# Feature encoder type
+encoder_type: dino_dense_descriptor  # or 'policy', 'dino'
+
+# Optimization parameters
+num_candidates: 32
+optimization_steps: 50
+
+# On-site 3DGS reconstruction (TODO)
+rebuild_scene_model: false

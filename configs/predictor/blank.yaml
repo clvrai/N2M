@@ -1,0 +1,6 @@
+# Blank predictor configuration (baseline)
+
+name: blank
+type: blank
+
+# No additional config needed for blank predictor

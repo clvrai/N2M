@@ -1,0 +1,22 @@
+# Main configuration file for N2M-Benchmark
+
+defaults:
+  - paths: default
+  - env: robocasa
+  - policy: bc_transformer
+  - predictor: blank
+  - benchmark: evaluation
+  - _self_
+
+# Task name (used for logging)
+task_name: ${env.name}
+
+# Random seed
+seed: 42
+
+# Hydra configuration
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    name: ${task_name}_${predictor.name}

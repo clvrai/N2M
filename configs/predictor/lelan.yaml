@@ -1,0 +1,15 @@
+# LeLaN predictor configuration
+
+name: lelan
+type: lelan
+
+# Path to LeLaN checkpoint
+checkpoint_path: ${paths.predictor_data.lelan.checkpoints}/lelan_model.pth
+
+# Task description (language)
+task_description: "navigate to the target object"
+
+# Navigation parameters
+max_steps: 500
+goal_distance_threshold: 0.1
+control_scale: 1.0

@@ -1,0 +1,20 @@
+# Benchmark evaluation configuration
+
+mode: evaluation
+
+# Number of evaluation episodes
+num_episodes: 50
+
+# Randomize initial robot base pose
+randomize_initial_pose: true
+
+# Rollout parameters
+horizon: 500  # Maximum manipulation steps
+max_nav_steps: 500  # Maximum navigation steps (for iterative predictors)
+
+# Rendering
+render: false
+render_offscreen: true
+
+# Result naming: {predictor_name}_{task}_{sceneID}_{styleID}.json
+save_format: "{predictor}_{task}_{scene}_{style}.json"

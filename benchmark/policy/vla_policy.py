@@ -1,0 +1,37 @@
+"""VLA policy placeholder.
+
+TODO: Implement VLA policy wrapper.
+"""
+
+import numpy as np
+from typing import Dict, Any, Optional
+
+from benchmark.policy.base import BasePolicy
+
+
+class VLAPolicy(BasePolicy):
+    """Placeholder for VLA (Vision-Language-Action) policy.
+    
+    TODO: Implement when VLA policy is ready.
+    """
+    
+    def __init__(self, config: Dict[str, Any]):
+        super().__init__(config)
+        raise NotImplementedError("VLA policy not yet implemented")
+    
+    def predict_action(
+        self, 
+        observation: Dict[str, np.ndarray],
+        goal: Optional[Dict[str, np.ndarray]] = None
+    ) -> np.ndarray:
+        raise NotImplementedError("VLA policy not yet implemented")
+    
+    def reset(self):
+        pass
+    
+    def load_checkpoint(self, checkpoint_path: str):
+        raise NotImplementedError("VLA policy not yet implemented")
+    
+    @property
+    def name(self) -> str:
+        return "vla"

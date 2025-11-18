@@ -1,0 +1,13 @@
+# BC Transformer policy (auto-selects based on task)
+# Usage: policy=bc_transformer
+
+name: bc_transformer
+type: robomimic
+
+# Auto-construct config_name from task name
+config_name: ${env.name}_BCtransformer
+
+# Paths are auto-constructed
+robomimic_config_path: ${paths.root}/configs/policy/configs/${policy.config_name}.json
+checkpoint_path: ${paths.policy_data.robomimic.checkpoints}/${policy.config_name}.pth
+

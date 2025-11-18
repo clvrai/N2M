@@ -1,0 +1,11 @@
+# Reachability predictor configuration
+
+name: reachability
+type: reachability
+
+# Sampling parameters
+max_sample_tries: 100
+reach_distance_threshold: 0.8
+
+# IK solver type
+ik_solver: jacobian  # or 'analytical'

@@ -1,0 +1,18 @@
+# Benchmark data collection configuration
+
+mode: data_collection
+
+# Data collection for which predictor
+collect_for: n2m  # or 'mobipi'
+
+# Number of valid data samples to collect (successful episodes)
+num_valid_data: 20
+
+# Randomize initial pose
+randomize_initial_pose: true
+
+# Rollout parameters
+horizon: 500
+
+# Save directory (will be resolved based on collect_for)
+save_dir: data/predictor/${benchmark.collect_for}/collected_data

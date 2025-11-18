@@ -1,0 +1,21 @@
+# N2M predictor configuration
+
+name: n2m
+type: n2m
+
+# Path to N2M checkpoint
+checkpoint_path: ${paths.predictor_data.n2m}/n2m_model.ckpt
+
+# Camera names for point cloud generation
+camera_names:
+  - robot0_agentview_left
+  - robot0_eye_in_hand
+
+# Point cloud size
+num_points: 1024
+
+# GMM sampling
+num_samples: 100
+
+# Collision checking
+use_collision_check: true

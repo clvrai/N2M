@@ -1,0 +1,28 @@
+# Unified path configuration for N2M-Benchmark
+# This file is loaded as the 'paths' config group, creating cfg.paths namespace
+
+# Project root directory (auto-detected by Hydra)
+root: ${hydra:runtime.cwd}
+
+# Data directories
+data_root: ${paths.root}/data
+
+predictor_data:
+  n2m: ${paths.data_root}/predictor/n2m
+  mobipi: ${paths.data_root}/predictor/mobipi
+  lelan: ${paths.data_root}/predictor/lelan
+
+policy_data:
+  robomimic:
+    checkpoints: ${paths.data_root}/policy/robomimic/checkpoints
+    datasets: ${paths.data_root}/policy/robomimic/datasets
+  vlm:
+    checkpoints: ${paths.data_root}/policy/vlm/checkpoints
+  vla:
+    checkpoints: ${paths.data_root}/policy/vla/checkpoints
+
+benchmark_data:
+  results: ${paths.data_root}/benchmark/results
+
+# Output directories (managed by Hydra)
+output_root: outputs
