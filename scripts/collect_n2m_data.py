@@ -105,8 +105,8 @@ def main(cfg: DictConfig):
         render_enabled = json_config.get('experiment', {}).get('render', False)
         print(f"[INFO] Using render setting from JSON config: {render_enabled}")
     
-    # Get depth camera names
-    depth_cameras = cfg.env.data_collection.depth_cameras
+    # Get depth camera names from benchmark config
+    depth_cameras = cfg.benchmark.depth_cameras
     
     # Load manipulation policy (following reference implementation)
     print("\n============= Loading Manipulation Policy =============")
@@ -239,8 +239,8 @@ def main(cfg: DictConfig):
                 continue
             
             # STEP 3-4: determine target_se2 (following reference: train_utils.py:890-893)
-            # Use pose range from config
-            pose_range = cfg.env.data_collection.initial_pose_randomization_range
+            # Use N2M data collection randomization range from benchmark config
+            pose_range = cfg.benchmark.n2m_data_collection_randomization
             x_range = pose_range.x
             y_range = pose_range.y
             theta_range = pose_range.theta
@@ -293,7 +293,12 @@ def main(cfg: DictConfig):
                 lang = ""  # Empty string as fallback
             rollout_policy.start_episode(lang=lang)
             success = False
-            horizon = cfg.benchmark.get('horizon', 500)
+            # Get horizon from JSON config (following reference: train_utils.py:119)
+            # Priority: train.data[0].horizon > experiment.rollout.horizon
+            if hasattr(config.train.data[0], 'get') and 'horizon' in config.train.data[0]:
+                horizon = config.train.data[0]['horizon']
+            else:
+                horizon = config.experiment.rollout.horizon
             
             for step_i in range(horizon):
                 # Get action from policy

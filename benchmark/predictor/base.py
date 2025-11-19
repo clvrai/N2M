@@ -74,6 +74,35 @@ class BasePredictor(ABC):
         """
         pass
     
+    def needs_detect_mode(self) -> bool:
+        """Whether predictor needs DETECT mode (robot-mounted camera).
+        
+        Returns:
+            True if predictor needs DETECT mode (e.g., for robot-mounted camera capture)
+            False if predictor doesn't need DETECT mode (default)
+        """
+        return False
+    
+    def needs_robot_removal(self) -> bool:
+        """Whether predictor needs robot to be moved away for scene capture.
+        
+        During benchmark evaluation, most predictors use pre-trained models and don't
+        need robot removal. This is only needed for predictors that do live scene
+        reconstruction (e.g., mobipi with 3DGS).
+        
+        Returns:
+            True if predictor needs robot removal (e.g., mobipi for live 3DGS)
+            False if predictor doesn't need robot removal (default for most predictors)
+            
+        Examples:
+            - blank: False (no scene observation needed)
+            - n2m: False (uses pre-trained model in benchmark)
+            - lelan: False (iterative navigation, no scene capture)
+            - reachability: False (rule-based, no scene capture)
+            - mobipi: True (needs live 3DGS reconstruction)
+        """
+        return False
+    
     @property
     @abstractmethod
     def name(self) -> str:

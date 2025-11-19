@@ -23,7 +23,9 @@ class BenchmarkRunner:
         env,
         policy: BasePolicy,
         predictor: BasePredictor,
-        config: Dict[str, Any]
+        config: Dict[str, Any],
+        algo_name: str = "bc",
+        policy_name: str = "bc_transformer"
     ):
         """Initialize benchmark runner.
         
@@ -32,11 +34,15 @@ class BenchmarkRunner:
             policy: Manipulation policy
             predictor: Navigation predictor
             config: Benchmark configuration
+            algo_name: Algorithm name ('act', 'bc', 'diffusion', etc.)
+            policy_name: Policy name for results (e.g., 'bc_transformer', 'diffusion')
         """
         self.env = env
         self.policy = policy
         self.predictor = predictor
         self.config = config
+        self.algo_name = algo_name
+        self.policy_name = policy_name
         
     def run_evaluation(self) -> Dict[str, Any]:
         """Run benchmark evaluation.
@@ -45,11 +51,13 @@ class BenchmarkRunner:
             results: Dictionary with evaluation results
         """
         num_episodes = self.config.get('num_episodes', 50)
-        randomize_initial_pose = self.config.get('randomize_initial_pose', True)
+        
+        # Get task area randomization settings for evaluation
+        task_area_randomization = self.config.get('task_area_randomization', None)
         
         # Initialize collision checker if needed
         collision_checker = None
-        if randomize_initial_pose:
+        if task_area_randomization is not None:
             # Build collision checker from first observation
             obs = self.env.reset()
             # TODO: Build collision checker from observation
@@ -59,17 +67,12 @@ class BenchmarkRunner:
         # Run episodes
         episodes = []
         for episode_id in tqdm(range(num_episodes), desc="Running evaluation"):
-            # Sample initial pose if randomizing
+            # Sample initial pose if using task area randomization
             initial_pose = None
-            if randomize_initial_pose and collision_checker is not None:
-                pose_range = self.config.get('initial_pose_range', {
-                    'x': [-0.5, 0.5],
-                    'y': [-0.5, 0.5],
-                    'theta': [-np.pi, np.pi]
-                })
+            if task_area_randomization is not None and collision_checker is not None:
                 initial_pose = sample_collision_free_pose(
                     collision_checker,
-                    pose_range,
+                    task_area_randomization,
                     origin_pose=np.array([0.0, 0.0, 0.0]),
                     max_tries=100
                 )
@@ -80,6 +83,7 @@ class BenchmarkRunner:
                 self.policy,
                 self.predictor,
                 self.config,
+                algo_name=self.algo_name,
                 initial_pose=initial_pose
             )
             
@@ -103,7 +107,8 @@ class BenchmarkRunner:
         results = {
             'config': {
                 'predictor': self.predictor.name,
-                'policy': self.policy.name,
+                'policy': self.policy_name,
+                'algo_name': self.algo_name,
                 'task': self.config.get('task_name', 'unknown'),
                 'num_episodes': num_episodes,
                 'timestamp': time.strftime('%Y-%m-%d_%H-%M-%S')

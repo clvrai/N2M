@@ -8,11 +8,24 @@ collect_for: n2m  # or 'mobipi'
 # Number of valid data samples to collect (successful episodes)
 num_valid_data: 20
 
-# Randomize initial pose
-randomize_initial_pose: true
+# N2M data collection settings
+# Scene depth cameras to use for N2M point cloud capture (following reference implementation)
+# These are fixed scene cameras (depth_camera1-5), not robot-mounted cameras
+depth_cameras:
+  - depth_camera1
+  - depth_camera2
+  - depth_camera3
+  - depth_camera4
+  - depth_camera5
 
-# Rollout parameters
-horizon: 500
+# N2M data collection pose randomization (smaller range for training data)
+# Following reference implementation: x_half_range=0.2, y_half_range=0.2, theta_half_range_deg=15
+n2m_data_collection_randomization:
+  x: [-0.2, 0.2]      # ±0.2m in x direction
+  y: [-0.2, 0.2]      # ±0.2m in y direction
+  theta: [-0.262, 0.262]  # ±15 degrees (0.262 radians)
+
+# Note: horizon is read from JSON config (train.data[0].horizon or experiment.rollout.horizon)
 
 # Save directory (will be resolved based on collect_for)
 save_dir: data/predictor/${benchmark.collect_for}/collected_data

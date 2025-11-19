@@ -1,129 +1,175 @@
-"""Rollout logic for benchmark.
+"""Rollout logic for benchmark evaluation.
 
 Migrated from A_ref/N2M-sim/robomimic/robomimic/utils/train_utils.py
 Key function: rollout_with_stats_for_SIR → run_rollout_with_predictor
+
+Benchmark evaluation flow (simplified from train_utils.py:840-1110):
+1. Reset environment
+2. [Optional] Set DETECT mode (only if predictor.needs_detect_mode() == True)
+3. [Optional] Move robot away (only if predictor.needs_robot_removal() == True)
+   - For benchmark: typically False (predictors use pre-trained models)
+   - For data collection: True (need to capture clean scene point cloud)
+4. Call predictor to get target pose (predictor handles its own observations)
+5. Teleport robot to predicted pose
+6. [Optional] Set MANIPULATION mode (only if DETECT mode was used)
+7. Execute manipulation policy
+
+Note: Most predictors (blank, n2m, lelan, reachability) don't need robot removal
+      during benchmark evaluation, as they use pre-trained models or don't need scene capture.
+      Only mobipi (with live 3DGS) needs robot removal.
 """
 
 import time
 import numpy as np
 from typing import Dict, Any, Optional
 
-from benchmark.utils.navigation_utils import teleport_robot_to_pose, get_current_robot_pose
+from benchmark.utils.transform_utils import qpos_command_wrapper
+from benchmark.utils.obs_utils import obs_to_SE2
 from benchmark.predictor.base import BasePredictor
-from benchmark.policy.base import BasePolicy
+from robomimic.algo import RolloutPolicy
 
 
 def run_rollout_with_predictor(
     env,
-    policy: BasePolicy,
+    policy: RolloutPolicy,
     predictor: BasePredictor,
     config: Dict[str, Any],
+    algo_name: str,
     initial_pose: Optional[np.ndarray] = None
 ) -> Dict[str, Any]:
     """Execute one episode rollout with predictor and policy.
     
-    Unified interface supporting both one-shot and iterative predictors.
+    Following reference implementation (train_utils.py:836-1110).
     
     Args:
-        env: RoboCasa environment
-        policy: Manipulation policy
+        env: RoboCasa environment (wrapped)
+        policy: Manipulation policy (RolloutPolicy)
         predictor: Navigation predictor
-        config: Rollout configuration with keys:
-            - horizon: Maximum steps for manipulation
-            - max_nav_steps: Maximum navigation steps (for iterative predictors)
-            - randomize_initial_pose: Whether to randomize initial base pose
-        initial_pose: Initial base pose (if not randomizing)
+        config: Rollout configuration
+        algo_name: Algorithm name ('act', 'bc', 'diffusion', etc.)
+        initial_pose: Optional initial randomized pose
         
     Returns:
-        result: Dictionary with:
-            - success: Whether task succeeded
-            - num_steps: Number of manipulation steps
-            - initial_pose: Initial robot pose
-            - predicted_pose: Final predicted pose
-            - nav_steps: Number of navigation steps taken
-            - prediction_time: Total time spent on prediction
-            - manipulation_time: Time spent on manipulation
-            - predictor_info: Additional info from predictor
+        result: Dictionary with rollout statistics
     """
     start_time = time.time()
     
-    # 1. Reset environment
-    obs = env.reset()
+    # STEP 1: Reset environment (train_utils.py:841)
+    ob_dict = env.reset()
     
-    # 2. Set initial base position
-    if initial_pose is not None:
-        teleport_robot_to_pose(env, initial_pose)
-        obs = env.get_observation()
-        initial_pose = initial_pose.copy()
+    # Get unwrapped env (train_utils.py:845-849)
+    is_act_policy = algo_name == "act"
+    if is_act_policy:
+        easy_env = env.env
     else:
-        initial_pose = get_current_robot_pose(env)
+        easy_env = env.env.env
+    easy_robot = easy_env.robots[0]
     
-    # 3. Predict target pose (unified iterative interface)
-    predictor.reset()
-    current_pose = initial_pose.copy()
-    nav_step = 0
-    max_nav_steps = config.get('max_nav_steps', 500)
+    # Get SE2 origin (train_utils.py:850)
+    se2_origin = obs_to_SE2(ob_dict, algorithm_name=algo_name)
+    ac = np.zeros(12)
     
+    # Optional: render if enabled
+    render_enabled = config.get('render', False)
+    if render_enabled:
+        easy_env.render()
+        env.step(ac)
+    
+    # STEP 2: Set DETECT mode for robot-mounted camera (train_utils.py:909)
+    # Only if predictor needs it (e.g., not for blank predictor)
+    if hasattr(predictor, 'needs_detect_mode') and predictor.needs_detect_mode():
+        from benchmark.utils.sample_utils import arm_fake_controller
+        arm_fake_controller(easy_env, "DETECT")
+    
+    # STEP 3: Move robot away to capture scene (train_utils.py:862 or 917)
+    # Only move robot if predictor needs it (e.g., mobipi for 3DGS)
+    # Blank predictor doesn't need this step
+    if hasattr(predictor, 'needs_robot_removal') and predictor.needs_robot_removal():
+        easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(np.array([0.0, -50.0, 0.0]))
+        easy_env.sim.forward()
+        ob_dict, _, _, _ = env.step(ac)
+    
+    # STEP 4: Capture point cloud / observation for predictor (train_utils.py:880-887 or 921-927)
+    # The predictor will handle this internally based on its needs
+    
+    # STEP 5: Determine initial navigation pose if randomizing (train_utils.py:930-936)
     prediction_start = time.time()
-    predictor_info = {}
     
-    # Unified iterative loop - works for both one-shot and iterative predictors
-    while nav_step < max_nav_steps:
-        # Get current observation and pose
-        obs = env.get_observation()
-        current_pose = get_current_robot_pose(env)
-        
-        # Get environment info (target object, etc.)
-        from benchmark.env.env_utils import get_target_object_info
-        env_info = get_target_object_info(env)
-        
-        # Call predictor
-        predicted_pose, done, pred_info = predictor.predict(
-            observation=obs,
-            current_pose=current_pose,
-            env_info=env_info
-        )
-        
-        # Handle pose delta vs absolute pose
-        if pred_info.get('is_pose_delta', False):
-            # Pose delta - add to current pose
-            next_pose = current_pose + predicted_pose
-        else:
-            # Absolute pose - use directly
-            next_pose = predicted_pose
-        
-        # Teleport to new position
-        teleport_robot_to_pose(env, next_pose)
-        nav_step += 1
-        
-        # Store predictor info
-        predictor_info.update(pred_info)
-        
-        # Check if predictor is done
-        if done:
-            break
+    if initial_pose is not None:
+        # Use randomized initial pose from task_area_randomization
+        target_se2_relative = initial_pose
+    else:
+        # Start from origin (0,0,0)
+        target_se2_relative = np.array([0.0, 0.0, 0.0])
     
-    # Get final predicted pose
-    predicted_pose = get_current_robot_pose(env)
+    # Teleport to initial pose
+    easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(target_se2_relative)
+    easy_env.sim.forward()
+    ob_dict, _, _, _ = env.step(ac)
+    
+    # STEP 6: Call predictor to get target pose (train_utils.py:938-1050)
+    # Get current SE2 pose after moving to initial pose
+    current_se2 = obs_to_SE2(ob_dict, algorithm_name=algo_name)
+    
+    # Call predictor
+    predictor.reset()
+    predicted_pose, done, pred_info = predictor.predict(
+        observation=ob_dict,
+        current_pose=current_se2,
+        env_info={'env': easy_env, 'se2_origin': se2_origin}
+    )
+    
+    # Handle pose delta vs absolute pose
+    if pred_info.get('is_pose_delta', False):
+        final_se2_relative = current_se2 - se2_origin + predicted_pose
+    else:
+        final_se2_relative = predicted_pose - se2_origin
+    
+    # Teleport to predicted pose (train_utils.py:1047-1050)
+    easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(final_se2_relative)
+    easy_env.sim.forward()
+    ob_dict, _, _, _ = env.step(ac)
+    
     prediction_time = time.time() - prediction_start
     
-    # 4. Execute manipulation policy
-    policy.reset()
-    obs = env.get_observation()
+    # STEP 7: Set MANIPULATION mode (train_utils.py:1052)
+    if hasattr(predictor, 'needs_detect_mode') and predictor.needs_detect_mode():
+        from benchmark.utils.sample_utils import arm_fake_controller
+        arm_fake_controller(easy_env, "MANIPULATION")
     
+    # STEP 8: Wait for robot to stabilize (train_utils.py:1055-1057)
+    for _ in range(5):
+        ac = np.zeros(12)
+        ob_dict, r, done, info = env.step(ac)
+    
+    # Get language instruction (train_utils.py:342)
+    if hasattr(easy_env, '_ep_lang_str'):
+        lang = easy_env._ep_lang_str
+    elif hasattr(env, '_ep_lang_str'):
+        lang = env._ep_lang_str
+    else:
+        lang = ""
+    policy.start_episode(lang=lang)
+    
+    # STEP 9: Execute manipulation policy (train_utils.py:1096-1108)
     manipulation_start = time.time()
     success = False
+    # Get horizon from config (passed from JSON config in run_benchmark.py)
     horizon = config.get('horizon', 500)
     
-    for step in range(horizon):
-        # Predict action
-        action = policy.predict_action(obs)
+    for step_i in range(horizon):
+        # Get action from policy
+        ac = policy(ob=ob_dict, goal=None)
         
-        # Step environment
-        obs, reward, done, info = env.step(action)
+        # Execute action
+        ob_dict, r, done, info = env.step(ac)
+        
+        # Render if enabled
+        if render_enabled:
+            easy_env.render()
         
         # Check success
-        if info.get('success', False):
+        if info.get('is_success', {}).get('task', False):
             success = True
             break
         
@@ -133,17 +179,20 @@ def run_rollout_with_predictor(
     manipulation_time = time.time() - manipulation_start
     total_time = time.time() - start_time
     
-    # 5. Build result dictionary
+    # Get final pose
+    final_se2 = obs_to_SE2(ob_dict, algorithm_name=algo_name)
+    
+    # Build result dictionary
     result = {
         'success': success,
-        'num_steps': step + 1,
-        'initial_pose': initial_pose.tolist(),
-        'predicted_pose': predicted_pose.tolist(),
-        'nav_steps': nav_step,
+        'num_steps': step_i + 1,
+        'initial_pose': (se2_origin + target_se2_relative).tolist(),
+        'predicted_pose': (se2_origin + final_se2_relative).tolist(),
+        'nav_steps': 1,  # One teleport
         'prediction_time': prediction_time,
         'manipulation_time': manipulation_time,
         'total_time': total_time,
-        'predictor_info': predictor_info,
+        'predictor_info': pred_info,
     }
     
     return result

@@ -110,17 +110,42 @@ CUDA_VISIBLE_DEVICES=7 python scripts/collect_n2m_data.py \
   policy=diffusion \
   benchmark=collection \
   benchmark.num_valid_data=50
+
+CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
+  env.name=CloseDoubleDoor \
+  env.render=true \
+  policy=bc_transformer \
+  benchmark=collection \
+  benchmark.num_valid_data=3
 ```
 
 Output format:
 ```
-data/predictor/n2m/PnPCounterToCab_scene1_style1_{policytype}/
+data/predictor/n2m/{task}_{scene}_{style}_{policytype}/
 ├── pcl/
 │   ├── 0.pcd
 │   ├── 1.pcd
 │   └── ...
 └── meta.json  # camera info, pose with pcd_path
 ```
+
+
+Train N2M module
+```bash
+cd predictor/N2M/scripts/render
+mkdir build && cd build
+cmake .. && make -j && cd ../../../../..
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 300 --vis --num_episodes 20
+
+# debug
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 10 --vis --num_episodes 2
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ../lamp --num_poses 100 --vis --num_episodes 1
+
+scripts/render/build/fpv_render data/predictor/n2m/OpenSingleDoor_0_1_diffusion
+
+```
+
+
 
 
 ### Predictor2: Mobipi (todo)
@@ -137,23 +162,38 @@ python scripts/collect_mobipi_images.py \
 Todo
 
 
-## Run Benchmark Evaluation (todo)
+## Run Benchmark Evaluation
 
 **Basic usage:**
 ```bash
-# Using BC Transformer policy for PnPCounterToCab
-python scripts/run_benchmark.py \
-  env=PnPCounterToCab \
+# name: [CloseDrawer, PnPCounterToCab, CloseDoubleDoor, OpenSingleDoor]
+# policy: [bc_transformer, diffusion]
+
+# Using BC Transformer policy for PnPCounterToCab with blank predictor
+CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=true \
+  policy=bc_transformer \
   predictor=blank \
-  policy=robomimic_bc_pnp \
+  benchmark=evaluation \
+  benchmark.num_episodes=3
+
+# Using Diffusion policy for CloseDrawer with blank predictor
+CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  policy=diffusion \
+  predictor=blank \
+  benchmark=evaluation \
   benchmark.num_episodes=50
 
-# Using Diffusion policy for CloseDoubleDoor
-python scripts/run_benchmark.py \
-  env=CloseDoubleDoor \
-  predictor=n2m \
-  policy=robomimic_diffusion_closedoor \
-  benchmark.num_episodes=50
+# Control rendering and scene layout
+CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
+  env.name=OpenSingleDoor \
+  env.render=false \
+  env.layout_and_style_ids='[[1,2]]' \
+  policy=bc_transformer \
+  predictor=blank \
+  benchmark=evaluation
 ```
 
 ## Troubleshooting
@@ -300,7 +340,6 @@ graph TB
     F --> F3[VLA]
     
     D --> D1[RoboCasa]
-    D --> D2[MimicGen]
     
     C --> G[Utils]
     G --> G1[Navigation]

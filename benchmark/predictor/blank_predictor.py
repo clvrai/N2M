@@ -47,6 +47,7 @@ class BlankPredictor(BasePredictor):
         
         info = {
             'is_valid': True,
+            'is_pose_delta': False,  # Absolute pose (same as current_pose)
             'prediction_time': 0.0  # No computation time
         }
         
@@ -59,6 +60,14 @@ class BlankPredictor(BasePredictor):
     def load_checkpoint(self, checkpoint_path: str):
         """Load checkpoint (no-op for blank predictor)."""
         pass
+    
+    def needs_detect_mode(self) -> bool:
+        """Blank predictor doesn't need DETECT mode (no observation needed)."""
+        return False
+    
+    def needs_robot_removal(self) -> bool:
+        """Blank predictor doesn't need robot removal (no scene capture needed)."""
+        return False
     
     @property
     def name(self) -> str:

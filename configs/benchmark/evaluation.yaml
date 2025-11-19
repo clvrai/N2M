@@ -5,16 +5,18 @@ mode: evaluation
 # Number of evaluation episodes
 num_episodes: 50
 
-# Randomize initial robot base pose
-randomize_initial_pose: true
+# Task area randomization for evaluation (larger range than data collection)
+# This allows testing the policy in a wider area to evaluate generalization
+task_area_randomization:
+  x: [-1.0, 1.0]      # ±0.4m in x direction (2x data collection range)
+  y: [-1.0, 1.0]      # ±0.4m in y direction (2x data collection range)
+  theta: [-0.524, 0.524]  # ±30 degrees (0.524 radians, 2x data collection range)
 
-# Rollout parameters
-horizon: 500  # Maximum manipulation steps
-max_nav_steps: 500  # Maximum navigation steps (for iterative predictors)
+# Results directory
+results_dir: data/benchmark/results
 
-# Rendering
-render: false
-render_offscreen: true
+# Result naming: {task}_{scene}_{style}_{policytype}_{predictor}.json
+save_format: "{task}_{scene}_{style}_{policy}_{predictor}.json"
 
-# Result naming: {predictor_name}_{task}_{sceneID}_{styleID}.json
-save_format: "{predictor}_{task}_{scene}_{style}.json"
+# Note: horizon is read from JSON config (experiment.rollout.horizon or train.data[0].horizon)
+# Note: render settings are controlled by robocasa.yaml (env.render)
