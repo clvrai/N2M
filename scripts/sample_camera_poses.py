@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from n2m.utils.sample_utils import TargetHelper
 
-def save_pose_visualization(pcl, poses, furniture_pos, save_path):
+def save_pose_visualization(pcl, poses, furniture_pos, robot_se2_pose, save_path):
     # Create point cloud for the scene
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(pcl.points)
@@ -19,12 +19,52 @@ def save_pose_visualization(pcl, poses, furniture_pos, save_path):
     furniture_pcd.colors = o3d.utility.Vector3dVector([[1, 0, 0]])  # Red
     pcd = pcd + furniture_pcd
     
+    # Add camera poses as coordinate frames
     for pose in poses:
         # Get axis endpoints in world coordinates
         camera_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
         camera_frame.transform(pose)
         camera_frame_points = camera_frame.sample_points_uniformly(number_of_points=300)
         pcd = pcd + camera_frame_points
+    
+    # Add robot base pose as a blue arrow
+    if robot_se2_pose is not None:
+        z_value = 0.8  # Height to display the arrow
+        interval = 0.2  # Scale for arrow size
+        
+        # Create sphere for robot position
+        sphere = o3d.geometry.TriangleMesh.create_sphere(radius=interval/4)
+        sphere.translate([robot_se2_pose[0], robot_se2_pose[1], z_value])
+        sphere.paint_uniform_color([0, 0, 1])  # Blue
+        sphere_pcd = sphere.sample_points_uniformly(number_of_points=500)
+        pcd = pcd + sphere_pcd
+        
+        # Create arrow for robot orientation
+        arrow_length = interval * 2
+        arrow = o3d.geometry.TriangleMesh.create_arrow(
+            cylinder_radius=interval/8,
+            cone_radius=interval/6,
+            cylinder_height=arrow_length*0.7,
+            cone_height=arrow_length*0.3
+        )
+        
+        # Rotate arrow to point along x-axis first, then rotate by theta
+        R_x = np.array([
+            [0, 0, 1],
+            [0, 1, 0],
+            [-1, 0, 0]
+        ])
+        R_theta = np.array([
+            [np.cos(robot_se2_pose[2]), -np.sin(robot_se2_pose[2]), 0],
+            [np.sin(robot_se2_pose[2]), np.cos(robot_se2_pose[2]), 0],
+            [0, 0, 1]
+        ])
+        arrow.rotate(R_x, center=[0, 0, 0])
+        arrow.rotate(R_theta, center=[0, 0, 0])
+        arrow.translate([robot_se2_pose[0], robot_se2_pose[1], z_value])
+        arrow.paint_uniform_color([0, 0, 1])  # Blue
+        arrow_pcd = arrow.sample_points_uniformly(number_of_points=1000)
+        pcd = pcd + arrow_pcd
     
     # Save combined point cloud
     o3d.io.write_point_cloud(save_path, pcd)
@@ -34,6 +74,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, default="datasets/rollouts/PnPCounterToCab_BCtransformer_rollouts/PnPCounterToCab_BCtransformer_rollout_scene1/20250430230003")
     parser.add_argument("--num_poses", type=int, default=10)
+    parser.add_argument("--num_episodes", type=int, default=None, help="Number of episodes to process. If not specified, process all episodes.")
     parser.add_argument("--x_half_range", type=float, default=2)
     parser.add_argument("--y_half_range", type=float, default=2)
     parser.add_argument("--theta_half_range_deg", type=float, default=60)
@@ -46,6 +87,13 @@ if __name__ == "__main__":
         meta = json.load(f)
     episodes = meta['episodes']
     print("meta loaded")
+    
+    # Validate and filter episodes based on num_episodes parameter
+    if args.num_episodes is not None:
+        if len(episodes) < args.num_episodes:
+            raise ValueError(f"Error: The meta file contains only {len(episodes)} episodes, but {args.num_episodes} episodes were requested.")
+        episodes = episodes[:args.num_episodes]
+        print(f"Processing {args.num_episodes} episodes out of {len(meta['episodes'])} total episodes.")
 
     T_base_to_cam = meta["meta"]["T_base_to_cam"]
     camera_intrinsic = meta["meta"]["camera_intrinsic"]
@@ -92,7 +140,7 @@ if __name__ == "__main__":
             episode_camera_poses.append(camera_extrinsic.tolist())
 
         if args.vis:
-            save_pose_visualization(pcl, episode_camera_poses, object_position, os.path.join(camera_pose_vis_dir, f"{episode['id']}.pcd"))
+            save_pose_visualization(pcl, episode_camera_poses, object_position, pose, os.path.join(camera_pose_vis_dir, f"{episode['id']}.pcd"))
 
         camera_poses.append(episode_camera_poses)
         base_poses.append(episode_base_poses)
