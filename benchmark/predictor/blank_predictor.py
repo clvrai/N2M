@@ -7,60 +7,32 @@ import numpy as np
 from typing import Dict, Tuple, Optional, Any
 
 from benchmark.predictor.base import BasePredictor
-
+from benchmark.utils.collision_utils import CollisionChecker
 
 class BlankPredictor(BasePredictor):
-    """Blank baseline predictor.
+    """Blank baseline predictor. 
     
     Does not perform any prediction - simply returns current robot pose.
     This serves as a baseline to evaluate the benefit of navigation prediction.
     """
-    
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize blank predictor.
+    def __init__(self, hydra_cfg, json_config, env, unwrapped_env):
+        super().__init__()  # BasePredictor.__init__() takes no arguments
+        self.hydra_cfg = hydra_cfg
+        self.json_config = json_config
+        self.env = env
+        self.unwrapped_env = unwrapped_env
         
-        Args:
-            config: Configuration dictionary (not used for blank predictor)
-        """
-        super().__init__(config)
-    
-    def predict(
-        self, 
-        observation: Dict[str, np.ndarray],
-        current_pose: np.ndarray,
-        env_info: Optional[Dict[str, Any]] = None
-    ) -> Tuple[np.ndarray, bool, Dict[str, Any]]:
-        """Return current pose without prediction.
-        
-        Args:
-            observation: Observation dict (not used)
-            current_pose: Current robot base SE2 pose [x, y, theta]
-            env_info: Environment info (not used)
-            
-        Returns:
-            predicted_pose: Same as current_pose
-            done: Always True (one-shot)
-            info: Empty dict
-        """
+    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker):
+        """Return current pose without prediction."""
         # Simply return current pose - no prediction
-        predicted_pose = current_pose.copy()
-        
-        info = {
-            'is_valid': True,
-            'is_pose_delta': False,  # Absolute pose (same as current_pose)
-            'prediction_time': 0.0  # No computation time
+        result = {
+            'is_ego': False,
+            'se2_predicted': se2_randomized,
         }
-        
-        return predicted_pose, True, info
-    
-    def reset(self):
-        """Reset predictor state (no-op for blank predictor)."""
-        pass
-    
-    def load_checkpoint(self, checkpoint_path: str):
-        """Load checkpoint (no-op for blank predictor)."""
-        pass
-    
+        return result
+
+    # ====== overwrite base class methods ======
+
     def needs_detect_mode(self) -> bool:
         """Blank predictor doesn't need DETECT mode (no observation needed)."""
         return False

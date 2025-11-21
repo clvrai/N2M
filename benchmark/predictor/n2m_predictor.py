@@ -1,19 +1,20 @@
 """N2M predictor - predicts poses from point cloud using GMM.
 
-Extracts core N2M prediction logic.
+Wraps N2Mmodule with path resolution and point cloud capture.
 """
 
 import time
 import numpy as np
 from typing import Dict, Tuple, Optional, Any
 import torch
-import open3d as o3d
-
+from omegaconf import DictConfig
 from benchmark.predictor.base import BasePredictor
-from benchmark.utils.observation_utils import observation_to_pointcloud, get_camera_params, fix_point_cloud_size
+from n2m.module.N2Mmodule import N2Mmodule
+import os
+from robocasa.demos.kitchen_scenes import capture_depth_camera_data
+from benchmark.utils.observation_utils import pcd_global_to_local
+from benchmark.utils.sample_utils import arm_fake_controller
 from benchmark.utils.collision_utils import CollisionChecker
-from benchmark.utils.sampling_utils import sample_from_gmm, select_best_sample
-
 
 class N2MPredictor(BasePredictor):
     """N2M predictor using point cloud → GMM → sampled pose.
@@ -21,232 +22,165 @@ class N2MPredictor(BasePredictor):
     One-shot predictor that returns done=True on first call.
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, hydra_cfg: DictConfig, json_config, env, unwrapped_env):
         """Initialize N2M predictor.
         
         Args:
-            config: Configuration dictionary with:
-                - checkpoint_path: Path to N2M model checkpoint
-                - camera_names: List of camera names for observation
-                - num_points: Number of points in point cloud (default 1024)
-                - num_samples: Number of samples from GMM (default 100)
-                - use_collision_check: Whether to filter colliding samples
+            hydra_cfg: Hydra config
+            json_config: Robomimic/Robocasa config
+            env: Environment instance (step)
+            unwrapped_env: Unwrapped environment instance (forward)
+                - config_path_template: Path template for config.json with {base_dir}, {task}, {layout}, {style}, {policy}
+                - ckpt_path_template: Path template for checkpoint .pth file
+                - camera_names: List of camera names for depth observation
+            env: Environment instance (needed to extract layout/style for path construction)
         """
-        super().__init__(config)
+        super().__init__()  # Call parent class __init__
         
-        self.camera_names = config.get('camera_names', ['robot0_agentview_left'])
-        self.num_points = config.get('num_points', 1024)
-        self.num_samples = config.get('num_samples', 100)
-        self.use_collision_check = config.get('use_collision_check', True)
-        
-        # N2M model (will be loaded in load_checkpoint)
+        self.hydra_cfg = hydra_cfg
+        self.json_config = json_config
+        self.env = env
+        self.unwrapped_env = unwrapped_env
+
         self.n2m_model = None
+        self.camera_name = hydra_cfg.predictor.camera_name
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # Collision checker (built on first predict call)
-        self.collision_checker = None
+        self.load_checkpoint()
         
-    def predict(
-        self, 
-        observation: Dict[str, np.ndarray],
-        current_pose: np.ndarray,
-        env_info: Optional[Dict[str, Any]] = None
-    ) -> Tuple[np.ndarray, bool, Dict[str, Any]]:
+        
+    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker):
         """Predict target pose using N2M.
         
         Args:
-            observation: Observation dict with RGB and depth
-            current_pose: Current robot base SE2 pose [x, y, theta]
-            env_info: Environment info (contains target object position)
+            se2_initial: Initial SE2 pose of robot after reset [x, y, theta]
+            se2_randomized: Randomized SE2 pose for task area randomization [x, y, theta]
+            collision_checker: Collision checker instance
             
         Returns:
             predicted_pose: Sampled SE2 pose from GMM
             done: Always True (one-shot predictor)
-            info: Dict with GMM distribution, samples, etc.
+            info: Dict with prediction metadata
         """
-        start_time = time.time()
         
-        # Get camera parameters (cache them)
-        if not hasattr(self, '_camera_intrinsics'):
-            self._camera_intrinsics = {}
-            self._camera_extrinsics = {}
-            # Note: env needs to be passed somehow - we'll get it from observation context
-            # For now assume they're in config or we compute on-the-fly
-        
-        # 1. Generate point cloud from observation
-        # For simplicity, assume we have a helper in observation that already processed it
-        # In real usage, we'd call observation_to_pointcloud here
-        
-        # Placeholder: In actual implementation, you'd extract point cloud
-        # For now, create a simple implementation
-        point_cloud = self._observation_to_n2m_pointcloud(observation, current_pose, env_info)
-        
-        # 2. Run N2M inference: point cloud → GMM distribution
-        gmm_means, gmm_covs, gmm_weights = self._run_n2m_inference(point_cloud)
-        
-        # 3. Build collision checker if needed
-        if self.use_collision_check and self.collision_checker is None:
-            # Build from current point cloud
-            pcd_o3d = o3d.geometry.PointCloud()
-            pcd_o3d.points = o3d.utility.Vector3dVector(point_cloud[:, :3])
-            self.collision_checker = CollisionChecker(pcd_o3d)
-        
-        # 4. Sample from GMM and filter by collision
-        samples, scores = sample_from_gmm(
-            means=gmm_means,
-            covariances=gmm_covs,
-            weights=gmm_weights,
-            num_samples=self.num_samples,
-            collision_checker=self.collision_checker if self.use_collision_check else None
-        )
-        
-        # 5. Select best sample
-        if len(samples) == 0:
-            # No valid samples, return current pose
-            predicted_pose = current_pose.copy()
-            is_valid = False
-        else:
-            best_idx = select_best_sample(samples, scores, selection_mode='max_score')
-            predicted_pose = samples[best_idx]
-            is_valid = True
-        
-        prediction_time = time.time() - start_time
-        
-        # 6. Build info dict
-        info = {
-            'distribution': {
-                'means': gmm_means.tolist(),
-                'covariances': gmm_covs.tolist(),
-                'weights': gmm_weights.tolist()
-            },
-            'samples': samples.tolist() if len(samples) > 0 else [],
-            'scores': scores.tolist() if len(scores) > 0 else [],
-            'num_valid_samples': len(samples),
-            'is_valid': is_valid,
-            'prediction_time': prediction_time
+        pcd_global = capture_depth_camera_data(self.unwrapped_env, camera_name=self.camera_name)
+        pcd_global_numpy = np.concatenate([pcd_global.points, pcd_global.colors], axis=1)
+
+        # Apply robot_centric transformation if needed
+        pcd_ego_numpy = pcd_global_to_local(pcd_global_numpy, se2_randomized)
+
+        se2_predicted_ego, extra_info = self.n2m_model.predict(pcd_ego_numpy, collision_checker=collision_checker)
+
+        # Simply return current pose - no prediction
+        result = {
+            'is_ego': True,
+            'se2_predicted': se2_predicted_ego,
+            'extra_info': extra_info
         }
-        
-        return predicted_pose, True, info
-    
-    def _observation_to_n2m_pointcloud(
-        self, 
-        observation: Dict[str, np.ndarray],
-        current_pose: np.ndarray,
-        env_info: Optional[Dict[str, Any]]
-    ) -> np.ndarray:
-        """Convert observation to N2M input format point cloud.
-        
-        Returns:
-            point_cloud: (N, 6) point cloud [xyz, rgb] in robot frame
-        """
-        # Use utility function to generate point cloud from RGB-D
-        from benchmark.env.env_utils import get_env_observation_with_depth
-        
-        # Get camera parameters (cached)
-        if not hasattr(self, '_camera_params_cache'):
-            from benchmark.utils.observation_utils import get_camera_params
-            # Note: env is not directly accessible here
-            # In practice, camera params should be passed in config or env_info
-            # For now, use default RoboCasa camera params
-            self._camera_params_cache = {}
-        
-        # Convert RGB-D to point cloud
-        pcd = observation_to_pointcloud(
-            observation=observation,
-            camera_names=self.camera_names,
-            camera_intrinsics=self._camera_intrinsics,
-            camera_extrinsics=self._camera_extrinsics,
-            num_points=self.num_points
-        )
-        
-        # Convert Open3D point cloud to numpy array [xyz, rgb]
-        points = np.asarray(pcd.points)
-        colors = np.asarray(pcd.colors)
-        point_cloud = np.concatenate([points, colors], axis=1).astype(np.float32)
-        
-        # Ensure correct size
-        point_cloud = fix_point_cloud_size(point_cloud, self.num_points)
-        
-        return point_cloud
-    
-    def _run_n2m_inference(self, point_cloud: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """Run N2M model inference.
-        
-        Args:
-            point_cloud: (N, 6) point cloud [xyz, rgb]
-            
-        Returns:
-            means: (K, 3) GMM means [x, y, theta]
-            covariances: (K, 3, 3) GMM covariances
-            weights: (K,) GMM weights
-        """
-        if self.n2m_model is None:
-            raise RuntimeError("N2M model not loaded. Call load_checkpoint() first.")
-        
-        # N2M model expects point cloud input
-        # The model outputs GMM distribution parameters
-        # Use the N2Mmodule's predict method
-        with torch.no_grad():
-            # N2Mmodule.predict() expects numpy array and returns SE2 pose + validity
-            # But we need the GMM distribution, so we access internal methods
-            output_dict = self.n2m_model.forward_inference(point_cloud)
-        
-        # Extract GMM parameters from output
-        # Based on N2M model structure: outputs means, log_vars, weights
-        means = output_dict['means'].cpu().numpy()  # (K, 3) for SE2
-        log_vars = output_dict['log_vars'].cpu().numpy()  # (K, 3)
-        weights = output_dict['weights'].cpu().numpy()  # (K,)
-        
-        # Convert log_vars to covariance matrices (diagonal)
-        variances = np.exp(log_vars)
-        covs = np.array([np.diag(var) for var in variances])
-        
-        return means, covs, weights
-    
+        return result
+
     def reset(self):
         """Reset predictor state."""
         # Collision checker can be reused across episodes
         pass
     
-    def load_checkpoint(self, checkpoint_path: str):
-        """Load N2M model checkpoint.
+    def needs_detect_mode(self) -> bool:
+        """N2M needs DETECT mode to position robot-mounted camera correctly.
+        
+        Following train_utils.py:909, N2M uses robot0_front_depth camera
+        which requires the robot arm to be in DETECT pose.
+        """
+        return True
+    
+    def needs_robot_removal(self) -> bool:
+        """N2M doesn't need robot removal during evaluation.
+        
+        Unlike data collection (which moves robot away to capture global scene),
+        evaluation uses the robot's current view from robot0_front_depth.
+        """
+        return False
+    
+    def _resolve_path_template(self, path_template: str, task: str, layout: int, style: int, policy: str) -> str:
+        """Resolve path template with base_dir/task/layout/style/policy placeholders.
         
         Args:
-            checkpoint_path: Path to N2M checkpoint or config
+            path_template: Path string with {base_dir}, {task}, {layout}, {style}, {policy} placeholders
+            task: Task name (e.g., "OpenSingleDoor")
+            layout: Layout ID (e.g., 0)
+            style: Style ID (e.g., 1)
+            policy: Policy name (e.g., "diffusion")
+            
+        Returns:
+            resolved_path: Path with placeholders replaced
         """
-        # Import N2M module
-        try:
-            from n2m.module import N2Mmodule
-        except ImportError:
-            raise ImportError(
-                "N2M module not found. Make sure predictor/N2M is installed: "
-                "pip install -e predictor/N2M"
-            )
+        resolved = path_template.format(
+            base_dir=self.base_dir,
+            task=task,
+            layout=layout,
+            style=style,
+            policy=policy
+        )
+        return resolved
+    
+    def load_checkpoint(self):
+        """Load N2M model checkpoint using path templates from config."""
         
-        # Load model using N2Mmodule
-        # N2Mmodule expects a config dict, not direct checkpoint path
-        # Load config if checkpoint_path is a JSON config
+        base_dir = self.hydra_cfg.get('base_dir', 'data/predictor/n2m')
+        task = self.hydra_cfg.env.name
+        policy = self.hydra_cfg.policy.name
+        config_path_template = self.hydra_cfg.predictor.config_path_template
+        ckpt_path_template = self.hydra_cfg.predictor.ckpt_path_template
+        layout = self.unwrapped_env.layout_id
+        style = self.unwrapped_env.style_id
+        
+        print(f"\n============= N2M Predictor Path Setup =============")
+        config_path = config_path_template.format(
+            base_dir=base_dir,
+            task=task,
+            layout=layout,
+            style=style,
+            policy=policy
+        )
+        ckpt_path = ckpt_path_template.format(
+            base_dir=base_dir,
+            task=task,
+            layout=layout,
+            style=style,
+            policy=policy
+        )
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"N2M config not found: {config_path}")
+        if not os.path.exists(ckpt_path):
+            raise FileNotFoundError(f"N2M checkpoint not found: {ckpt_path}")
+
+        print(f"[predictor] Resolved config_path: {config_path}")
+        print(f"[predictor] Resolved ckpt_path: {ckpt_path}")
+        
+        # Load config from JSON
         import json
-        from pathlib import Path
+        with open(config_path, 'r') as f:
+            full_config = json.load(f)
         
-        checkpoint_path = Path(checkpoint_path)
-        if checkpoint_path.suffix == '.json':
-            # Load from config
-            with open(checkpoint_path, 'r') as f:
-                n2m_config = json.load(f)
-            self.n2m_model = N2Mmodule(n2m_config)
-        else:
-            # Assume it's a direct checkpoint file
-            # Create default config and load weights
-            n2m_config = {
-                'checkpoint_path': str(checkpoint_path),
-                'device': str(self.device),
-                'num_modes': 5
-            }
-            self.n2m_model = N2Mmodule(n2m_config)
+        n2m_config = {
+            "n2mnet": full_config["n2mnet"],
+            "ckpt": str(ckpt_path)  # Set checkpoint path
+        }
+
+        # Add preprocess and postprocess settings from n2mmodule section
+        if "n2mmodule" in full_config:
+            n2m_module_cfg = full_config["n2mmodule"]
+            if "preprocess" in n2m_module_cfg:
+                n2m_config["preprocess"] = n2m_module_cfg["preprocess"]
+            if "postprocess" in n2m_module_cfg:
+                n2m_config["postprocess"] = n2m_module_cfg["postprocess"]
         
-        self.n2m_model.to(self.device)
-        self.n2m_model.eval()
+        # Initialize N2M module with config
+        # Following reference: 1_data_collection_with_rollout.py line 375
+        self.n2m_model = N2Mmodule(n2m_config)
+        self.n2m_model.model.to(self.device)  # N2Mmodule has .model attribute
+        self.n2m_model.model.eval()
+        
+        print(f"[predictor] N2M model loaded successfully\n")
     
     @property
     def name(self) -> str:

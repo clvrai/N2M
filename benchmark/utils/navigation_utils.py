@@ -8,29 +8,36 @@ import numpy as np
 from benchmark.utils.transform_utils import qpos_command_wrapper, obs_to_SE2
 
 
-def teleport_robot_to_pose(env, target_pose: np.ndarray):
+def teleport_robot_to_target(unwrapped_env, se2_target: np.ndarray, se2_initial: np.ndarray = np.array([0.0, 0.0, 0.0])):
     """Teleport robot to target pose using Mujoco low-level API.
-    
-    NO PID control - directly set qpos and step simulator.
-    
-    Args:
-        env: RoboCasa environment
-        target_pose: SE2 pose [x, y, theta]
+        robocasa use se2_initial as their coordinate origin (position and direction)
+        both se2_target and se2_initial are in the global coordinate system
+        need first transform se2_target to the local coordinate system, then set the qpos
     """
-    # Get unwrapped environment
-    unwrapped_env = env.unwrapped if hasattr(env, 'unwrapped') else env.env
     robot = unwrapped_env.robots[0]
+
+    offset = 0.21
+    se2_initial = se2_initial - offset * np.array([np.cos(se2_initial[2]), np.sin(se2_initial[2]), 0])
+    se2_target = se2_target - offset * np.array([np.cos(se2_target[2]), np.sin(se2_target[2]), 0])
+
+    # Transform se2_target from global frame to se2_initial's local frame
+    # SE2 transformation: rotate translation by -theta_initial and subtract
+    dx_global = se2_target[0] - se2_initial[0]
+    dy_global = se2_target[1] - se2_initial[1]
+    theta_initial = se2_initial[2]
     
-    # Set base joint positions (wrap command for mujoco x-axis flip)
-    unwrapped_env.sim.data.qpos[robot._ref_base_joint_pos_indexes] = \
-        qpos_command_wrapper(target_pose)
+    # Rotate global translation to local frame
+    cos_theta = np.cos(theta_initial)
+    sin_theta = np.sin(theta_initial)
+    dx_local = dx_global * cos_theta + dy_global * sin_theta
+    dy_local = -dx_global * sin_theta + dy_global * cos_theta
+    dtheta_local = se2_target[2] - se2_initial[2]
+    
+    relative_se2 = np.array([dx_local, dy_local, dtheta_local])
+    unwrapped_env.sim.data.qpos[robot._ref_base_joint_pos_indexes] = relative_se2
     
     # Forward simulate to update state
     unwrapped_env.sim.forward()
-    
-    # Step environment with zero action to update observations
-    zero_action = np.zeros(env.action_dim)
-    env.step(zero_action)
 
 
 def get_current_robot_pose(env) -> np.ndarray:
@@ -44,13 +51,3 @@ def get_current_robot_pose(env) -> np.ndarray:
     """
     obs = env.get_observation()
     return obs_to_SE2(obs)
-
-
-def move_robot_away(env, far_pose: np.ndarray = np.array([0.0, -50.0, 0.0])):
-    """Move robot to a far-away position (useful for data collection).
-    
-    Args:
-        env: RoboCasa environment
-        far_pose: Far away SE2 pose (default [0.0, -50.0, 0.0])
-    """
-    teleport_robot_to_pose(env, far_pose)

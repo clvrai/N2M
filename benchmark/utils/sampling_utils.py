@@ -11,36 +11,80 @@ from benchmark.utils.collision_utils import CollisionChecker
 def sample_collision_free_pose(
     collision_checker: CollisionChecker,
     pose_range: Dict[str, Tuple[float, float]],
-    origin_pose: np.ndarray = np.array([0.0, 0.0, 0.0]),
-    max_tries: int = 100
+    se2_initial: np.ndarray = np.array([0.0, 0.0, 0.0]),
+    max_tries: int = 100,
+    visualize: bool = False,
+    save_path: Optional[str] = None,
+    object_pos: Optional[np.ndarray] = None,
+    check_visibility: bool = False,
+    check_boundary: bool = True
 ) -> Optional[np.ndarray]:
-    """Sample a collision-free SE2 pose.
+    """Sample a collision-free SE2 pose with optional visibility and boundary checks.
+    
+    Following reference: sample_utils.py get_random_target_se2_with_visibility_check (line 680-699)
     
     Args:
         collision_checker: CollisionChecker instance
         pose_range: Dictionary with 'x', 'y', 'theta' ranges
             Example: {'x': [-0.5, 0.5], 'y': [-0.5, 0.5], 'theta': [-np.pi, np.pi]}
-        origin_pose: Origin pose to add to sampled delta
+        se2_initial: Origin pose to add to sampled delta
         max_tries: Maximum number of sampling attempts
+        visualize: Whether to visualize the sampled pose
+        save_path: Optional path to save visualization (e.g., 'debug/collision_check.png')
+        object_pos: Object position [x, y] or [x, y, z] for visibility check
+        check_visibility: Whether to check if object is visible from camera
+        check_boundary: Whether to check if pose is within point cloud boundaries
         
     Returns:
         Collision-free pose, or None if failed after max_tries
     """
-    for _ in range(max_tries):
+    for attempt in range(max_tries):
         # Sample random delta
         dx = np.random.uniform(*pose_range['x'])
         dy = np.random.uniform(*pose_range['y'])
         dtheta = np.random.uniform(*pose_range['theta'])
         
         # Compute absolute pose
-        pose = origin_pose + np.array([dx, dy, dtheta])
+        pose = se2_initial + np.array([dx, dy, dtheta])
         
         # Check collision (following reference implementation semantics)
         # check_collision returns True if NO collision (pose is valid)
-        if collision_checker.check_collision(pose):
-            return pose
+        collision_free = collision_checker.check_collision(pose)
+        if not collision_free:
+            continue
+        
+        # Check visibility if requested and object position provided (following reference line 690)
+        if check_visibility and object_pos is not None:
+            visible = collision_checker.check_object_visibility(pose, object_pos)
+            if not visible:
+                continue
+        
+        # Check boundary if requested (following reference line 690)
+        if check_boundary:
+            x_range = (collision_checker.pcd_min_value[0], collision_checker.pcd_max_value[0])
+            y_range = (collision_checker.pcd_min_value[1], collision_checker.pcd_max_value[1])
+            within_boundary = collision_checker.check_boundary(pose, x_range, y_range)
+            if not within_boundary:
+                continue
+        
+        # All checks passed!
+        # Visualize if requested (only save, don't show to avoid blocking)
+        if visualize and save_path is not None:
+            collision_checker.visualize_occupancy_and_rectangle(
+                se2_initial=se2_initial,
+                sampled_pose=pose,
+                pose_range=pose_range,
+                save_path=save_path,
+                show_plot=False  # Don't show plot to avoid blocking
+            )
+        
+        # Return delta (relative pose), not absolute pose
+        # Following reference: get_random_target_se2_with_reachability_check returns se2_delta
+        # delta_pose = pose - se2_initial
+        return pose
     
     # Failed to sample collision-free pose
+    print(f"Warning: Failed to sample collision-free pose after {max_tries} attempts")
     return None
 
 

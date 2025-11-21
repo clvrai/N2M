@@ -15,92 +15,20 @@ class BasePredictor(ABC):
     The benchmark will loop calling predict() until done=True is returned.
     """
     
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize predictor.
-        
-        Args:
-            config: Predictor configuration dictionary
-        """
-        self.config = config
-        
+    def __init__(self):
+        """Initialize predictor."""
+
     @abstractmethod
-    def predict(
-        self, 
-        observation: Dict[str, np.ndarray],
-        current_pose: np.ndarray,
-        env_info: Optional[Dict[str, Any]] = None
-    ) -> Tuple[np.ndarray, bool, Dict[str, Any]]:
-        """Predict robot base target pose or pose increment.
-        
-        Args:
-            observation: Observation dict containing RGB, depth, etc.
-            current_pose: Current robot base SE2 pose [x, y, theta]
-            env_info: Additional environment information (e.g., target object position)
-            
-        Returns:
-            predicted_pose: shape (3,) pose [x, y, theta]
-                - One-shot predictor: directly return final target pose
-                - Iterative predictor: can return pose delta or next step pose
-            done: Whether prediction is complete
-                - True: prediction complete, can start manipulation
-                - False: need to continue calling predict()
-            info: Dictionary with additional information:
-                - 'distribution': predicted distribution (for N2M)
-                - 'score': prediction confidence (for mobipi)
-                - 'samples': sampled candidate poses (for N2M)
-                - 'is_valid': whether prediction is valid
-                - 'control': control command (for lelan) [linear_x, angular_z]
-                - 'is_pose_delta': bool, True if returned pose is a delta
-                - 'prediction_time': prediction time in seconds
-        """
-        pass
-    
-    @abstractmethod
-    def reset(self):
-        """Reset predictor state.
-        
-        Called at the beginning of each episode:
-        - One-shot predictor: can be no-op
-        - Iterative predictor: reset internal counters, states, etc.
-        """
-        pass
-    
-    @abstractmethod
-    def load_checkpoint(self, checkpoint_path: str):
-        """Load pretrained model checkpoint.
-        
-        Args:
-            checkpoint_path: Path to checkpoint file
-        """
+    def predict(self):
+        """Predict robot base target pose or pose increment."""
         pass
     
     def needs_detect_mode(self) -> bool:
-        """Whether predictor needs DETECT mode (robot-mounted camera).
-        
-        Returns:
-            True if predictor needs DETECT mode (e.g., for robot-mounted camera capture)
-            False if predictor doesn't need DETECT mode (default)
-        """
+        """Whether predictor needs DETECT mode (robot-mounted camera)."""
         return False
     
     def needs_robot_removal(self) -> bool:
-        """Whether predictor needs robot to be moved away for scene capture.
-        
-        During benchmark evaluation, most predictors use pre-trained models and don't
-        need robot removal. This is only needed for predictors that do live scene
-        reconstruction (e.g., mobipi with 3DGS).
-        
-        Returns:
-            True if predictor needs robot removal (e.g., mobipi for live 3DGS)
-            False if predictor doesn't need robot removal (default for most predictors)
-            
-        Examples:
-            - blank: False (no scene observation needed)
-            - n2m: False (uses pre-trained model in benchmark)
-            - lelan: False (iterative navigation, no scene capture)
-            - reachability: False (rule-based, no scene capture)
-            - mobipi: True (needs live 3DGS reconstruction)
-        """
+        """Whether predictor needs robot to be moved away for scene capture."""
         return False
     
     @property

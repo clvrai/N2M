@@ -105,8 +105,8 @@ def main(cfg: DictConfig):
         render_enabled = json_config.get('experiment', {}).get('render', False)
         print(f"[INFO] Using render setting from JSON config: {render_enabled}")
     
-    # Get depth camera names from benchmark config
-    depth_cameras = cfg.benchmark.depth_cameras
+    # Get depth camera names from env config
+    depth_cameras = cfg.env.depth_cameras
     
     # Load manipulation policy (following reference implementation)
     print("\n============= Loading Manipulation Policy =============")
@@ -211,6 +211,8 @@ def main(cfg: DictConfig):
             
             # Render to screen if enabled
             if render_enabled and hasattr(unwrapped_env, 'viewer') and unwrapped_env.viewer is not None:
+                # Set camera to free camera view (camera_id=-1) for better visualization
+                unwrapped_env.viewer.set_camera(camera_id=-1)
                 unwrapped_env.render()
                 env.step(ac)
             
@@ -331,7 +333,7 @@ def main(cfg: DictConfig):
                     pcd=pcd,
                     episode_id=successful_episodes,
                     target_pose=target_pose_abs,
-                    depth_cameras=depth_cameras,
+                    detect_camera="robot0_front_depth",
                     env=env,
                     algo_name=config.algo_name
                 )

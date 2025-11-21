@@ -27,15 +27,21 @@ from benchmark.utils.transform_utils import qpos_command_wrapper
 from benchmark.utils.obs_utils import obs_to_SE2
 from benchmark.predictor.base import BasePredictor
 from robomimic.algo import RolloutPolicy
-
+from benchmark.utils.navigation_utils import teleport_robot_to_target
+from robomimic.envs.wrappers import FrameStackWrapper
+from robocasa.environments.kitchen.single_stage.kitchen_doors import OpenSingleDoor
+from benchmark.utils.sample_utils import arm_fake_controller
+from benchmark.utils.collision_utils import CollisionChecker
 
 def run_rollout_with_predictor(
-    env,
+    env: FrameStackWrapper,
     policy: RolloutPolicy,
     predictor: BasePredictor,
     config: Dict[str, Any],
+    collision_checker: CollisionChecker,
     algo_name: str,
-    initial_pose: Optional[np.ndarray] = None
+    se2_initial: np.ndarray,    # also the origin of the robot coordinate system in global coordinate system
+    se2_randomized: Optional[np.ndarray] = None
 ) -> Dict[str, Any]:
     """Execute one episode rollout with predictor and policy.
     
@@ -47,111 +53,94 @@ def run_rollout_with_predictor(
         predictor: Navigation predictor
         config: Rollout configuration
         algo_name: Algorithm name ('act', 'bc', 'diffusion', etc.)
-        initial_pose: Optional initial randomized pose
+        se2_initial: Initial SE2 pose of robot after reset [x, y, theta]
+        se2_randomized: Optional randomized SE2 pose for task area randomization [x, y, theta]
         
     Returns:
         result: Dictionary with rollout statistics
     """
     start_time = time.time()
     
-    # STEP 1: Reset environment (train_utils.py:841)
-    ob_dict = env.reset()
-    
     # Get unwrapped env (train_utils.py:845-849)
+    unwrapped_env: OpenSingleDoor 
+
     is_act_policy = algo_name == "act"
     if is_act_policy:
-        easy_env = env.env
+        unwrapped_env = env.env
     else:
-        easy_env = env.env.env
-    easy_robot = easy_env.robots[0]
+        unwrapped_env = env.env.env
+    robot = unwrapped_env.robots[0]
     
-    # Get SE2 origin (train_utils.py:850)
-    se2_origin = obs_to_SE2(ob_dict, algorithm_name=algo_name)
     ac = np.zeros(12)
     
     # Optional: render if enabled
     render_enabled = config.get('render', False)
     if render_enabled:
-        easy_env.render()
+        unwrapped_env.render()
+        unwrapped_env.viewer.viewer.cam.type = 0
         env.step(ac)
+
     
-    # STEP 2: Set DETECT mode for robot-mounted camera (train_utils.py:909)
-    # Only if predictor needs it (e.g., not for blank predictor)
-    if hasattr(predictor, 'needs_detect_mode') and predictor.needs_detect_mode():
-        from benchmark.utils.sample_utils import arm_fake_controller
-        arm_fake_controller(easy_env, "DETECT")
+    # if hasattr(predictor, 'needs_detect_mode') and predictor.needs_detect_mode():
+    #     from benchmark.utils.sample_utils import arm_fake_controller
+    #     arm_fake_controller(unwrapped_env, "DETECT")
     
-    # STEP 3: Move robot away to capture scene (train_utils.py:862 or 917)
-    # Only move robot if predictor needs it (e.g., mobipi for 3DGS)
-    # Blank predictor doesn't need this step
-    if hasattr(predictor, 'needs_robot_removal') and predictor.needs_robot_removal():
-        easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(np.array([0.0, -50.0, 0.0]))
-        easy_env.sim.forward()
+    # if hasattr(predictor, 'needs_robot_removal') and predictor.needs_robot_removal():
+    #     teleport_robot_to_target(unwrapped_env, np.array([20.0, 0.0, 0.0]), se2_initial)
+    #     ob_dict, _, _, _ = env.step(ac)
+
+    
+    # STEP 1: move to sampled pose se2_randomized
+    teleport_robot_to_target(unwrapped_env, se2_randomized, se2_initial)
+    ob_dict, _, _, _ = env.step(ac)
+
+    # STEP 2: move to sampled pose se2_randomized
+    arm_fake_controller(unwrapped_env, "DETECT")
+    prediction_start = time.time()
+    result_dict = predictor.predict(
+        se2_initial =  se2_initial,
+        se2_randomized = se2_randomized,
+        collision_checker=collision_checker
+    )
+    prediction_time = time.time() - prediction_start
+
+    # Handle pose delta vs absolute pose
+    if result_dict['is_ego']:
+        # convert to global coordinates
+        se2_predicted = result_dict['se2_predicted']
+        global_se2_predicted = np.zeros(3)
+        global_se2_predicted[0] = se2_randomized[0] + se2_predicted[0] * np.cos(se2_randomized[2]) - se2_predicted[1] * np.sin(se2_randomized[2])
+        global_se2_predicted[1] = se2_randomized[1] + se2_predicted[0] * np.sin(se2_randomized[2]) + se2_predicted[1] * np.cos(se2_randomized[2])
+        global_se2_predicted[2] = se2_randomized[2] + se2_predicted[2]
+        se2_predicted = global_se2_predicted
+    else:
+        se2_predicted = result_dict['se2_predicted']
+    
+    print("[Rollout-summary-start]========================")
+    print("Prediction time: {:.2f} s".format(prediction_time))
+    print("initial pose:\t", se2_initial)
+    print("randomized pose:\t", se2_randomized)
+    print("predicted pose:\t", se2_predicted)
+    print("[Rollout-summary-end]========================")
+
+    # STEP 3: teleport to predicted region
+    teleport_robot_to_target(unwrapped_env, se2_predicted, se2_initial)
+    ob_dict, _, _, _ = env.step(ac)
+    arm_fake_controller(unwrapped_env, "MANIPULATION")  # switch to manipulation mode.
+    for _ in range(10):     # flush the observation buffer
+        ac = np.zeros(12)
         ob_dict, _, _, _ = env.step(ac)
     
-    # STEP 4: Capture point cloud / observation for predictor (train_utils.py:880-887 or 921-927)
-    # The predictor will handle this internally based on its needs
-    
-    # STEP 5: Determine initial navigation pose if randomizing (train_utils.py:930-936)
-    prediction_start = time.time()
-    
-    if initial_pose is not None:
-        # Use randomized initial pose from task_area_randomization
-        target_se2_relative = initial_pose
-    else:
-        # Start from origin (0,0,0)
-        target_se2_relative = np.array([0.0, 0.0, 0.0])
-    
-    # Teleport to initial pose
-    easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(target_se2_relative)
-    easy_env.sim.forward()
-    ob_dict, _, _, _ = env.step(ac)
-    
-    # STEP 6: Call predictor to get target pose (train_utils.py:938-1050)
-    # Get current SE2 pose after moving to initial pose
-    current_se2 = obs_to_SE2(ob_dict, algorithm_name=algo_name)
-    
-    # Call predictor
-    predictor.reset()
-    predicted_pose, done, pred_info = predictor.predict(
-        observation=ob_dict,
-        current_pose=current_se2,
-        env_info={'env': easy_env, 'se2_origin': se2_origin}
-    )
-    
-    # Handle pose delta vs absolute pose
-    if pred_info.get('is_pose_delta', False):
-        final_se2_relative = current_se2 - se2_origin + predicted_pose
-    else:
-        final_se2_relative = predicted_pose - se2_origin
-    
-    # Teleport to predicted pose (train_utils.py:1047-1050)
-    easy_env.sim.data.qpos[easy_robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(final_se2_relative)
-    easy_env.sim.forward()
-    ob_dict, _, _, _ = env.step(ac)
-    
-    prediction_time = time.time() - prediction_start
-    
-    # STEP 7: Set MANIPULATION mode (train_utils.py:1052)
-    if hasattr(predictor, 'needs_detect_mode') and predictor.needs_detect_mode():
-        from benchmark.utils.sample_utils import arm_fake_controller
-        arm_fake_controller(easy_env, "MANIPULATION")
-    
-    # STEP 8: Wait for robot to stabilize (train_utils.py:1055-1057)
-    for _ in range(5):
-        ac = np.zeros(12)
-        ob_dict, r, done, info = env.step(ac)
-    
+    # STEP 4: call manipulation policy
     # Get language instruction (train_utils.py:342)
-    if hasattr(easy_env, '_ep_lang_str'):
-        lang = easy_env._ep_lang_str
+    if hasattr(unwrapped_env, '_ep_lang_str'):
+        lang = unwrapped_env._ep_lang_str
     elif hasattr(env, '_ep_lang_str'):
         lang = env._ep_lang_str
     else:
         lang = ""
     policy.start_episode(lang=lang)
     
-    # STEP 9: Execute manipulation policy (train_utils.py:1096-1108)
     manipulation_start = time.time()
     success = False
     # Get horizon from config (passed from JSON config in run_benchmark.py)
@@ -166,7 +155,7 @@ def run_rollout_with_predictor(
         
         # Render if enabled
         if render_enabled:
-            easy_env.render()
+            unwrapped_env.render()
         
         # Check success
         if info.get('is_success', {}).get('task', False):
@@ -177,22 +166,18 @@ def run_rollout_with_predictor(
             break
     
     manipulation_time = time.time() - manipulation_start
-    total_time = time.time() - start_time
     
-    # Get final pose
-    final_se2 = obs_to_SE2(ob_dict, algorithm_name=algo_name)
-    
-    # Build result dictionary
     result = {
         'success': success,
         'num_steps': step_i + 1,
-        'initial_pose': (se2_origin + target_se2_relative).tolist(),
-        'predicted_pose': (se2_origin + final_se2_relative).tolist(),
-        'nav_steps': 1,  # One teleport
         'prediction_time': prediction_time,
         'manipulation_time': manipulation_time,
-        'total_time': total_time,
-        'predictor_info': pred_info,
+        'pose_info': {
+            "se2_initial": se2_initial.tolist(),
+            "se2_randomized": se2_randomized.tolist(),
+            "se2_predicted": se2_predicted.tolist(),
+        },
+        'extra_info': result_dict['extra_info'] if 'extra_info' in result_dict else None
     }
     
     return result

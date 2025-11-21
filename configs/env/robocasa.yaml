@@ -9,7 +9,18 @@ name: ???
 # All environment configuration (env_meta_update_dict, observation, etc.) is in this JSON
 json_config_path: ${paths.root}/configs/env/configs/${env.name}.json
 
+
+# Scene depth cameras to filter collision free poses and also for n2m data collection
+# These are fixed scene cameras (depth_camera1-5), not robot-mounted cameras
+depth_cameras:
+  - depth_camera1
+  - depth_camera2
+  - depth_camera3
+  - depth_camera4
+  - depth_camera5
+
+
 # Runtime environment settings (override JSON config)
 # These settings take precedence over values in the JSON config
 render: false  # Whether to render on-screen (for visualization)
-layout_and_style_ids: [[0, 1]]  # Scene layout and style combinations
+layout_and_style_ids: [[0,1]]  # Scene layout and style combinations

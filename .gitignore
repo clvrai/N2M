@@ -1,6 +1,8 @@
 # Data directory (unified log storage)
 data/
 data
+debug*
+results
 
 # Legacy directories
 datasets

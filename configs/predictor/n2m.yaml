@@ -1,21 +1,16 @@
 # N2M predictor configuration
+# Path templates use Python str.format() placeholders: {task}, {layout}, {style}, {policy}
+# These will be resolved at runtime using environment metadata
 
 name: n2m
 type: n2m
 
-# Path to N2M checkpoint
-checkpoint_path: ${paths.predictor_data.n2m}/n2m_model.ckpt
+# Base directory for N2M predictor data
+base_dir: ${paths.predictor_data.n2m}
 
-# Camera names for point cloud generation
-camera_names:
-  - robot0_agentview_left
-  - robot0_eye_in_hand
+# Path templates
+config_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}/training/config.json"
+ckpt_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}/training/ckpts/best_model.pth"
 
-# Point cloud size
-num_points: 1024
-
-# GMM sampling
-num_samples: 100
-
-# Collision checking
-use_collision_check: true
+# Camera names for depth point cloud generation
+camera_name: robot0_front_depth

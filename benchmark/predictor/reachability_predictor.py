@@ -28,20 +28,25 @@ class ReachabilityPredictor(BasePredictor):
     This is an iterative predictor - may need multiple predict() calls.
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, hydra_cfg, json_config, env, unwrapped_env):
         """Initialize reachability predictor.
         
         Args:
-            config: Configuration dictionary with:
-                - max_sample_tries: Maximum number of sampling attempts
-                - ik_solver: IK solver type ('jacobian' or 'analytical')
-                - reach_distance_threshold: Maximum distance from base to object
+            hydra_cfg: Hydra config
+            json_config: Robomimic/Robocasa config
+            env: Environment instance (step)
+            unwrapped_env: Unwrapped environment instance (forward)
         """
-        super().__init__(config)
+        super().__init__()  # BasePredictor.__init__() takes no arguments
         
-        self.max_sample_tries = config.get('max_sample_tries', 100)
-        self.ik_solver = config.get('ik_solver', 'jacobian')
-        self.reach_distance_threshold = config.get('reach_distance_threshold', 0.8)
+        self.hydra_cfg = hydra_cfg
+        self.json_config = json_config
+        self.env = env
+        self.unwrapped_env = unwrapped_env
+        
+        self.max_sample_tries = hydra_cfg.get('max_sample_tries', 100)
+        self.ik_solver = hydra_cfg.get('ik_solver', 'jacobian')
+        self.reach_distance_threshold = hydra_cfg.get('reach_distance_threshold', 0.8)
         
         # Internal state for iterative sampling
         self.sample_count = 0

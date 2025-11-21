@@ -4,6 +4,44 @@ import numpy as np
 import matplotlib.transforms as transforms
 import open3d as o3d
 
+
+def arm_fake_controller(unwrapped_env, mode):
+    """Move robot arm to preset position for different modes.
+    
+    Args:
+        unwrapped_env: Environment instance (should be unwrapped to access sim)
+        mode: Either "DETECT" or "MANIPULATION"
+            - DETECT: Move arm to position for robot-mounted camera capture
+            - MANIPULATION: Move arm back to initial manipulation pose
+    """
+    maximum_step = 0.05
+    threshold = 0.01
+    
+    # Define preset joint positions for different modes
+    DETECT_POS = np.array([0.00748372, -1.28215526, -0.03359372, -1.71793475, -0.01200928, 1.37912621, 0.75347592])
+    MANIPULATION_POS = np.array(unwrapped_env.robots[0].init_qpos)
+    
+    # Set target based on mode
+    if mode == "DETECT":
+        target = DETECT_POS
+        print("[arm_fake_controller] Moving arm to DETECT position")
+    elif mode == "MANIPULATION":
+        target = MANIPULATION_POS
+        print("[arm_fake_controller] Moving arm to MANIPULATION position")
+    else:
+        raise ValueError(f"Invalid mode: {mode}. Must be either 'DETECT' or 'MANIPULATION'")
+    
+    # Move arm to target position with smooth control
+    while True:
+        curr_arm_joint_pos = unwrapped_env.sim.data.qpos[unwrapped_env.robots[0]._ref_arm_joint_pos_indexes]
+        arm_joint_pos_error = target - curr_arm_joint_pos
+        next_arm_joint_pos = curr_arm_joint_pos + np.clip(arm_joint_pos_error, -maximum_step, maximum_step)
+        unwrapped_env.sim.data.qpos[unwrapped_env.robots[0]._ref_arm_joint_pos_indexes] = next_arm_joint_pos
+        unwrapped_env.sim.forward()
+        unwrapped_env.step(np.zeros(12))
+        if np.all(np.abs(arm_joint_pos_error) < threshold):
+            break
+
 ##################################################
 # memo for previous version
 ##################################################

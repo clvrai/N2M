@@ -189,3 +189,17 @@ def fix_point_cloud_size(
         new_pcd.colors = o3d.utility.Vector3dVector(new_colors)
         
         return new_pcd
+
+def rotate_points_xy(points, angle):
+    rotation_matrix = np.array([[np.cos(angle), -np.sin(angle), 0],
+                                [np.sin(angle), np.cos(angle), 0],
+                                [0, 0, 1]])
+    return points @ rotation_matrix
+
+def pcd_global_to_local(point_cloud_global, se2_local):
+    '''project global point cloud into se2 coordinate'''
+    point_cloud_local = point_cloud_global.copy()
+    se2_randomized = [-se2_local[0], -se2_local[1], se2_local[2]]
+    point_cloud_local[:, :3] = point_cloud_local[:, :3] + np.array([se2_randomized[0], se2_randomized[1], 0])
+    point_cloud_local[:, :3] = rotate_points_xy(point_cloud_local[:, :3], se2_randomized[2])
+    return point_cloud_local

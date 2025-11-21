@@ -101,16 +101,23 @@ Collect Policy rollout for N2M training
 # policy: [bc_transformer, diffusion]
 CUDA_VISIBLE_DEVICES=6 python scripts/collect_n2m_data.py \
   env.name=OpenSingleDoor \
-  policy=diffusion \
+  policy=bc_transformer \
   benchmark=collection \
   benchmark.num_valid_data=50
 
 CUDA_VISIBLE_DEVICES=7 python scripts/collect_n2m_data.py \
   env.name=PnPCounterToCab \
-  policy=diffusion \
+  policy=bc_transformer \
   benchmark=collection \
   benchmark.num_valid_data=50
 
+CUDA_VISIBLE_DEVICES=7 python scripts/collect_n2m_data.py \
+  env.name=CloseDoubleDoor \
+  policy=bc_transformer \
+  benchmark=collection \
+  benchmark.num_valid_data=50
+  
+# debug (tmp)
 CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
   env.name=CloseDoubleDoor \
   env.render=true \
@@ -129,24 +136,39 @@ data/predictor/n2m/{task}_{scene}_{style}_{policytype}/
 └── meta.json  # camera info, pose with pcd_path
 ```
 
-
-Train N2M module
+Data augmentation
 ```bash
 cd predictor/N2M/scripts/render
 mkdir build && cd build
 cmake .. && make -j && cd ../../../../..
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 300 --vis --num_episodes 20
 
-# debug
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 10 --vis --num_episodes 2
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ../lamp --num_poses 100 --vis --num_episodes 1
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/OpenSingleDoor_0_1_diffusion
 
-scripts/render/build/fpv_render data/predictor/n2m/OpenSingleDoor_0_1_diffusion
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/PnPCounterToCab_0_1_diffusion --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/PnPCounterToCab_0_1_diffusion
 
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer
+
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer
+
+# debug (tmp)
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ../lamp --num_poses 100
+predictor/N2M/scripts/render/build/fpv_render ../lamp
 ```
 
+Train N2M module
+```bash
+CUDA_VISIBLE_DEVICES=0 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/OpenSingleDoor_0_1_diffusion --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
+CUDA_VISIBLE_DEVICES=1 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/PnPCounterToCab_0_1_diffusion --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
+CUDA_VISIBLE_DEVICES=2 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+
+CUDA_VISIBLE_DEVICES=3 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+```
 
 ### Predictor2: Mobipi (todo)
 
@@ -168,32 +190,50 @@ Todo
 ```bash
 # name: [CloseDrawer, PnPCounterToCab, CloseDoubleDoor, OpenSingleDoor]
 # policy: [bc_transformer, diffusion]
+# predictor: [blank, n2m]
 
-# Using BC Transformer policy for PnPCounterToCab with blank predictor
+# blank
 CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
-  env.render=true \
-  policy=bc_transformer \
-  predictor=blank \
-  benchmark=evaluation \
-  benchmark.num_episodes=3
-
-# Using Diffusion policy for CloseDrawer with blank predictor
-CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
+  env.name=PnPCounterToCab \
+  env.render=false \
   policy=diffusion \
   predictor=blank \
   benchmark=evaluation \
-  benchmark.num_episodes=50
+  benchmark.num_episodes=100
 
-# Control rendering and scene layout
-CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
+CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
   env.name=OpenSingleDoor \
   env.render=false \
-  env.layout_and_style_ids='[[1,2]]' \
-  policy=bc_transformer \
+  policy=diffusion \
   predictor=blank \
-  benchmark=evaluation
+  benchmark=evaluation \
+  benchmark.num_episodes=100
+
+# n2m
+CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
+  env.name=PnPCounterToCab \
+  env.render=false \
+  policy=diffusion \
+  predictor=n2m \
+  benchmark=evaluation \
+  benchmark.num_episodes=100
+
+CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
+  env.name=OpenSingleDoor \
+  env.render=false \
+  policy=bc_transformer \
+  predictor=n2m \
+  benchmark=evaluation \
+  benchmark.num_episodes=100
+
+# mobipi
+CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
+  env.name=OpenSingleDoor \
+  env.render=true \
+  policy=diffusion \
+  predictor=mobipi \
+  benchmark=evaluation \
+  benchmark.num_episodes=2
 ```
 
 ## Troubleshooting

@@ -21,23 +21,26 @@ class LeLaNPredictor(BasePredictor):
     2. Max steps exceeded
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, hydra_cfg, json_config, env, unwrapped_env):
         """Initialize LeLaN predictor.
         
         Args:
-            config: Configuration dictionary with:
-                - checkpoint_path: Path to LeLaN checkpoint
-                - task_description: Language task description
-                - max_steps: Maximum navigation steps (default 500)
-                - goal_distance_threshold: Distance threshold for done (default 0.1)
-                - control_scale: Scale for control commands (default 1.0)
+            hydra_cfg: Hydra config
+            json_config: Robomimic/Robocasa config
+            env: Environment instance (step)
+            unwrapped_env: Unwrapped environment instance (forward)
         """
-        super().__init__(config)
+        super().__init__()  # BasePredictor.__init__() takes no arguments
         
-        self.task_description = config.get('task_description', 'navigate to the target')
-        self.max_steps = config.get('max_steps', 500)
-        self.goal_distance_threshold = config.get('goal_distance_threshold', 0.1)
-        self.control_scale = config.get('control_scale', 1.0)
+        self.hydra_cfg = hydra_cfg
+        self.json_config = json_config
+        self.env = env
+        self.unwrapped_env = unwrapped_env
+        
+        self.task_description = hydra_cfg.get('task_description', 'navigate to the target')
+        self.max_steps = hydra_cfg.get('max_steps', 500)
+        self.goal_distance_threshold = hydra_cfg.get('goal_distance_threshold', 0.1)
+        self.control_scale = hydra_cfg.get('control_scale', 1.0)
         
         # LeLaN model (loaded in load_checkpoint)
         self.lelan_model = None

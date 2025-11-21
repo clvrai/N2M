@@ -8,7 +8,7 @@ from typing import Dict, List, Any
 import open3d as o3d
 
 from benchmark.utils.observation_utils import observation_to_pointcloud, get_camera_params
-from benchmark.utils.transform_utils import obs_to_SE2
+from benchmark.utils.transform_utils import obs_to_SE2, se2_to_se3
 from benchmark.env.env_utils import get_target_object_info, get_env_observation_with_depth
 
 class N2MDataCollector:
@@ -67,7 +67,7 @@ class N2MDataCollector:
         pcd,
         episode_id: int,
         target_pose: np.ndarray,
-        depth_cameras: List[str],
+        detect_camera: List[str],
         env,
         algo_name: str = "bc"
     ):
@@ -99,8 +99,8 @@ class N2MDataCollector:
         # Get camera parameters from first depth camera (for global meta)
         # Set global meta on first episode only (shared across all episodes)
         if self.global_meta is None:
-            first_cam = depth_cameras[0]
-            intrinsic, extrinsic = get_camera_params(env, first_cam)
+            detect_camera = "robot0_front_depth"
+            intrinsic, extrinsic = get_camera_params(env, detect_camera)
             
             # Get unwrapped environment (following reference implementation)
             temp_unwrapped = env
@@ -108,13 +108,18 @@ class N2MDataCollector:
                 temp_unwrapped = temp_unwrapped.env
             
             # Get camera dimensions from env
-            cam_idx = temp_unwrapped.camera_names.index(first_cam)
+            cam_idx = temp_unwrapped.camera_names.index(detect_camera)
             cam_height = temp_unwrapped.camera_heights[cam_idx]
             cam_width = temp_unwrapped.camera_widths[cam_idx]
             
             # Set global meta (N2M format)
             self.global_meta = {
-                'T_base_to_cam': extrinsic.tolist(),
+                'T_base_to_cam': np.array([
+                    [-8.25269110e-02, -5.73057816e-01,  8.15348841e-01,  6.05364230e-04],
+                    [-9.95784041e-01,  1.45464862e-02, -9.05661474e-02, -3.94417736e-02],
+                    [ 4.00391906e-02, -8.19385767e-01, -5.71842485e-01,  1.64310488e-00],
+                    [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]
+                    ]).tolist(),
                 'camera_intrinsic': [
                     intrinsic[0, 0],  # fx
                     intrinsic[1, 1],  # fy

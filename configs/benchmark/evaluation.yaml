@@ -8,9 +8,9 @@ num_episodes: 50
 # Task area randomization for evaluation (larger range than data collection)
 # This allows testing the policy in a wider area to evaluate generalization
 task_area_randomization:
-  x: [-1.0, 1.0]      # ±0.4m in x direction (2x data collection range)
-  y: [-1.0, 1.0]      # ±0.4m in y direction (2x data collection range)
-  theta: [-0.524, 0.524]  # ±30 degrees (0.524 radians, 2x data collection range)
+  x: [-2.0, 2.0]      # 2.0m in x direction 
+  y: [-2.0, 2.0]      # 2.0m in y direction 
+  theta: [-0.524, 0.524]  # ±30 degrees (0.524 radians)
 
 # Results directory
 results_dir: data/benchmark/results

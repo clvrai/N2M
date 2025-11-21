@@ -17,26 +17,28 @@ class MobipiPredictor(BasePredictor):
     One-shot predictor that returns done=True on first call.
     """
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, hydra_cfg, json_config, env, unwrapped_env):
         """Initialize Mobipi predictor.
         
         Args:
-            config: Configuration dictionary with:
-                - scene_model_path: Path to pre-built 3DGS scene model
-                - policy_checkpoint_path: Path to manipulation policy (for features)
-                - encoder_type: Feature encoder ('dino_dense_descriptor', 'policy', 'dino')
-                - num_candidates: Number of candidate poses to optimize (default 32)
-                - optimization_steps: Number of optimization iterations (default 50)
-                - rebuild_scene_model: Whether to rebuild 3DGS on-site (TODO, default False)
+            hydra_cfg: Hydra config
+            json_config: Robomimic/Robocasa config
+            env: Environment instance (step)
+            unwrapped_env: Unwrapped environment instance (forward)
         """
-        super().__init__(config)
+        super().__init__()  # BasePredictor.__init__() takes no arguments
         
-        self.scene_model_path = config['scene_model_path']
-        self.policy_checkpoint_path = config.get('policy_checkpoint_path', None)
-        self.encoder_type = config.get('encoder_type', 'dino_dense_descriptor')
-        self.num_candidates = config.get('num_candidates', 32)
-        self.optimization_steps = config.get('optimization_steps', 50)
-        self.rebuild_scene_model = config.get('rebuild_scene_model', False)
+        self.hydra_cfg = hydra_cfg
+        self.json_config = json_config
+        self.env = env
+        self.unwrapped_env = unwrapped_env
+        
+        self.scene_model_path = hydra_cfg['scene_model_path']
+        self.policy_checkpoint_path = hydra_cfg.get('policy_checkpoint_path', None)
+        self.encoder_type = hydra_cfg.get('encoder_type', 'dino_dense_descriptor')
+        self.num_candidates = hydra_cfg.get('num_candidates', 32)
+        self.optimization_steps = hydra_cfg.get('optimization_steps', 50)
+        self.rebuild_scene_model = hydra_cfg.get('rebuild_scene_model', False)
         
         # Mobipi components (loaded in load_checkpoint)
         self.scene_model = None
