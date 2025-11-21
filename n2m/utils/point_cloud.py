@@ -91,10 +91,10 @@ def fix_point_cloud_size(point_cloud, pointnum):
         point_cloud = np.vstack([point_cloud, padding])
     return point_cloud
 
-def translate_se2_point_cloud(point_cloud, se2_transform):
-    point_cloud[:, :3] = point_cloud[:, :3] + np.array([se2_transform[0], se2_transform[1], 0])
-    point_cloud[:, :3] = rotate_points_xy(point_cloud[:, :3], se2_transform[2])
-    return point_cloud
+# def translate_se2_point_cloud(point_cloud, se2_transform):
+#     point_cloud[:, :3] = point_cloud[:, :3] + np.array([se2_transform[0], se2_transform[1], 0])
+#     point_cloud[:, :3] = rotate_points_xy(point_cloud[:, :3], se2_transform[2])
+#     return point_cloud
 
 def translate_se2_target(target_point, se2_transform):
     target_point = rotate_points_se2(target_point, se2_transform[2])

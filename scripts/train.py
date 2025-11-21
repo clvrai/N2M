@@ -121,10 +121,22 @@ def save_checkpoint(model, optimizer, epoch, loss, save_path):
     }
     torch.save(checkpoint, save_path)
 
-def get_exp_dir(train_config):
+def get_exp_dir(train_config, use_time_str):
     t_now = time.time()
     time_str = datetime.datetime.fromtimestamp(t_now).strftime('%Y%m%d%H%M%S')
-    output_dir = os.path.join(train_config['output_dir'], time_str)
+    
+    # Determine base output directory
+    if train_config.get('output_dir') is not None:
+        base_output_dir = train_config['output_dir']
+    else:
+        # Use dataset_path/training as default
+        dataset_path = train_config['dataset']['dataset_path']
+        base_output_dir = os.path.join(dataset_path, 'training')
+    
+    if use_time_str:
+        output_dir = os.path.join(base_output_dir, time_str)
+    else:
+        output_dir = base_output_dir    
 
     ckpt_dir = os.path.join(output_dir, 'ckpts')
     val_dir = os.path.join(output_dir, 'val')
@@ -140,17 +152,33 @@ def get_exp_dir(train_config):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/training/config.json', help='Path to the config file.')
+    parser.add_argument('--config', type=str, default=None, help='Path to the config file.')
+    parser.add_argument('--dataset_path', type=str, default=None, help='Path to the dataset directory.')
+    parser.add_argument('--encoder_ckpt', type=str, default=None, help='Path to the encoder checkpoint.')
+    parser.add_argument('--use_time_str', type=bool, default=False, help='Use time string as output directory name.')
     args = parser.parse_args()
     
-    # Load configuration
-    config = load_config(args.config)
+    # Load configuration from the same directory as this script
+    if args.config is None:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(script_dir, '..', 'configs', 'config.json')
+    else:
+        config_path = args.config
+    
+    config = load_config(config_path)
     train_config = config['train']
-    model_config = config['model']
-    dataset_config = config['dataset']
+    n2mnet_config = config['n2mnet']
+    dataset_config = train_config['dataset']
+    
+    # Override with command line arguments
+    if args.dataset_path is not None:
+        dataset_config['dataset_path'] = args.dataset_path  
+    
+    if args.encoder_ckpt is not None:
+        train_config['encoder']['ckpt'] = args.encoder_ckpt
 
     # Create output directory
-    output_dir, ckpt_dir, val_dir, log_dir = get_exp_dir(train_config)
+    output_dir, ckpt_dir, val_dir, log_dir = get_exp_dir(train_config, args.use_time_str)
 
     # Initialize wandb
     wandb_config = train_config['wandb']
@@ -170,6 +198,16 @@ def main():
     # Set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
+    
+    # Merge encoder config with n2mnet config for model initialization
+    model_config = {
+        'encoder': {
+            **n2mnet_config['encoder'],
+            'ckpt': train_config['encoder']['ckpt'],
+            'freeze': train_config['encoder']['freeze']
+        },
+        'decoder': n2mnet_config['decoder']
+    }
     
     # Create model
     model = N2Mnet(

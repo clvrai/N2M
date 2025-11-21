@@ -19,6 +19,25 @@ class CollisionChecker:
 
     def filter_point_cloud(self, pcd):
         """Filter noisy points from the point cloud using Open3D filtering methods."""
+        if not isinstance(pcd, o3d.geometry.PointCloud):
+            # Expect numpy array of shape (N, 6): [x, y, z, r, g, b]
+            if not isinstance(pcd, np.ndarray) or pcd.ndim != 2 or pcd.shape[1] < 3:
+                raise ValueError(
+                    f"pcd must be a numpy array of shape (N, 3 or 6), got {type(pcd)} with shape {getattr(pcd, 'shape', None)}"
+                )
+
+            pcd_o3d = o3d.geometry.PointCloud()
+            # First 3 columns are points
+            pcd_o3d.points = o3d.utility.Vector3dVector(pcd[:, :3].astype(np.float64))
+
+            # If there are color channels, use columns 3:6
+            if pcd.shape[1] >= 6:
+                colors = pcd[:, 3:6]
+                # Clamp colors to [0,1]
+                colors = np.clip(colors, 0.0, 1.0).astype(np.float64)
+                pcd_o3d.colors = o3d.utility.Vector3dVector(colors)
+
+            pcd = pcd_o3d
         try:
             # 1. Voxel downsampling to reduce noise and density
             voxel_size = 0.02  # 2cm voxel size
@@ -79,8 +98,12 @@ class CollisionChecker:
         else:
             self.pcd = pcd
 
-        self.pcd_points = np.asarray(self.pcd.points)
-        self.pcd_colors = np.asarray(self.pcd.colors)
+        if hasattr(self.pcd, "points"):
+            self.pcd_points = np.asarray(self.pcd.points)
+            self.pcd_colors = np.asarray(self.pcd.colors)
+        else:
+            self.pcd_points = self.pcd[:, :3]
+            self.pcd_colors = self.pcd[:, 3:]
 
         self.set_occupancy_grid()
 
@@ -96,69 +119,70 @@ class CollisionChecker:
         if self.occupancy_grid is None or self.min_coords is None or self.max_coords is None:
             raise ValueError("Occupancy grid not initialized. Call set_pcd() first.")
 
-        # Get rectangle corners in world frame
-        corners = np.array([
-            [-self.robot_length*0.83, -self.robot_width/2],          # Bottom left
-            [self.robot_length*0.17, -self.robot_width/2],           # Bottom right
-            [self.robot_length*0.17, self.robot_width/2],            # Top right
-            [-self.robot_length*0.83, self.robot_width/2]            # Top left
+        # Pre-compute rotation matrix
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        
+        # Robot rectangle bounds in local frame
+        rect_min_x = -self.robot_length * 0.83
+        rect_max_x = self.robot_length * 0.17
+        rect_min_y = -self.robot_width * 0.5
+        rect_max_y = self.robot_width * 0.5
+        
+        # Get rectangle corners in world frame for bounding box
+        corners_local = np.array([
+            [rect_min_x, rect_min_y],
+            [rect_max_x, rect_min_y],
+            [rect_max_x, rect_max_y],
+            [rect_min_x, rect_max_y]
         ])
-        # Rotate corners
-        rot_matrix = np.array([
-            [np.cos(theta), -np.sin(theta)],
-            [np.sin(theta), np.cos(theta)]
-        ])
-        rotated_corners = (rot_matrix @ corners.T).T
-
-        # Translate corners
-        world_corners = rotated_corners + np.array([x, y])  
-
-        # Get min and max coordinates of the rectangle
-        rect_min = np.min(world_corners, axis=0)
-        rect_max = np.max(world_corners, axis=0)
+        
+        # Rotate and translate corners
+        rotated_x = corners_local[:, 0] * cos_theta - corners_local[:, 1] * sin_theta + x
+        rotated_y = corners_local[:, 0] * sin_theta + corners_local[:, 1] * cos_theta + y
+        
+        # Get bounding box
+        rect_min = np.array([rotated_x.min(), rotated_y.min()])
+        rect_max = np.array([rotated_x.max(), rotated_y.max()])
 
         # Convert to grid indices
-        min_x_idx = int((rect_min[0] - self.min_coords[0]) / self.resolution)
-        min_y_idx = int((rect_min[1] - self.min_coords[1]) / self.resolution)
-        max_x_idx = int((rect_max[0] - self.min_coords[0]) / self.resolution) + 1
-        max_y_idx = int((rect_max[1] - self.min_coords[1]) / self.resolution) + 1
+        min_x_idx = max(0, int((rect_min[0] - self.min_coords[0]) / self.resolution))
+        min_y_idx = max(0, int((rect_min[1] - self.min_coords[1]) / self.resolution))
+        max_x_idx = min(self.occupancy_grid.shape[1], int((rect_max[0] - self.min_coords[0]) / self.resolution) + 1)
+        max_y_idx = min(self.occupancy_grid.shape[0], int((rect_max[1] - self.min_coords[1]) / self.resolution) + 1)
 
-        # Ensure indices are within grid bounds
-        min_x_idx = max(0, min_x_idx)
-        min_y_idx = max(0, min_y_idx)
-        max_x_idx = min(self.occupancy_grid.shape[1], max_x_idx)
-        max_y_idx = min(self.occupancy_grid.shape[0], max_y_idx)
-
-        # Check each grid cell in the bounding box
-        for y_idx in range(min_y_idx, max_y_idx):
-            for x_idx in range(min_x_idx, max_x_idx):
-                if self.occupancy_grid[y_idx, x_idx] == 1:
-                    # Get grid cell corners in world coordinates
-                    grid_min_x = self.min_coords[0] + x_idx * self.resolution
-                    grid_min_y = self.min_coords[1] + y_idx * self.resolution
-                    grid_max_x = grid_min_x + self.resolution
-                    grid_max_y = grid_min_y + self.resolution
-
-                    # Check if grid cell intersects with rectangle
-                    grid_corners = np.array([
-                        [grid_min_x, grid_min_y],
-                        [grid_max_x, grid_min_y],
-                        [grid_max_x, grid_max_y],
-                        [grid_min_x, grid_max_y]
-                    ])
-                    translated_corners = grid_corners - np.array([x, y])
-                    local_corners = (rot_matrix.T @ translated_corners.T).T
-
-                    rect_min_x = -self.robot_length*0.83
-                    rect_max_x = self.robot_length*0.17
-                    rect_min_y = -self.robot_width/2
-                    rect_max_y = self.robot_width/2
-
-                    for corner in local_corners:
-                        if (rect_min_x <= corner[0] <= rect_max_x and 
-                            rect_min_y <= corner[1] <= rect_max_y):
-                            return False
-        return True
+        # Extract the subgrid to check
+        subgrid = self.occupancy_grid[min_y_idx:max_y_idx, min_x_idx:max_x_idx]
+        
+        # If no occupied cells in bounding box, no collision
+        if not subgrid.any():
+            return True
+        
+        # Get indices of occupied cells in the subgrid
+        occupied_y, occupied_x = np.nonzero(subgrid)
+        
+        # Convert back to full grid indices
+        occupied_x += min_x_idx
+        occupied_y += min_y_idx
+        
+        # Compute grid cell centers in world coordinates
+        grid_centers_x = self.min_coords[0] + (occupied_x + 0.5) * self.resolution
+        grid_centers_y = self.min_coords[1] + (occupied_y + 0.5) * self.resolution
+        
+        # Transform grid centers to robot's local frame
+        dx = grid_centers_x - x
+        dy = grid_centers_y - y
+        local_x = dx * cos_theta + dy * sin_theta
+        local_y = -dx * sin_theta + dy * cos_theta
+        
+        # Check if any grid cell center is inside the robot rectangle (with margin)
+        half_res = self.resolution * 0.5
+        collision = (
+            (local_x >= rect_min_x - half_res) & (local_x <= rect_max_x + half_res) &
+            (local_y >= rect_min_y - half_res) & (local_y <= rect_max_y + half_res)
+        )
+        
+        return not collision.any()
 
 
 def get_target_helper_for_rollout_collection(inference_mode=False, all_pcd=None, se2_origin=None, vis=False, camera_intrinsic=None, filter_noise=True):
