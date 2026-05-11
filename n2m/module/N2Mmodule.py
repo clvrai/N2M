@@ -9,6 +9,8 @@ from n2m.utils.point_cloud import fix_point_cloud_size
 from n2m.utils.sample_utils import CollisionChecker
 from n2m.utils.visualizer import save_gmm_visualization_se2
 
+
+
 class N2Mmodule:
     """
     N2M module class that encapsulates the N2M model.
@@ -21,6 +23,7 @@ class N2Mmodule:
         self.ckpt_path = config['ckpt']
 
         self.model = N2Mnet(self.n2mnet_config)
+        self.if_visualize = False
         
         # Load checkpoint if provided
         if self.ckpt_path is not None:
@@ -88,15 +91,17 @@ class N2Mmodule:
                 'collision_checking_time': collision_checking_time,
                 'prediction_validity': True
             }
-            save_gmm_visualization_se2(
-                point_cloud = point_cloud,
-                target_se2 = best_mean,
-                label = 1,
-                means = means_np,
-                covs = covs[0].cpu().numpy(),
-                weights = weights_np,
-                output_path = "./debug4/valid_pose.ply"
-            )
+            if self.if_visualize:
+                os.makedirs("./debug4", exist_ok=True)
+                save_gmm_visualization_se2(
+                    point_cloud = point_cloud,
+                    target_se2 = best_mean,
+                    label = 1,
+                    means = means_np,
+                    covs = covs[0].cpu().numpy(),
+                    weights = weights_np,
+                    output_path = "./debug4/valid_pose.ply"
+                )
             return best_mean, extra_info
 
         # sort predictions in the order of predicted probability
@@ -120,16 +125,17 @@ class N2Mmodule:
                     'collision_checking_time': collision_checking_time,
                     'prediction_validity': True
                 }
-                os.makedirs("./debug4", exist_ok=True)
-                save_gmm_visualization_se2(
-                    point_cloud = point_cloud,
-                    target_se2 = sample,
-                    label = 1,
-                    means = means_np,
-                    covs = covs[0].cpu().numpy(),
-                    weights = weights_np,
-                    output_path = "./debug4/valid_pose.ply"
-                )
+                if self.if_visualize:
+                    os.makedirs("./debug4", exist_ok=True)
+                    save_gmm_visualization_se2(
+                        point_cloud = point_cloud,
+                        target_se2 = sample,
+                        label = 1,
+                        means = means_np,
+                        covs = covs[0].cpu().numpy(),
+                        weights = weights_np,
+                        output_path = "./debug4/valid_pose.ply"
+                    )
                 return sample, extra_info
             else:
                 print("Invalid pose, trying again: ", sample)
@@ -141,14 +147,15 @@ class N2Mmodule:
             'collision_checking_time': collision_checking_time,
             'prediction_validity': False
         }
-        os.makedirs("./debug4", exist_ok=True)
-        save_gmm_visualization_se2(
-            point_cloud = point_cloud,
-            target_se2 = best_mean,
-            label = 1,
-            means = means_np,
-            covs = covs[0].cpu().numpy(),
-            weights = weights_np,
-            output_path = "./debug4/valid_pose.ply"
-        )
+        if self.if_visualize:
+            os.makedirs("./debug4", exist_ok=True)
+            save_gmm_visualization_se2(
+                point_cloud = point_cloud,
+                target_se2 = best_mean,
+                label = 1,
+                means = means_np,
+                covs = covs[0].cpu().numpy(),
+                weights = weights_np,
+                output_path = "./debug4/valid_pose.ply"
+            )
         return best_mean, extra_info

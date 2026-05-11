@@ -53,6 +53,8 @@ class N2MDataset(Dataset):
         self.anno = anno
         self.pointnum = config['pointnum']
         self.config = config
+        self.use_cache = config.get('use_cache', False)
+        self.cache = {}
 
         self.settings = config['settings'] if 'settings' in config else None
 
@@ -60,6 +62,11 @@ class N2MDataset(Dataset):
             self.dataset_path = config['dataset_path']
         else:
             raise ValueError(f"Invalid config: {config}")
+        
+        # Preload all data if caching is enabled
+        if self.use_cache:
+            print(f"Caching {len(self.anno)} samples in memory...")
+            self._preload_data()
 
     def _load_point_cloud(self, file_path):
         if os.path.exists(file_path):
@@ -73,6 +80,87 @@ class N2MDataset(Dataset):
                     
         raise FileNotFoundError(f"No point cloud file found for object {file_path}")
     
+    def _load_single_sample(self, index):
+        """Load a single sample for caching"""
+        data = self.anno[index]
+        file_path = os.path.join(self.dataset_path, data['file_path'])
+
+        try:
+            # Load and process point cloud
+            point_cloud = self._load_point_cloud(file_path)
+            target_point = np.array(data['pose'], dtype=np.float32)
+            label = 1
+
+            # Ensure point cloud has consistent size
+            point_cloud = fix_point_cloud_size(point_cloud, self.pointnum)
+
+            return index, {
+                'point_cloud': point_cloud,
+                'target_point': target_point,
+                'label': label
+            }
+        except Exception as e:
+            print(f"Warning: Failed to load sample {index}: {e}")
+            return index, None
+
+    def _preload_data(self):
+        """Preload all data samples into memory cache using multithreading"""
+        from tqdm import tqdm
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        import threading
+        
+        # Determine number of threads
+        import multiprocessing
+        if 'cache_threads' in self.config and self.config['cache_threads'] is not None:
+            num_threads = self.config['cache_threads']
+        else:
+            # Auto-detect: use half of available cores, max 8
+            num_threads = min(8, max(1, multiprocessing.cpu_count() // 2))
+        print(f"Using {num_threads} threads for data loading...")
+        
+        # Thread-safe cache updates
+        cache_lock = threading.Lock()
+        
+        # Use ThreadPoolExecutor for parallel loading
+        with ThreadPoolExecutor(max_workers=num_threads) as executor:
+            # Submit all loading tasks
+            future_to_index = {
+                executor.submit(self._load_single_sample, index): index 
+                for index in range(len(self.anno))
+            }
+            
+            # Process completed tasks with progress bar
+            successful_loads = 0
+            failed_loads = 0
+            
+            for future in tqdm(as_completed(future_to_index), 
+                             total=len(self.anno), 
+                             desc="Loading data into cache"):
+                index, result = future.result()
+                
+                if result is not None:
+                    with cache_lock:
+                        self.cache[index] = result
+                    successful_loads += 1
+                else:
+                    failed_loads += 1
+        
+        print(f"Successfully cached {successful_loads} samples in memory.")
+        if failed_loads > 0:
+            print(f"Warning: Failed to load {failed_loads} samples.")
+    
+    def _apply_tensor_augmentations(self, point_cloud, target_point, augmentations):
+        """Apply augmentations on torch tensors for better performance"""
+        # For now, fall back to numpy-based augmentations
+        # TODO: Implement GPU-based tensor augmentations for better performance
+        pc_np = point_cloud.numpy()
+        tp_np = target_point.numpy()
+        
+        from n2m.utils.point_cloud import apply_augmentations
+        pc_aug, tp_aug = apply_augmentations(pc_np, tp_np, augmentations)
+        
+        return torch.from_numpy(pc_aug.astype(np.float32)), torch.from_numpy(tp_aug)
+    
     def __len__(self):
         """
         Return number of samples in the dataset
@@ -83,25 +171,33 @@ class N2MDataset(Dataset):
         """
         Get a sample from the dataset
         """
-        data = self.anno[index]
-        file_path = os.path.join(self.dataset_path, data['file_path'])
+        if self.use_cache and index in self.cache:
+            # Use cached data
+            cached_data = self.cache[index]
+            point_cloud = cached_data['point_cloud'].copy()  # Copy to avoid modifying cached data
+            target_point = cached_data['target_point'].copy()
+            label = cached_data['label']
+        else:
+            # Load data from disk (fallback or when caching is disabled)
+            data = self.anno[index]
+            file_path = os.path.join(self.dataset_path, data['file_path'])
 
-        # Load point cloud and target point
-        point_cloud = self._load_point_cloud(file_path)
-        target_point = np.array(data['pose'], dtype=np.float32)
-        label = 1
+            # Load point cloud and target point
+            point_cloud = self._load_point_cloud(file_path)
+            target_point = np.array(data['pose'], dtype=np.float32)
+            label = 1
 
-        # Ensure point cloud has consistent size
-        point_cloud = fix_point_cloud_size(point_cloud, self.pointnum)
+            # Ensure point cloud has consistent size
+            point_cloud = fix_point_cloud_size(point_cloud, self.pointnum)
 
-        # Apply augmentations
-        if 'augmentations' in self.config:
-            point_cloud, target_point = apply_augmentations(point_cloud, target_point, self.config['augmentations'])
-
-        # Convert to torch tensors
+        # Convert to torch tensors first
         point_cloud = torch.from_numpy(point_cloud.astype(np.float32))
         target_point = torch.from_numpy(target_point)
         label = torch.tensor(label, dtype=torch.long)
+        
+        # Apply augmentations on tensors (can be moved to GPU later)
+        if 'augmentations' in self.config:
+            point_cloud, target_point = self._apply_tensor_augmentations(point_cloud, target_point, self.config['augmentations'])
         
         return {
             'point_cloud': point_cloud,
