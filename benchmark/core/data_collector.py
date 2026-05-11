@@ -134,13 +134,12 @@ class N2MDataCollector:
         # N2M format expects 4D pose: [x, y, z, theta]
         # target_pose from SE2 is [x, y, theta], we add z coordinate
         robot_x, robot_y, robot_theta = target_pose
-        robot_z = 0.0  # Base z position (robot base is at ground level)
         
         # Create episode entry (N2M standard format)
         # Format: {"id": int, "pose": [x, y, z, theta], "file_path": str}
         episode_entry = {
             'id': episode_id,
-            'pose': [robot_x, robot_y, robot_z, robot_theta],  # N2M format: [x, y, z, theta]
+            'pose': [robot_x, robot_y, robot_theta],  # N2M format: [x, y, z, theta]
             'file_path': f'pcl/{pcl_filename}'  # Relative path
         }
         

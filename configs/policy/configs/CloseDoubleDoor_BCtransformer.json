@@ -80,7 +80,7 @@
     "train": {
         "data": [
             {
-                "path": "data/policy/robomimic/datasets/CloseDoubleDoor_mg_im.hdf5",
+                "path": "data/policy/robomimic/datasets/CloseDoubleDoor_robomimic.hdf5",
                 "horizon": 700,
                 "do_eval": true,
                 "filter_key": "3000_demos"

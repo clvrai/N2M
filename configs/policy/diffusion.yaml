@@ -2,12 +2,13 @@
 # Usage: policy=diffusion
 
 name: diffusion
-type: robomimic
+type: diffusion
 
 # Auto-construct config_name from task name
 config_name: ${env.name}_diffusion
 
 # Paths are auto-constructed
 config_path: ${paths.root}/configs/policy/configs/${policy.config_name}.json
-ckpt_path: ${paths.policy_data.robomimic.checkpoints}/${policy.config_name}.pth
+ckpt_path: ${paths.policy_data.dp.checkpoints}/${policy.config_name}.pth
+dataset_path: ${paths.policy_data.dp.datasets}/${policy.config_name}.hdf5
 

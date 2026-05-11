@@ -107,7 +107,7 @@
     "train": {
         "data": [
             {
-                "path": "data/policy/robomimic/datasets/PnPCounterToCab_mg_im.hdf5",
+                "path": "data/policy/robomimic/datasets/PnPCounterToCab_robomimic.hdf5",
                 "horizon": 500,
                 "do_eval": true,
                 "filter_key": "3000_demos"
@@ -171,7 +171,7 @@
         "cuda": true,
         "batch_size": 16,
         "num_epochs": 5000,
-        "seed": 0,
+        "seed": 123,
         "max_grad_norm": 100.0,
         "data_format": "robomimic",
         "shuffled_obs_key_groups": null

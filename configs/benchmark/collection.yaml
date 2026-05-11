@@ -10,9 +10,9 @@ num_valid_data: 20
 
 # N2M data collection
 n2m_data_collection_randomization:
-  x: [-0.2, 0.2]      # ±0.2m in x direction
-  y: [-0.2, 0.2]      # ±0.2m in y direction
-  theta: [-0.262, 0.262]  # ±15 degrees (0.262 radians)
+  x: [-0.1, 0.1]      # ±0.1m in x direction
+  y: [-0.1, 0.1]      # ±0.1m in y direction
+  theta: [-0.087, 0.087]  # ±5 degrees (0.262 radians)
 
 # Note: horizon is read from JSON config (train.data[0].horizon or experiment.rollout.horizon)
 

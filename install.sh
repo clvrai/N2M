@@ -65,7 +65,11 @@ mkdir -p data/benchmark/results
 # Note: nerfstudio and timm have version conflicts, install them separately if needed for mobipi
 pip install scikit-optimize cma sentencepiece peft==0.10.0 transformers==4.36.0 huggingface-hub==0.25.0
 # Fix numpy version for compatibility
-pip install "numpy>=1.23.0,<2.0.0"
+# pip install "numpy>=1.23.0,<2.0.0"
+pip install nerfstudio==1.1.5
+pip install pin
+pip install numpy==1.23.3
+pip install timm==1.0.12
 
 # ---- Check PyTorch ----
 echo "🔥 Checking PyTorch installation..."

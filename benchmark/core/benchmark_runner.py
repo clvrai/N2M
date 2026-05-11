@@ -207,13 +207,35 @@ class BenchmarkRunner:
             print(f"Environment RNG state synchronized to episode {num_completed}\n")
         
         # Run episodes (continue from where we left off)
+        from benchmark.utils.obs_utils import obs_to_SE2
+
         for episode_id in tqdm(range(num_completed, num_episodes), desc="Running evaluation", initial=num_completed, total=num_episodes):
-            # Reset environment for new episode
-            obs_dict = self.env.reset()
-            
-            # Get initial SE2 pose after reset
-            from benchmark.utils.obs_utils import obs_to_SE2
-            se2_initial = obs_to_SE2(obs_dict, algorithm_name=self.algo_name)
+            if self.cfg.predictor.name == 'mobipi' and self.env.name == 'CloseDoubleDoor':
+                while True:
+                    # Reset environment for new episode
+                    obs_dict = self.env.reset()
+                    # Get initial SE2 pose after reset
+                    se2_initial = obs_to_SE2(obs_dict, algorithm_name=self.algo_name)
+                    if self.cfg.env.layout_and_style_ids[0][1] in [0, 1, 8]:
+                        if se2_initial[0] > 2.0:
+                            break
+                    else:
+                        if se2_initial[0] < 2.0:    # 2,6
+                            break
+            if self.cfg.predictor.name == 'mobipi' and self.env.name == 'OpenSingleDoor':
+                while True:
+                    # Reset environment for new episode
+                    obs_dict = self.env.reset()
+                    # Get initial SE2 pose after reset
+                    se2_initial = obs_to_SE2(obs_dict, algorithm_name=self.algo_name)
+                    if self.cfg.env.layout_and_style_ids[0][1] in [0, 1, 2]:
+                        if abs(se2_initial[0] - 3.12380) < 0.1:
+                            break
+
+            else:
+                # Reset environment for new episode
+                obs_dict = self.env.reset()
+                se2_initial = obs_to_SE2(obs_dict, algorithm_name=self.algo_name)
             
             # Build collision checker and sample randomized pose if using randomization
             se2_randomized = None
@@ -263,7 +285,8 @@ class BenchmarkRunner:
                 collision_checker=self.collision_checker,
                 algo_name=self.algo_name,
                 se2_initial=se2_initial,
-                se2_randomized=se2_randomized
+                se2_randomized=se2_randomized,
+                episode_id=episode_id
             )
             
             # Add episode ID

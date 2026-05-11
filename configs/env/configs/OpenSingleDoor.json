@@ -106,7 +106,7 @@
     "train": {
         "data": [
             {
-                "path": "data/policy/robomimic/datasets/OpenSingleDoor_mg_im.hdf5",
+                "path": "data/policy/robomimic/datasets/OpenSingleDoor_robomimic.hdf5",
                 "horizon": 500,
                 "do_eval": true,
                 "filter_key": "3000_demos"

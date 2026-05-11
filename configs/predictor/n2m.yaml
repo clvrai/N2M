@@ -7,10 +7,12 @@ type: n2m
 
 # Base directory for N2M predictor data
 base_dir: ${paths.predictor_data.n2m}
+rollout_num: 20
 
 # Path templates
-config_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}/training/config.json"
-ckpt_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}/training/ckpts/best_model.pth"
+config_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}_{rollout_num}/training/config.json"
+# ckpt_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}/training/ckpts/best_model.pth"
+ckpt_path_template: "{base_dir}/{task}_{layout}_{style}_{policy}_{rollout_num}/training/ckpts/best_model.pth"
 
 # Camera names for depth point cloud generation
 camera_name: robot0_front_depth

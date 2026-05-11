@@ -10,4 +10,5 @@ config_name: ${env.name}_BCtransformer
 # Paths are auto-constructed
 config_path: ${paths.root}/configs/policy/configs/${policy.config_name}.json
 ckpt_path: ${paths.policy_data.robomimic.checkpoints}/${policy.config_name}.pth
+dataset_path: ${paths.policy_data.robomimic.datasets}/${env.name}_robomimic.hdf5
 

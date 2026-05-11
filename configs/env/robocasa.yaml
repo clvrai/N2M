@@ -8,7 +8,7 @@ name: ???
 # Path to complete robomimic-style JSON config (auto-constructed from name)
 # All environment configuration (env_meta_update_dict, observation, etc.) is in this JSON
 json_config_path: ${paths.root}/configs/env/configs/${env.name}.json
-
+dataset_path: ${paths.policy_data.robomimic.datasets}/${env.name}_mg_im.hdf5
 
 # Scene depth cameras to filter collision free poses and also for n2m data collection
 # These are fixed scene cameras (depth_camera1-5), not robot-mounted cameras

@@ -47,9 +47,8 @@ class N2MPredictor(BasePredictor):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         self.load_checkpoint()
-        
-        
-    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker):
+    
+    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker, episode_id=None):
         """Predict target pose using N2M.
         
         Args:
@@ -58,9 +57,7 @@ class N2MPredictor(BasePredictor):
             collision_checker: Collision checker instance
             
         Returns:
-            predicted_pose: Sampled SE2 pose from GMM
-            done: Always True (one-shot predictor)
-            info: Dict with prediction metadata
+            result: Dict with prediction metadata
         """
         
         pcd_global = capture_depth_camera_data(self.unwrapped_env, camera_name=self.camera_name)
@@ -139,14 +136,16 @@ class N2MPredictor(BasePredictor):
             task=task,
             layout=layout,
             style=style,
-            policy=policy
+            policy=policy,
+            rollout_num=self.hydra_cfg.predictor.rollout_num
         )
         ckpt_path = ckpt_path_template.format(
             base_dir=base_dir,
             task=task,
             layout=layout,
             style=style,
-            policy=policy
+            policy=policy,
+            rollout_num=self.hydra_cfg.predictor.rollout_num
         )
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"N2M config not found: {config_path}")

@@ -3,6 +3,9 @@ data/
 data
 debug*
 results
+tmp/
+scene_data
+.claude
 
 # Legacy directories
 datasets

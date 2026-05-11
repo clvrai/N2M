@@ -33,6 +33,7 @@ from robocasa.environments.kitchen.single_stage.kitchen_doors import OpenSingleD
 from benchmark.utils.sample_utils import arm_fake_controller
 from benchmark.utils.collision_utils import CollisionChecker
 
+
 def run_rollout_with_predictor(
     env: FrameStackWrapper,
     policy: RolloutPolicy,
@@ -41,7 +42,8 @@ def run_rollout_with_predictor(
     collision_checker: CollisionChecker,
     algo_name: str,
     se2_initial: np.ndarray,    # also the origin of the robot coordinate system in global coordinate system
-    se2_randomized: Optional[np.ndarray] = None
+    se2_randomized: Optional[np.ndarray] = None,
+    episode_id = None
 ) -> Dict[str, Any]:
     """Execute one episode rollout with predictor and policy.
     
@@ -94,13 +96,17 @@ def run_rollout_with_predictor(
     teleport_robot_to_target(unwrapped_env, se2_randomized, se2_initial)
     ob_dict, _, _, _ = env.step(ac)
 
+    # time.sleep(1000)
     # STEP 2: move to sampled pose se2_randomized
-    arm_fake_controller(unwrapped_env, "DETECT")
+    if predictor.needs_detect_mode():
+        arm_fake_controller(unwrapped_env, "DETECT")
+
     prediction_start = time.time()
     result_dict = predictor.predict(
         se2_initial =  se2_initial,
         se2_randomized = se2_randomized,
-        collision_checker=collision_checker
+        collision_checker=collision_checker,
+        episode_id=episode_id
     )
     prediction_time = time.time() - prediction_start
 

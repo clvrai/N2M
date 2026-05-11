@@ -54,65 +54,72 @@ def main(cfg: DictConfig):
     
     # Load manipulation policy (following collect_n2m_data.py)
     print("\n============= Loading Manipulation Policy =============")
-    from robomimic.algo import algo_factory, RolloutPolicy
-    import robomimic.utils.file_utils as FileUtils
-    import robomimic.utils.torch_utils as TorchUtils
-    import robomimic.utils.train_utils as TrainUtils
-    import robomimic.utils.lang_utils as LangUtils
-    
-    # Get device
-    device = TorchUtils.get_torch_device(try_to_use_cuda=config.train.cuda)
-    
-    # Load dataset to get shape_meta
-    dataset_path = os.path.expanduser(config.train.data[0]["path"])
-    shape_meta = FileUtils.get_shape_metadata_from_dataset(
-        dataset_path=dataset_path,
-        action_keys=config.train.action_keys,
-        all_obs_keys=config.all_obs_keys,
-        ds_format=config.train.data_format,
-        verbose=True
-    )
-    
-    # Create model
-    model = algo_factory(
-        algo_name=config.algo_name,
-        config=config,
-        obs_key_shapes=shape_meta["all_shapes"],
-        ac_dim=shape_meta["ac_dim"],
-        device=device,
-    )
-    
-    # Load checkpoint
-    ckpt_path = config.experiment.ckpt_path
-    if ckpt_path is not None and os.path.isfile(os.path.expanduser(ckpt_path)):
-        print(f"Loading model weights from {ckpt_path}")
-        ckpt_dict = FileUtils.maybe_dict_from_checkpoint(ckpt_path=ckpt_path)
-        model.deserialize(ckpt_dict["model"])
-    else:
-        raise ValueError(f"Checkpoint path not found or not specified: {ckpt_path}")
-    
-    # Load training dataset to get normalization stats
-    lang_encoder = LangUtils.LangEncoder(device=device)
-    trainset, validset = TrainUtils.load_data_for_training(
-        config, obs_keys=shape_meta["all_obs_keys"], lang_encoder=lang_encoder)
-    
-    # Get normalization stats
-    obs_normalization_stats = None
-    if config.train.hdf5_normalize_obs:
-        obs_normalization_stats = trainset.get_obs_normalization_stats()
-    action_normalization_stats = trainset.get_action_normalization_stats()
-    
-    # Wrap as RolloutPolicy
-    rollout_policy = RolloutPolicy(
-        model,
-        obs_normalization_stats=obs_normalization_stats,
-        action_normalization_stats=action_normalization_stats,
-        lang_encoder=lang_encoder,
-    )
-    
+    if cfg.policy.type == "robomimic":
+        from robomimic.algo import algo_factory, RolloutPolicy
+        import robomimic.utils.file_utils as FileUtils
+        import robomimic.utils.torch_utils as TorchUtils
+        import robomimic.utils.train_utils as TrainUtils
+        import robomimic.utils.lang_utils as LangUtils
+        
+        # Get device
+        device = TorchUtils.get_torch_device(try_to_use_cuda=config.train.cuda)
+        
+        # Load dataset to get shape_meta
+        dataset_path = os.path.expanduser(config.train.data[0]["path"])
+        shape_meta = FileUtils.get_shape_metadata_from_dataset(
+            dataset_path=dataset_path,
+            action_keys=config.train.action_keys,
+            all_obs_keys=config.all_obs_keys,
+            ds_format=config.train.data_format,
+            verbose=True
+        )
+        
+        # Create model
+        model = algo_factory(
+            algo_name=config.algo_name,
+            config=config,
+            obs_key_shapes=shape_meta["all_shapes"],
+            ac_dim=shape_meta["ac_dim"],
+            device=device,
+        )
+        
+        # Load checkpoint
+        ckpt_path = config.experiment.ckpt_path
+        if ckpt_path is not None and os.path.isfile(os.path.expanduser(ckpt_path)):
+            print(f"Loading model weights from {ckpt_path}")
+            ckpt_dict = FileUtils.maybe_dict_from_checkpoint(ckpt_path=ckpt_path)
+            model.deserialize(ckpt_dict["model"])
+        else:
+            raise ValueError(f"Checkpoint path not found or not specified: {ckpt_path}")
+        
+        # Load training dataset to get normalization stats
+        lang_encoder = LangUtils.LangEncoder(device=device)
+        trainset, validset = TrainUtils.load_data_for_training(
+            config, obs_keys=shape_meta["all_obs_keys"], lang_encoder=lang_encoder)
+        
+        # Get normalization stats
+        obs_normalization_stats = None
+        if config.train.hdf5_normalize_obs:
+            obs_normalization_stats = trainset.get_obs_normalization_stats()
+        action_normalization_stats = trainset.get_action_normalization_stats()
+        
+        # Wrap as RolloutPolicy
+        rollout_policy = RolloutPolicy(
+            model,
+            obs_normalization_stats=obs_normalization_stats,
+            action_normalization_stats=action_normalization_stats,
+            lang_encoder=lang_encoder,
+        )
+    elif cfg.policy.type == "diffusion":
+        from mobipi.utils.policy_utils import load_policy
+        ext_cfg = json.load(open(cfg.policy.config_path, 'r'))
+        config_tmp = config_factory(ext_cfg["algo_name"])
+        with config_tmp.values_unlocked():
+            config_tmp.update(ext_cfg)
+        model, rollout_policy, lang_encoder = load_policy(config_tmp, cfg.policy.ckpt_path)
+
     # rollout_policy=None
-    print("Policy loaded successfully\n")
-    
+    print(f"{cfg.policy.name} loaded successfully\n")
     print("\n============= Preparing BenchmarkRunner =============")
     # Get horizon from JSON config (following reference: train_utils.py:119)
     # Priority: train.data[0].horizon > experiment.rollout.horizon
@@ -148,8 +155,14 @@ def main(cfg: DictConfig):
     policy_type = cfg.policy.name if hasattr(cfg.policy, 'name') else 'bc_transformer'
     predictor_name = cfg.predictor.name
     
+    if cfg.predictor.name=='mobipi':
+        output_dir = os.path.join(cfg.benchmark.results_dir, f'mobipi_{task_name}_initSamples_{cfg.predictor.num_init_samples}_boSamples_{cfg.predictor.bo_num_samples}_scene_{scene_id}_style_{style_id}')
+    elif cfg.predictor.name=='n2m':
+        output_dir = os.path.join(cfg.benchmark.results_dir, f'n2m_{cfg.predictor.rollout_num}')
+    else:
+        output_dir = cfg.benchmark.results_dir
+    
     output_filename = f"{task_name}_{scene_id}_{style_id}_{policy_type}_{predictor_name}.json"
-    output_dir = cfg.benchmark.get('results_dir', 'data/benchmark/results')
     output_path = os.path.join(output_dir, output_filename)
     
     print(f"Results will be saved to: {output_path}")
@@ -202,8 +215,6 @@ def _create_predictor(hydra_cfg: DictConfig, json_config, env, unwrapped_env):
             predictor.load_checkpoint(hydra_cfg.predictor.checkpoint_path)
     elif predictor_name == 'mobipi':
         predictor = MobipiPredictor(hydra_cfg, json_config, env, unwrapped_env)
-        if hasattr(hydra_cfg.predictor, 'scene_model_path') and hydra_cfg.predictor.scene_model_path:
-            predictor.load_checkpoint(hydra_cfg.predictor.scene_model_path)
     elif predictor_name == 'reachability':
         predictor = ReachabilityPredictor(hydra_cfg, json_config, env, unwrapped_env)
     else:

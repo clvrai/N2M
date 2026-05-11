@@ -16,8 +16,9 @@ policy_data:
   robomimic:
     checkpoints: ${paths.data_root}/policy/robomimic/checkpoints
     datasets: ${paths.data_root}/policy/robomimic/datasets
-  vlm:
-    checkpoints: ${paths.data_root}/policy/vlm/checkpoints
+  dp:
+    checkpoints: ${paths.data_root}/policy/dp/checkpoints
+    datasets: ${paths.data_root}/policy/dp/datasets
   vla:
     checkpoints: ${paths.data_root}/policy/vla/checkpoints
 

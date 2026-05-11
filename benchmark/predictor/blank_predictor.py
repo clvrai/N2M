@@ -22,12 +22,16 @@ class BlankPredictor(BasePredictor):
         self.env = env
         self.unwrapped_env = unwrapped_env
         
-    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker):
+    def predict(self, se2_initial, se2_randomized, collision_checker: CollisionChecker, episode_id=None):
         """Return current pose without prediction."""
         # Simply return current pose - no prediction
+        # result = {
+        #     'is_ego': False,
+        #     'se2_predicted': se2_randomized,
+        # }
         result = {
             'is_ego': False,
-            'se2_predicted': se2_randomized,
+            'se2_predicted': se2_initial,
         }
         return result
 

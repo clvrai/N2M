@@ -14,9 +14,11 @@ from tqdm import tqdm
 
 from benchmark.env.env_utils import create_env_from_config
 from benchmark.core.data_collector import N2MDataCollector
-from benchmark.utils.sample_utils import TargetHelper
 from benchmark.utils.obs_utils import obs_to_SE2
-import open3d as o3d
+from benchmark.utils.sampling_utils import sample_collision_free_pose
+from benchmark.utils.collision_utils import CollisionChecker
+from benchmark.utils.navigation_utils import teleport_robot_to_target
+
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -109,68 +111,79 @@ def main(cfg: DictConfig):
     depth_cameras = cfg.env.depth_cameras
     
     # Load manipulation policy (following reference implementation)
+    # Load manipulation policy (following collect_n2m_data.py)
     print("\n============= Loading Manipulation Policy =============")
-    from robomimic.algo import algo_factory, RolloutPolicy
-    import robomimic.utils.file_utils as FileUtils
-    import robomimic.utils.torch_utils as TorchUtils
-    
-    # Get device
-    device = TorchUtils.get_torch_device(try_to_use_cuda=config.train.cuda)
-    
-    # Load dataset to get shape_meta
-    dataset_path = os.path.expanduser(config.train.data[0]["path"])
-    shape_meta = FileUtils.get_shape_metadata_from_dataset(
-        dataset_path=dataset_path,
-        action_keys=config.train.action_keys,
-        all_obs_keys=config.all_obs_keys,
-        ds_format=config.train.data_format,
-        verbose=True
-    )
-    
-    # Create model
-    model = algo_factory(
-        algo_name=config.algo_name,
-        config=config,
-        obs_key_shapes=shape_meta["all_shapes"],
-        ac_dim=shape_meta["ac_dim"],
-        device=device,
-    )
-    
-    # Load checkpoint
-    ckpt_path = config.experiment.ckpt_path
-    if ckpt_path is not None and os.path.isfile(os.path.expanduser(ckpt_path)):
-        print(f"Loading model weights from {ckpt_path}")
-        ckpt_dict = FileUtils.maybe_dict_from_checkpoint(ckpt_path=ckpt_path)
-        model.deserialize(ckpt_dict["model"])
-    else:
-        raise ValueError(f"Checkpoint path not found or not specified: {ckpt_path}")
-    
-    # Load training dataset to get normalization stats (following reference: 1_data_collection_with_rollout.py:198-215)
-    import robomimic.utils.lang_utils as LangUtils
-    lang_encoder = LangUtils.LangEncoder(device=device)
-    
-    # Load training dataset (following reference: 1_data_collection_with_rollout.py:198-199)
-    import robomimic.utils.train_utils as TrainUtils
-    trainset, validset = TrainUtils.load_data_for_training(
-        config, obs_keys=shape_meta["all_obs_keys"], lang_encoder=lang_encoder)
-    
-    # Get normalization stats (following reference: 1_data_collection_with_rollout.py:209-215)
-    obs_normalization_stats = None
-    if config.train.hdf5_normalize_obs:
-        obs_normalization_stats = trainset.get_obs_normalization_stats()
-    
-    # Always get action normalization stats (following reference: 1_data_collection_with_rollout.py:215)
-    action_normalization_stats = trainset.get_action_normalization_stats()
-    
-    # Wrap as RolloutPolicy (following reference: 1_data_collection_with_rollout.py:343-348)
-    rollout_policy = RolloutPolicy(
-        model,
-        obs_normalization_stats=obs_normalization_stats,
-        action_normalization_stats=action_normalization_stats,
-        lang_encoder=lang_encoder,
-    )
-    print("Policy loaded successfully\n")
-    
+    if cfg.policy.type == "robomimic":
+        from robomimic.algo import algo_factory, RolloutPolicy
+        import robomimic.utils.file_utils as FileUtils
+        import robomimic.utils.torch_utils as TorchUtils
+        
+        # Get device
+        device = TorchUtils.get_torch_device(try_to_use_cuda=config.train.cuda)
+        
+        # Load dataset to get shape_meta
+        dataset_path = os.path.expanduser(config.train.data[0]["path"])
+        shape_meta = FileUtils.get_shape_metadata_from_dataset(
+            dataset_path=dataset_path,
+            action_keys=config.train.action_keys,
+            all_obs_keys=config.all_obs_keys,
+            ds_format=config.train.data_format,
+            verbose=True
+        )
+        
+        # Create model
+        model = algo_factory(
+            algo_name=config.algo_name,
+            config=config,
+            obs_key_shapes=shape_meta["all_shapes"],
+            ac_dim=shape_meta["ac_dim"],
+            device=device,
+        )
+        
+        # Load checkpoint
+        ckpt_path = config.experiment.ckpt_path
+        if ckpt_path is not None and os.path.isfile(os.path.expanduser(ckpt_path)):
+            print(f"Loading model weights from {ckpt_path}")
+            ckpt_dict = FileUtils.maybe_dict_from_checkpoint(ckpt_path=ckpt_path)
+            model.deserialize(ckpt_dict["model"])
+        else:
+            raise ValueError(f"Checkpoint path not found or not specified: {ckpt_path}")
+        
+        # Load training dataset to get normalization stats (following reference: 1_data_collection_with_rollout.py:198-215)
+        import robomimic.utils.lang_utils as LangUtils
+        lang_encoder = LangUtils.LangEncoder(device=device)
+        
+        # Load training dataset (following reference: 1_data_collection_with_rollout.py:198-199)
+        import robomimic.utils.train_utils as TrainUtils
+        trainset, validset = TrainUtils.load_data_for_training(
+            config, obs_keys=shape_meta["all_obs_keys"], lang_encoder=lang_encoder)
+        
+        # Get normalization stats (following reference: 1_data_collection_with_rollout.py:209-215)
+        obs_normalization_stats = None
+        if config.train.hdf5_normalize_obs:
+            obs_normalization_stats = trainset.get_obs_normalization_stats()
+        
+        # Always get action normalization stats (following reference: 1_data_collection_with_rollout.py:215)
+        action_normalization_stats = trainset.get_action_normalization_stats()
+        
+        # Wrap as RolloutPolicy (following reference: 1_data_collection_with_rollout.py:343-348)
+        rollout_policy = RolloutPolicy(
+            model,
+            obs_normalization_stats=obs_normalization_stats,
+            action_normalization_stats=action_normalization_stats,
+            lang_encoder=lang_encoder,
+        )
+    elif cfg.policy.type == "diffusion":
+        from mobipi.utils.policy_utils import load_policy
+        ext_cfg = json.load(open(cfg.policy.config_path, 'r'))
+        config_tmp = config_factory(ext_cfg["algo_name"])
+        with config_tmp.values_unlocked():
+            config_tmp.update(ext_cfg)
+        model, rollout_policy, lang_encoder = load_policy(config_tmp, cfg.policy.ckpt_path)
+
+    print(f"{cfg.policy.name} loaded successfully\n")
+
+    print("\n============= Preparing BenchmarkRunner =============")
     # Collect episodes (following reference implementation: train_utils.py:836-1134)
     # Get number of already collected episodes (for incremental collection)
     num_already_collected = collector.get_num_collected()
@@ -206,7 +219,7 @@ def main(cfg: DictConfig):
             robot = unwrapped_env.robots[0]
             
             # Get origin SE2 pose (following reference: train_utils.py:850)
-            se2_origin = obs_to_SE2(obs_dict, algorithm_name=config.algo_name)
+            se2_initial = obs_to_SE2(obs_dict, algorithm_name=config.algo_name)
             ac = np.zeros(12)
             
             # Render to screen if enabled
@@ -240,49 +253,33 @@ def main(cfg: DictConfig):
                 print(f"Warning: No point clouds captured for attempt {episode_attempt}")
                 continue
             
+            collision_checker = CollisionChecker(
+                point_cloud=pcd,
+                resolution=0.02,
+                robot_width=0.5,
+                robot_length=0.63,
+                ground_z=0.05
+            )
+
             # STEP 3-4: determine target_se2 (following reference: train_utils.py:890-893)
             # Use N2M data collection randomization range from benchmark config
-            pose_range = cfg.benchmark.n2m_data_collection_randomization
-            x_range = pose_range.x
-            y_range = pose_range.y
-            theta_range = pose_range.theta
-            
-            # Calculate half ranges
-            x_half_range = (x_range[1] - x_range[0]) / 2.0
-            y_half_range = (y_range[1] - y_range[0]) / 2.0
-            theta_half_range_rad = (theta_range[1] - theta_range[0]) / 2.0
-            theta_half_range_deg = np.degrees(theta_half_range_rad)
-            
-            target_helper = TargetHelper(
-                pcd=pcd,
-                origin_se2=se2_origin,
-                x_half_range=x_half_range,
-                y_half_range=y_half_range,
-                theta_half_range_deg=theta_half_range_deg,
-                vis=False,
-                camera_intrinsic=None,
-                filter_noise=True
-            )
             furniture_name = unwrapped_env.init_robot_base_pos.name
             furniture_pos = unwrapped_env.fixtures[furniture_name].pos[:2]
+            n2m_data_collection_randomization = cfg.benchmark.n2m_data_collection_randomization
+            se2_randomized = sample_collision_free_pose(
+                collision_checker,
+                n2m_data_collection_randomization,
+                se2_initial=se2_initial,  # Use actual robot pose after reset as origin
+                max_tries=100,
+                visualize=True,
+                save_path=f"{save_dir}/debug/episode_{successful_episodes}_sampling.png",
+                object_pos=furniture_pos,
+                check_visibility=True,
+                check_boundary=True
+            )
             
-            # This returns se2_delta (relative position)
-            try:
-                target_se2_delta = target_helper.get_random_target_se2_with_reachability_check(furniture_pos)
-            except Exception as e:
-                print(f"Attempt {episode_attempt}: Failed to sample pose - {e}")
-                continue
-            
-            # Teleport robot to target pose (following reference: train_utils.py:898-902)
-            from benchmark.utils.transform_utils import qpos_command_wrapper
-            robot = unwrapped_env.robots[0]
-            unwrapped_env.sim.data.qpos[robot._ref_base_joint_pos_indexes] = qpos_command_wrapper(target_se2_delta)
-            unwrapped_env.sim.forward()
-            
-            # Wait for robot to stabilize (following reference: train_utils.py:1055-1057)
-            for _ in range(5):
-                ac = np.zeros(env.action_spec()[0].shape[0] if hasattr(env, 'action_spec') else unwrapped_env.action_dim)
-                obs_dict, _, _, _ = env.step(ac)
+            teleport_robot_to_target(unwrapped_env, se2_randomized, se2_initial)
+            obs_dict, _, _, _ = env.step(ac)
             
             # Execute manipulation policy rollout (following reference: train_utils.py:1096-1106)
             # Get language instruction from env (following reference: train_utils.py:342)
@@ -325,23 +322,16 @@ def main(cfg: DictConfig):
             # Note: Point cloud was already captured BEFORE rollout (step 3-3)
             if success:
                 # Save the point cloud and metadata
-                # Note: target_pose is the absolute pose (se2_origin + target_se2_delta)
-                target_pose_abs = se2_origin + target_se2_delta
-                
-                # Save point cloud (already captured before rollout)
                 collector.save_episode_pointcloud(
                     pcd=pcd,
                     episode_id=successful_episodes,
-                    target_pose=target_pose_abs,
+                    target_pose=se2_randomized,
                     detect_camera="robot0_front_depth",
                     env=env,
                     algo_name=config.algo_name
                 )
-                
-                # Save metadata after each successful episode (for incremental collection)
                 collector.save_metadata()
                 
-                # Update progress
                 successful_episodes += 1
                 pbar.update(1)
                 print(f"Attempt {episode_attempt}: SUCCESS (saved as episode {successful_episodes-1})")

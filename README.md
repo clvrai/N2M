@@ -99,31 +99,39 @@ Collect Policy rollout for N2M training
 ```bash
 # name: [CloseDrawer, PnPCounterToCab, CloseDoubleDoor, OpenSingleDoor]
 # policy: [bc_transformer, diffusion]
-CUDA_VISIBLE_DEVICES=6 python scripts/collect_n2m_data.py \
-  env.name=OpenSingleDoor \
-  policy=bc_transformer \
-  benchmark=collection \
-  benchmark.num_valid_data=50
-
-CUDA_VISIBLE_DEVICES=7 python scripts/collect_n2m_data.py \
-  env.name=PnPCounterToCab \
-  policy=bc_transformer \
-  benchmark=collection \
-  benchmark.num_valid_data=50
-
-CUDA_VISIBLE_DEVICES=7 python scripts/collect_n2m_data.py \
-  env.name=CloseDoubleDoor \
-  policy=bc_transformer \
-  benchmark=collection \
-  benchmark.num_valid_data=50
-  
-# debug (tmp)
 CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
-  env.name=CloseDoubleDoor \
-  env.render=true \
+  env.name=PnPCounterToCab \
+  env.render=false \
+  'env.layout_and_style_ids=[[5,6]]' \
   policy=bc_transformer \
   benchmark=collection \
-  benchmark.num_valid_data=3
+  benchmark.num_valid_data=20
+
+CUDA_VISIBLE_DEVICES=1 python scripts/collect_n2m_data.py \
+  env.name=CloseDoubleDoor \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,1]]' \
+  policy=bc_transformer \
+  benchmark=collection \
+  benchmark.num_valid_data=20
+
+
+CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=diffusion \
+  benchmark=collection \
+  benchmark.num_valid_data=50
+
+CUDA_VISIBLE_DEVICES=1 python scripts/collect_n2m_data.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
+  benchmark=collection \
+  benchmark.num_valid_data=50
+
 ```
 
 Output format:
@@ -136,53 +144,81 @@ data/predictor/n2m/{task}_{scene}_{style}_{policytype}/
 └── meta.json  # camera info, pose with pcd_path
 ```
 
-Data augmentation
+Data augmentation and Train N2M module
 ```bash
+# put this into installation.sh
 cd predictor/N2M/scripts/render
 mkdir build && cd build
 cmake .. && make -j && cd ../../../../..
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/OpenSingleDoor_0_1_diffusion --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/OpenSingleDoor_0_1_diffusion
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_20 --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_20 
+CUDA_VISIBLE_DEVICES=0 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_20 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/PnPCounterToCab_0_1_diffusion --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/PnPCounterToCab_0_1_diffusion
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_35 --num_poses 300 --num_episodes 35
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_35 
+CUDA_VISIBLE_DEVICES=1 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_35 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_50 --num_poses 300 --num_episodes 50
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_50 
+CUDA_VISIBLE_DEVICES=3 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_50 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer
 
-# debug (tmp)
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ../lamp --num_poses 100
-predictor/N2M/scripts/render/build/fpv_render ../lamp
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 --num_poses 300 --num_episodes 20
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 
+CUDA_VISIBLE_DEVICES=5 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 --num_poses 300 --num_episodes 35
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 
+CUDA_VISIBLE_DEVICES=6 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 --num_poses 300 --num_episodes 50
+predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 64
+CUDA_VISIBLE_DEVICES=7 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+
+
+
+
+
+# for real-world
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ./data/predictor/n2m/pick --num_poses 300
+predictor/N2M/scripts/render/build/fpv_render ./data/predictor/n2m/pick
+CUDA_VISIBLE_DEVICES=6 python predictor/N2M/scripts/train.py --use_cache --output_dim 4 --max_epoch 500 --num_gaussians 1 --no_val --dataset_path ./data/predictor/n2m/pick --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+
+python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ./data/predictor/n2m/place --num_poses 300
+predictor/N2M/scripts/render/build/fpv_render ./data/predictor/n2m/place
+CUDA_VISIBLE_DEVICES=7 python predictor/N2M/scripts/train.py --use_cache --output_dim 4 --max_epoch 500 --num_gaussians 1 --no_val --dataset_path ./data/predictor/n2m/place --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 ```
 
-Train N2M module
+### Predictor2: Mobipi
+Reconstruct the scene in mobipi their own repo (6m57s for each reconstruction, including 83s for capture image and pcd. 3dgs with ground truth transform_matrix and pcd.)
 ```bash
-CUDA_VISIBLE_DEVICES=0 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/OpenSingleDoor_0_1_diffusion --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-CUDA_VISIBLE_DEVICES=1 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/PnPCounterToCab_0_1_diffusion --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-CUDA_VISIBLE_DEVICES=2 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/PnPCounterToCab_5_6_bc_transformer --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-CUDA_VISIBLE_DEVICES=3 python predictor/N2M/scripts/train.py --dataset_path ./data/predictor/n2m/CloseDoubleDoor_0_1_bc_transformer --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+CUDA_VISIBLE_DEVICES=7 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 1 --seed 123000
+CUDA_VISIBLE_DEVICES=0 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 3 --seed 123000
+CUDA_VISIBLE_DEVICES=1 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 4 --seed 123000
+CUDA_VISIBLE_DEVICES=2 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 5 --seed 123000
+CUDA_VISIBLE_DEVICES=3 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 7 --seed 123000
+CUDA_VISIBLE_DEVICES=4 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 8 --seed 123000
+CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 9 --seed 123000
+CUDA_VISIBLE_DEVICES=6 python mobipi/scene_model/collect_images.py --env_name PnPCounterToCab --layout_id 5 --style_id 6 --seed 123000
+CUDA_VISIBLE_DEVICES=0 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 0 --seed 123000
+CUDA_VISIBLE_DEVICES=1 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 1 --seed 123000
+CUDA_VISIBLE_DEVICES=2 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 2 --seed 123000
+CUDA_VISIBLE_DEVICES=3 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 3 --seed 123000
+CUDA_VISIBLE_DEVICES=4 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 4 --seed 123000
+CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 5 --seed 123000
+CUDA_VISIBLE_DEVICES=6 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 6 --seed 123000
+CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name CloseDrawer --layout_id 0 --style_id 0 --seed 123000
 ```
-
-### Predictor2: Mobipi (todo)
-
-**Collect Mobipi images (TODO)**
-```bash
-python scripts/collect_mobipi_images.py \
-  env=CloseDrawer \
-  benchmark=data_collection
-```
+or download our pre-collect dataset.
 
 ### Predictor3: LeLaN (todo)
 
 Todo
 
+### Predictor4: Reachability (todo)
+
+Todo
 
 ## Run Benchmark Evaluation
 
@@ -192,48 +228,132 @@ Todo
 # policy: [bc_transformer, diffusion]
 # predictor: [blank, n2m]
 
-# blank
-CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
-  env.name=PnPCounterToCab \
+# blank (need do again) (PnPCounterToCab 5,6) (CloseDoubleDoor 0,1)
+CUDA_VISIBLE_DEVICES=2 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
   env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
   policy=diffusion \
   predictor=blank \
   benchmark=evaluation \
-  benchmark.num_episodes=100
+  benchmark.num_episodes=300
 
-CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
-  env.name=OpenSingleDoor \
+CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
   env.render=false \
-  policy=diffusion \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
   predictor=blank \
   benchmark=evaluation \
-  benchmark.num_episodes=100
+  benchmark.num_episodes=300
 
-# n2m
+# n2m (to do) (PnPCounterToCab 5,6) (CloseDoubleDoor 0,1)
 CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
-  env.name=PnPCounterToCab \
+  env.name=CloseDrawer \
   env.render=false \
-  policy=diffusion \
-  predictor=n2m \
-  benchmark=evaluation \
-  benchmark.num_episodes=100
-
-CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
-  env.name=OpenSingleDoor \
-  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
   policy=bc_transformer \
   predictor=n2m \
+  predictor.rollout_num=20 \
   benchmark=evaluation \
-  benchmark.num_episodes=100
+  benchmark.num_episodes=300
 
-# mobipi
+CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
+  predictor=n2m \
+  predictor.rollout_num=35 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+CUDA_VISIBLE_DEVICES=3 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=diffusion \
+  predictor=n2m \
+  predictor.rollout_num=50 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+
+CUDA_VISIBLE_DEVICES=5 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=diffusion \
+  predictor=n2m \
+  predictor.rollout_num=20 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+CUDA_VISIBLE_DEVICES=6 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=diffusion \
+  predictor=n2m \
+  predictor.rollout_num=35 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+CUDA_VISIBLE_DEVICES=7 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
+  predictor=n2m \
+  predictor.rollout_num=50 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+
+
+
+
+# mobipi (implementing) (CloseDoubleDoor 0,1)
+CUDA_VISIBLE_DEVICES=2 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
+  predictor=mobipi \
+  predictor.num_init_samples=2500 \
+  predictor.bo_num_samples=500 \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
 CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
-  env.name=OpenSingleDoor \
-  env.render=true \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
   policy=diffusion \
   predictor=mobipi \
+  predictor.num_init_samples=2500 \
+  predictor.bo_num_samples=505 \
   benchmark=evaluation \
-  benchmark.num_episodes=2
+  benchmark.num_episodes=300
+
+# reachability
+CUDA_VISIBLE_DEVICES=5 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=diffusion \
+  predictor=reachability \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
+
+CUDA_VISIBLE_DEVICES=6 python scripts/run_benchmark.py \
+  env.name=CloseDrawer \
+  env.render=false \
+  'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer \
+  predictor=reachability \
+  benchmark=evaluation \
+  benchmark.num_episodes=300
 ```
 
 ## Troubleshooting
