@@ -14,7 +14,7 @@ Benchmark evaluation flow (simplified from train_utils.py:840-1110):
 6. [Optional] Set MANIPULATION mode (only if DETECT mode was used)
 7. Execute manipulation policy
 
-Note: Most predictors (blank, n2m, lelan, reachability) don't need robot removal
+Note: Most predictors (oracle, n2m, lelan, reachability) don't need robot removal
       during benchmark evaluation, as they use pre-trained models or don't need scene capture.
       Only mobipi (with live 3DGS) needs robot removal.
 """

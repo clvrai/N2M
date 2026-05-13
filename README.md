@@ -4,11 +4,12 @@ Unified benchmark framework for mobile manipulation navigation predictors.
 
 ## Overview
 
-This repository provides a benchmark environment for evaluating different navigation prediction methods (N2M, Mobipi, LeLaN, Blank, Reachability) combined with manipulation policies in RoboCasa kitchen environments.
+This repository provides a benchmark environment for evaluating different navigation prediction methods (N2M, Mobipi, Reachability, Oracle, LeLaN) combined with manipulation policies in RoboCasa kitchen environments.
 
 **Key Features:**
+
 - Unified predictor/policy/env interfaces for benchmark
-- include 5 predictors: N2M, Mobipi, LeLaN, Blank, Reachability
+- include 5 predictors: N2M, Mobipi, Reachability, Oracle, LeLaN
 - Minimal modification to third-party libraries
 - Hydra configuration management
 
@@ -21,102 +22,109 @@ mamba activate n2m_benchmark
 git clone git@github.com:clvrai/N2M.git -b benchmark N2M_benchmark
 cd N2M_benchmark
 
+echo "alias n2m_ws='cd $(pwd)'" >> ~/.${SHELL##*/}rc && source ~/.${SHELL##*/}rc
+
 chmod +x install.sh
 ./install.sh    # it is ok to have pip packages conflicts.
 ```
+
+## Download Prepared Data
+
+We provide a prepared `data/` folder that contains the pretrained assets used by the benchmark, including pretrained manipulation policies, pretrained N2M models, and the CloseDrawer Mobipi 3DGS reconstruction.
+
+Download link: https://drive.google.com/drive/folders/1lRb42oNca6Eiiu7QzvDSpTC61Rxrt3H4?usp=drive_link
+
+Download and extract this folder **before** downloading the RoboCasa datasets below. The prepared folder creates `data/` in the repository root.
+
+
+This prepared `data/` folder does **not** include the RoboCasa policy datasets because they are too large to bundle with the pretrained assets. You still need to download the datasets manually in the next section. They are required for inference as well as training.
 
 ## Prepare Policy
 
 ### Policy1: Robomimic
 
 **Download datasets**
-Download robocasa pre-collected dataset for policy training and inference
+Download RoboCasa pre-collected datasets for policy training and inference. This step is required even if you use the pretrained checkpoints.
+
 ```bash
-cd env/robocasa
-python robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks PnPCounterToCab --download_dir ../../data/policy/robomimic/datasets
-python robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks CloseDoubleDoor --download_dir ../../data/policy/robomimic/datasets
-python robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks OpenSingleDoor --download_dir ../../data/policy/robomimic/datasets
-python robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks CloseDrawer --download_dir ../../data/policy/robomimic/datasets
+n2m_ws
+
+python env/robocasa/robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks PnPCounterToCab --download_dir data/policy/robomimic/datasets
+python env/robocasa/robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks CloseDoubleDoor --download_dir data/policy/robomimic/datasets
+python env/robocasa/robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks OpenSingleDoor --download_dir data/policy/robomimic/datasets
+python env/robocasa/robocasa/scripts/my_download_datasets.py --ds_types mg_im --tasks CloseDrawer --download_dir data/policy/robomimic/datasets
 ```
+
 **Train policies**
 You can train yourself, or use our pre-trained policy checkpoints. 
-<details>
-<summary>Click to expand training commands</summary>
+
+**Use pretrained checkpoints**
+If you do not want to train the manipulation policies yourself, use the prepared `data/` folder linked above. It already contains the pretrained policy checkpoints used by the benchmark.
+
+Click to expand training commands
 
 ```bash
-cd policy/robomimic
+n2m_ws
 
 # PnPCounterToCab - BC Transformer
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/pnpCounterToCab_BCtransformer.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/pnpCounterToCab_BCtransformer.json
 
 # PnPCounterToCab - Diffusion
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/PnPCounterToCab_diffusion.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/PnPCounterToCab_diffusion.json
 
 # CloseDoubleDoor - BC Transformer
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/CloseDoubleDoor_BCtransformer.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/CloseDoubleDoor_BCtransformer.json
 
 # CloseDoubleDoor - Diffusion
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/CloseDoubleDoor_diffusion.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/CloseDoubleDoor_diffusion.json
 
 # OpenSingleDoor - BC Transformer
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/OpenSingleDoor_BCtransformer.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/OpenSingleDoor_BCtransformer.json
 
 # OpenSingleDoor - Diffusion
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/OpenSingleDoor_diffusion.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/OpenSingleDoor_diffusion.json
 
 # CloseDrawer - BC Transformer
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/CloseDrawer_BCtransformer.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/CloseDrawer_BCtransformer.json
 
 # CloseDrawer - Diffusion
-python robomimic/scripts/train.py --config ../../data/policy/robomimic/configs/CloseDrawer_diffusion.json
+python policy/robomimic/robomimic/scripts/train.py --config data/policy/robomimic/configs/CloseDrawer_diffusion.json
 ```
-</details>
 
-Policy checkpoints should be placed as follows:
+Policy checkpoints should be placed as follows. BC Transformer checkpoints are loaded from `data/policy/robomimic/checkpoints/`, and diffusion checkpoints are loaded from `data/policy/dp/checkpoints/`.
+
 ```
-data/policy/robomimic/checkpoints/
-├── pnpCounterToCab_BCtransformer.pth
-├── PnPCounterToCab_diffusion.pth
-├── CloseDoubleDoor_BCtransformer.pth
-├── CloseDoubleDoor_diffusion.pth
-├── OpenSingleDoor_BCtransformer.pth
-├── OpenSingleDoor_diffusion.pth
-├── CloseDrawer_BCtransformer.pth
-└── CloseDrawer_diffusion.pth
+data/policy/
+├── robomimic/checkpoints/
+│   ├── PnPCounterToCab_BCtransformer.pth
+│   ├── CloseDoubleDoor_BCtransformer.pth
+│   ├── OpenSingleDoor_BCtransformer.pth
+│   └── CloseDrawer_BCtransformer.pth
+└── dp/checkpoints/
+    ├── PnPCounterToCab_diffusion.pth
+    ├── CloseDoubleDoor_diffusion.pth
+    ├── OpenSingleDoor_diffusion.pth
+    └── CloseDrawer_diffusion.pth
 ```
 
 ### Policy2: VLM
-Todo
+
+Not implemented — we planned to include a Vision-Language Model baseline but ran out of time before the deadline. The interface is already in place, so users can plug one in without touching the runner: subclass `BasePolicy` (see `benchmark/policy/base.py`) and replace the stub at `benchmark/policy/vlm_policy.py`. The required methods are `predict_action(observation, goal=None) -> np.ndarray`, `reset()`, `load_checkpoint(path)`, and the `name` property.
 
 ### Policy3: VLA
-Todo
+
+Not implemented — same story as VLM. The stub lives at `benchmark/policy/vla_policy.py` and follows the exact same `BasePolicy` contract; finish those four methods and wire it into `scripts/run_benchmark.py` alongside the existing `cfg.policy.type == "robomimic" / "diffusion"` branches.
 
 ## Prepare Predictors
 
 ### Predictor1: N2M
 
 Collect Policy rollout for N2M training
+
 ```bash
 # name: [CloseDrawer, PnPCounterToCab, CloseDoubleDoor, OpenSingleDoor]
 # policy: [bc_transformer, diffusion]
-CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
-  env.name=PnPCounterToCab \
-  env.render=false \
-  'env.layout_and_style_ids=[[5,6]]' \
-  policy=bc_transformer \
-  benchmark=collection \
-  benchmark.num_valid_data=20
-
-CUDA_VISIBLE_DEVICES=1 python scripts/collect_n2m_data.py \
-  env.name=CloseDoubleDoor \
-  env.render=false \
-  'env.layout_and_style_ids=[[0,1]]' \
-  policy=bc_transformer \
-  benchmark=collection \
-  benchmark.num_valid_data=20
-
-
-CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
+python scripts/collect_n2m_data.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -124,17 +132,17 @@ CUDA_VISIBLE_DEVICES=0 python scripts/collect_n2m_data.py \
   benchmark=collection \
   benchmark.num_valid_data=50
 
-CUDA_VISIBLE_DEVICES=1 python scripts/collect_n2m_data.py \
+python scripts/collect_n2m_data.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
   policy=bc_transformer \
   benchmark=collection \
   benchmark.num_valid_data=50
-
 ```
 
 Output format:
+
 ```
 data/predictor/n2m/{task}_{scene}_{style}_{policytype}/
 ├── pcl/
@@ -145,130 +153,120 @@ data/predictor/n2m/{task}_{scene}_{style}_{policytype}/
 ```
 
 Data augmentation and Train N2M module
+
+**Use pretrained N2M checkpoints**
+If you do not want to collect rollouts and train N2M yourself, use the prepared `data/` folder linked above. It already contains the pretrained N2M folders used by the benchmark.
+
+Place each folder under `data/predictor/n2m/`. For example:
+
+```
+data/predictor/n2m/CloseDrawer_0_0_diffusion_50/
+└── training/
+    ├── config.json
+    └── ckpts/best_model.pth
+
+data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50/
+└── training/
+    ├── config.json
+    └── ckpts/best_model.pth
+```
+
 ```bash
-# put this into installation.sh
+# compile the render (c++ based for rending speed.) (Introduced in Section 3.3.2 in our paper)
 cd predictor/N2M/scripts/render
 mkdir build && cd build
-cmake .. && make -j && cd ../../../../..
+cmake .. && make -j
+n2m_ws
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_20 --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_20 
-CUDA_VISIBLE_DEVICES=0 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_20 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_35 --num_poses 300 --num_episodes 35
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_35 
-CUDA_VISIBLE_DEVICES=1 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_35 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
+# diffusion
 python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_50 --num_poses 300 --num_episodes 50
+
 predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_diffusion_50 
-CUDA_VISIBLE_DEVICES=3 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_diffusion_50 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+python predictor/N2M/scripts/train.py --use_cache --max_epoch 800 --num_gaussians 2 --dataset_path data/predictor/n2m/CloseDrawer_0_0_diffusion_50 --encoder_ckpt data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 
 
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 --num_poses 300 --num_episodes 20
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 
-CUDA_VISIBLE_DEVICES=5 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_20 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 --num_poses 300 --num_episodes 35
-predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 
-CUDA_VISIBLE_DEVICES=6 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_35 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
+# bc_transformer
 python predictor/N2M/scripts/sample_camera_poses.py --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 --num_poses 300 --num_episodes 50
+
 predictor/N2M/scripts/render/build/fpv_render data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 64
-CUDA_VISIBLE_DEVICES=7 python predictor/N2M/scripts/train.py --use_cache --max_epoch 1000 --num_gaussians 2 --dataset_path ./data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-
-
-
-
-# for real-world
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ./data/predictor/n2m/pick --num_poses 300
-predictor/N2M/scripts/render/build/fpv_render ./data/predictor/n2m/pick
-CUDA_VISIBLE_DEVICES=6 python predictor/N2M/scripts/train.py --use_cache --output_dim 4 --max_epoch 500 --num_gaussians 1 --no_val --dataset_path ./data/predictor/n2m/pick --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
-
-python predictor/N2M/scripts/sample_camera_poses.py --dataset_path ./data/predictor/n2m/place --num_poses 300
-predictor/N2M/scripts/render/build/fpv_render ./data/predictor/n2m/place
-CUDA_VISIBLE_DEVICES=7 python predictor/N2M/scripts/train.py --use_cache --output_dim 4 --max_epoch 500 --num_gaussians 1 --no_val --dataset_path ./data/predictor/n2m/place --encoder_ckpt ./data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
+python predictor/N2M/scripts/train.py --use_cache --max_epoch 800 --num_gaussians 2 --dataset_path data/predictor/n2m/CloseDrawer_0_0_bc_transformer_50 --encoder_ckpt data/predictor/n2m/PointBERT/PointTransformer_ModelNet8192points.pth
 ```
 
 ### Predictor2: Mobipi
+
 Reconstruct the scene in mobipi their own repo (6m57s for each reconstruction, including 83s for capture image and pcd. 3dgs with ground truth transform_matrix and pcd.)
+
 ```bash
-CUDA_VISIBLE_DEVICES=7 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 1 --seed 123000
-CUDA_VISIBLE_DEVICES=0 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 3 --seed 123000
-CUDA_VISIBLE_DEVICES=1 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 4 --seed 123000
-CUDA_VISIBLE_DEVICES=2 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 5 --seed 123000
-CUDA_VISIBLE_DEVICES=3 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 7 --seed 123000
-CUDA_VISIBLE_DEVICES=4 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 8 --seed 123000
-CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name CloseDoubleDoor --layout_id 0 --style_id 9 --seed 123000
-CUDA_VISIBLE_DEVICES=6 python mobipi/scene_model/collect_images.py --env_name PnPCounterToCab --layout_id 5 --style_id 6 --seed 123000
-CUDA_VISIBLE_DEVICES=0 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 0 --seed 123000
-CUDA_VISIBLE_DEVICES=1 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 1 --seed 123000
-CUDA_VISIBLE_DEVICES=2 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 2 --seed 123000
-CUDA_VISIBLE_DEVICES=3 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 3 --seed 123000
-CUDA_VISIBLE_DEVICES=4 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 4 --seed 123000
-CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 5 --seed 123000
-CUDA_VISIBLE_DEVICES=6 python mobipi/scene_model/collect_images.py --env_name OpenSingleDoor --layout_id 0 --style_id 6 --seed 123000
-CUDA_VISIBLE_DEVICES=5 python mobipi/scene_model/collect_images.py --env_name CloseDrawer --layout_id 0 --style_id 0 --seed 123000
+python mobipi/scene_model/collect_images.py --env_name CloseDrawer --layout_id 0 --style_id 0 --seed 123000
 ```
-or download our pre-collect dataset.
 
-### Predictor3: LeLaN (todo)
+or use the pre-collected CloseDrawer 3DGS reconstruction included in the prepared `data/` folder linked above.
 
-Todo
+Place it under:
 
-### Predictor4: Reachability (todo)
+```
+data/predictor/mobipi/scene_data/close_drawer/layout0_style0_seed123000/
+└── model/splatfacto/.../nerfstudio_models/step-*.ckpt
+```
 
-Todo
+### Predictor3: Reachability
+
+We ship a **rigorous IK-based reachability baseline**. A previous reachability baseline of ours was criticized by reviewers as not strict enough, so for this benchmark we sample a candidate base pose, then explicitly run IK on the Panda arm to verify the robot can reach the target manipulation surface *before and after* the task is executed. If both checks pass, the pose is accepted. Implementation lives in `benchmark/predictor/reachability_predictor.py` and uses [pinocchio](https://github.com/stack-of-tasks/pinocchio) plus the Panda URDF loaded via `robot_descriptions`.
+
+**Two implementations exist** (only the first is in this branch):
+
+1. **Strict IK** (this branch) — sample a base pose → IK-check reachability of pre-/post-task end-effector targets on the drawer surface. Guarantees reachability but is **tailored to the `CloseDrawer` task only** (target surfaces are hard-coded in `reachability_predictor.py`). A cleaner approach would be to precompute an *inverse reachability map* and query it on the fly; we chose the naive online sampler because it's easy to verify and gives a fair point of comparison for this benchmark. Apologies for the rough edges.
+2. **Simplified distance heuristic** (`sim` branch, **not in this benchmark branch**) — accept a base pose iff `distance(target, arm_base) > 0.9 × arm_length`. Numerically almost identical to the strict version and applicable to *all* tasks (not just `CloseDrawer`). This is the version reported in Figure 5 and Figure 10 of our ICML camera-ready paper.
+
+```bash
+python scripts/run_benchmark.py \
+  env.name=CloseDrawer 'env.layout_and_style_ids=[[0,0]]' \
+  policy=bc_transformer predictor=reachability \
+  benchmark=evaluation benchmark.num_episodes=300
+```
+
+### Predictor4: Oracle
+
+The Oracle baseline is `**OraclePredictor**` (`benchmark/predictor/oracle_predictor.py`, CLI override `predictor=oracle`). It returns `se2_initial` directly — the unperturbed initial pose from `env.reset()`, which matches the pose distribution the manipulation policy was trained on. So it answers: *"how well does the policy do if you give it the training-time canonical pose for free?"* — an upper bound that isolates manipulation difficulty from navigation difficulty. No checkpoint or extra setup required.
+
+### Predictor5: LeLaN (todo)
+
+Not implemented in this branch. LeLaN is a **VLM-based navigation policy** used as a navigation predictor baseline in the Mobipi paper — given a natural-language target description, it predicts a base pose to drive toward. Source for the model lives in the `[predictor/lelan/](predictor/lelan/)` submodule. The integration scaffolding (`benchmark/predictor/lelan_predictor.py` + `configs/predictor/lelan.yaml`) is in place, but we ran out of time before the deadline to finish the wrapper. Contributors who want to enable it can fill in `LeLaNPredictor.predict()` against the model API documented in `predictor/lelan/README.md`.
 
 ## Run Benchmark Evaluation
 
+We also release one set of benchmark statistics computed from 300 consecutive runs, corresponding to the benchmark results reported in the paper:
+
+https://drive.google.com/drive/folders/1qPjI9FdSEAifqHznYgRZOjvHC9zO6nIm?usp=drive_link
+
 **Basic usage:**
+
 ```bash
 # name: [CloseDrawer, PnPCounterToCab, CloseDoubleDoor, OpenSingleDoor]
 # policy: [bc_transformer, diffusion]
-# predictor: [blank, n2m]
+# predictor: [oracle, n2m, mobipi, reachability]
 
-# blank (need do again) (PnPCounterToCab 5,6) (CloseDoubleDoor 0,1)
-CUDA_VISIBLE_DEVICES=2 python scripts/run_benchmark.py \
+# oracle
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
   policy=diffusion \
-  predictor=blank \
+  predictor=oracle \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
   policy=bc_transformer \
-  predictor=blank \
+  predictor=oracle \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-# n2m (to do) (PnPCounterToCab 5,6) (CloseDoubleDoor 0,1)
-CUDA_VISIBLE_DEVICES=0 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
-  env.render=false \
-  'env.layout_and_style_ids=[[0,0]]' \
-  policy=bc_transformer \
-  predictor=n2m \
-  predictor.rollout_num=20 \
-  benchmark=evaluation \
-  benchmark.num_episodes=300
-
-CUDA_VISIBLE_DEVICES=1 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
-  env.render=false \
-  'env.layout_and_style_ids=[[0,0]]' \
-  policy=bc_transformer \
-  predictor=n2m \
-  predictor.rollout_num=35 \
-  benchmark=evaluation \
-  benchmark.num_episodes=300
-
-CUDA_VISIBLE_DEVICES=3 python scripts/run_benchmark.py \
+# n2m (we tried rollout_num = 20,35,50. They all works reasonable.)
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -278,28 +276,7 @@ CUDA_VISIBLE_DEVICES=3 python scripts/run_benchmark.py \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-
-CUDA_VISIBLE_DEVICES=5 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
-  env.render=false \
-  'env.layout_and_style_ids=[[0,0]]' \
-  policy=diffusion \
-  predictor=n2m \
-  predictor.rollout_num=20 \
-  benchmark=evaluation \
-  benchmark.num_episodes=300
-
-CUDA_VISIBLE_DEVICES=6 python scripts/run_benchmark.py \
-  env.name=CloseDrawer \
-  env.render=false \
-  'env.layout_and_style_ids=[[0,0]]' \
-  policy=diffusion \
-  predictor=n2m \
-  predictor.rollout_num=35 \
-  benchmark=evaluation \
-  benchmark.num_episodes=300
-
-CUDA_VISIBLE_DEVICES=7 python scripts/run_benchmark.py \
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -309,12 +286,8 @@ CUDA_VISIBLE_DEVICES=7 python scripts/run_benchmark.py \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-
-
-
-
-# mobipi (implementing) (CloseDoubleDoor 0,1)
-CUDA_VISIBLE_DEVICES=2 python scripts/run_benchmark.py \
+# mobipi 
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -325,7 +298,7 @@ CUDA_VISIBLE_DEVICES=2 python scripts/run_benchmark.py \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -337,7 +310,7 @@ CUDA_VISIBLE_DEVICES=4 python scripts/run_benchmark.py \
   benchmark.num_episodes=300
 
 # reachability
-CUDA_VISIBLE_DEVICES=5 python scripts/run_benchmark.py \
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -346,7 +319,7 @@ CUDA_VISIBLE_DEVICES=5 python scripts/run_benchmark.py \
   benchmark=evaluation \
   benchmark.num_episodes=300
 
-CUDA_VISIBLE_DEVICES=6 python scripts/run_benchmark.py \
+python scripts/run_benchmark.py \
   env.name=CloseDrawer \
   env.render=false \
   'env.layout_and_style_ids=[[0,0]]' \
@@ -361,12 +334,15 @@ CUDA_VISIBLE_DEVICES=6 python scripts/run_benchmark.py \
 ### OpenGL/GLFW Rendering Issues
 
 If you encounter errors like:
+
 ```
 libGL error: MESA-LOADER: failed to open swrast: /lib/x86_64-linux-gnu/libLLVM-12.so.1: undefined symbol: ffi_type_sint32
 GLFWError: (65543) b'GLX: Failed to create context: BadValue (integer parameter out of range for operation)'
 ERROR: could not create window
 ```
+
 Try following steps
+
 ```bash
 sudo apt install mlocate
 locate libglfw.so.3
@@ -377,213 +353,125 @@ export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libffi.so.7
 ```
 
 ## Project Structure
-### Folder Structure
+
+### Repo layout
+
 ```
 N2M-benchmark/
-├── benchmark/                      # Main benchmark package
-│   ├── core/                       # Core benchmark logic
-│   │   ├── benchmark_runner.py    # Multi-episode runner
-│   │   ├── data_collector.py      # N2M data collection
-│   │   └── rollout.py             # Unified rollout loop
-│   ├── env/                        # Environment utilities
-│   │   └── env_utils.py           # Env creation, config loading
-│   ├── policy/                     # Policy wrappers
-│   │   ├── base.py                # BasePolicy interface
-│   │   ├── robomimic_policy.py    # Robomimic policy wrapper
-│   │   ├── vlm_policy.py          # VLM policy wrapper
-│   │   └── vla_policy.py          # VLA policy wrapper
-│   ├── predictor/                  # Predictor implementations
-│   │   ├── base.py                # BasePredictor interface
-│   │   ├── blank_predictor.py     # Baseline (no prediction)
-│   │   ├── n2m_predictor.py       # N2M predictor
-│   │   ├── mobipi_predictor.py    # Mobipi predictor
-│   │   ├── lelan_predictor.py     # LeLaN predictor
-│   │   └── reachability_predictor.py # Reachability predictor
-│   └── utils/                      # Utility modules
-│       ├── collision_utils.py     # Collision checking
-│       ├── navigation_utils.py    # Teleport navigation
-│       ├── obs_utils.py           # Observation extraction
-│       ├── observation_utils.py   # RGB-D → point cloud
-│       ├── sample_utils.py        # Pose sampling
-│       ├── sampling_utils.py      # Target sampling
-│       ├── transform_utils.py     # SE2/SE3 transforms
-│       └── visualization_utils.py # Video/plot generation
-├── configs/                        # Hydra configurations
-│   ├── config.yaml                # Main entry point
-│   ├── paths/                     # Path configurations
-│   │   └── default.yaml           # Data/checkpoint paths
-│   ├── env/                       # Environment configs
-│   │   ├── configs/               # JSON configs (robosuite)
-│   │   │   ├── CloseDrawer.json
-│   │   │   ├── CloseDoubleDoor.json
-│   │   │   ├── OpenSingleDoor.json
-│   │   │   └── PnPCounterToCab.json
-│   │   └── robocasa.yaml          # Universal RoboCasa config
-│   ├── policy/                    # Policy configs
-│   │   ├── configs/               # JSON configs (robomimic)
-│   │   │   ├── CloseDrawer_BCtransformer.json
-│   │   │   ├── CloseDrawer_diffusion.json
-│   │   │   ├── CloseDoubleDoor_BCtransformer.json
-│   │   │   ├── CloseDoubleDoor_diffusion.json
-│   │   │   ├── OpenSingleDoor_BCtransformer.json
-│   │   │   ├── OpenSingleDoor_diffusion.json
-│   │   │   ├── pnpCounterToCab_BCtransformer.json
-│   │   │   └── PnPCounterToCab_diffusion.json
-│   │   ├── bc_transformer.yaml    # BC Transformer config
-│   │   └── diffusion.yaml         # Diffusion policy config
-│   ├── predictor/                 # Predictor configs
-│   │   ├── blank.yaml
-│   │   ├── n2m.yaml
-│   │   ├── mobipi.yaml
-│   │   ├── lelan.yaml
-│   │   └── reachability.yaml
-│   └── benchmark/                 # Benchmark mode configs
-│       ├── collection.yaml        # Data collection mode
-│       └── evaluation.yaml        # Evaluation mode
-├── data/                           # Data storage (gitignored)
-│   ├── policy/                    # Policy checkpoints and datasets
-│   │   └── robomimic/
-│   │       ├── checkpoints/       # Trained policy checkpoints
-│   │       └── datasets/          # Training datasets
-│   ├── predictor/                 # Predictor data
-│   │   └── n2m/                   # N2M training data
-│   │       └── {task}_{layout}_{style}_{policy}/
-│   │           ├── pcl/           # Point cloud files
-│   │           │   ├── 0.pcd
-│   │           │   ├── 1.pcd
-│   │           │   └── ...
-│   │           └── meta.json      # Metadata (poses, camera params)
-│   └── benchmark/                 # Benchmark results
-│       └── results/
-├── env/                            # Environment submodules
-│   ├── robocasa/                  # RoboCasa environment
-│   ├── robosuite/                 # Robosuite simulator
-│   └── mimicgen/                  # MimicGen
-├── policy/                         # Policy submodules
-│   └── robomimic/                 # Robomimic policy library
-├── predictor/                      # Predictor submodules
-│   ├── N2M/                       # N2M predictor
-│   ├── mobipi/                    # Mobipi predictor
-│   ├── lelan/                     # LeLaN predictor
-│   ├── blank/                     # Blank predictor (placeholder)
-│   └── reachability/              # Reachability predictor
-├── scripts/                        # Executable scripts
-│   ├── collect_n2m_data.py        # Collect N2M training data
-│   ├── collect_mobipi_images.py   # Collect Mobipi images
-│   └── run_benchmark.py           # Run benchmark evaluation
-├── docs/                           # Documentation
-│   └── RENDERING_ISSUES.md        # Troubleshooting guide
-├── install.sh                      # Installation script
-├── pyproject.toml                  # Package configuration
+├── benchmark/                          # Integration layer (this repo's source)
+│   ├── core/
+│   │   ├── benchmark_runner.py        # Multi-episode runner with resume + incremental save
+│   │   ├── data_collector.py          # N2M training data collection
+│   │   └── rollout.py                 # Per-episode predict → teleport → manipulate loop
+│   ├── env/env_utils.py               # RoboCasa env creation from JSON config
+│   ├── policy/                        # Policy wrappers (subclass BasePolicy)
+│   │   ├── base.py                    # BasePolicy abstract class
+│   │   ├── robomimic_policy.py        # BC Transformer / Diffusion via robomimic
+│   │   ├── vlm_policy.py              # Stub — NotImplementedError
+│   │   └── vla_policy.py              # Stub — NotImplementedError
+│   ├── predictor/                     # Predictor wrappers (subclass BasePredictor)
+│   │   ├── base.py
+│   │   ├── oracle_predictor.py        # Upper-bound baseline (returns training-distribution pose)
+│   │   ├── n2m_predictor.py           # Point cloud → GMM → SE2
+│   │   ├── mobipi_predictor.py        # 3DGS + Bayesian Optimization
+│   │   ├── lelan_predictor.py         # Stub
+│   │   └── reachability_predictor.py  # IK reachability (pinocchio)
+│   └── utils/                         # Collision, sampling, observation, transform helpers
+│
+├── configs/                            # Hydra configurations (YAML composition + JSON details)
+│   ├── config.yaml                    # Top-level: composes paths/env/policy/predictor/benchmark
+│   ├── paths/default.yaml             # Data and checkpoint root paths
+│   ├── env/
+│   │   ├── robocasa.yaml              # Universal env YAML; interpolates env.name into JSON path
+│   │   └── configs/                   # Full robosuite/robocasa JSON configs (one per task)
+│   │       ├── CloseDrawer.json
+│   │       ├── CloseDoubleDoor.json
+│   │       ├── OpenSingleDoor.json
+│   │       └── PnPCounterToCab.json
+│   ├── policy/
+│   │   ├── bc_transformer.yaml        # auto-builds config_name from env.name
+│   │   ├── diffusion.yaml
+│   │   └── configs/                   # Full robomimic JSON configs (one per task × policy)
+│   │       ├── CloseDrawer_BCtransformer.json
+│   │       ├── CloseDrawer_diffusion.json
+│   │       ├── CloseDoubleDoor_BCtransformer.json
+│   │       ├── OpenSingleDoor_BCtransformer.json
+│   │       └── pnpCounterToCab_BCtransformer.json
+│   ├── predictor/                     # One YAML per predictor (oracle/n2m/mobipi/lelan/reachability)
+│   └── benchmark/
+│       ├── collection.yaml            # Data-collection mode (asserted by collect_n2m_data.py)
+│       └── evaluation.yaml            # Evaluation mode (asserted by run_benchmark.py)
+│
+├── scripts/
+│   ├── run_benchmark.py               # Main evaluation entry point
+│   ├── collect_n2m_data.py            # Collect N2M training data via base-policy rollouts
+│   └── collect_mobipi_images.py       # Collect multi-view images for mobipi 3DGS training
+│
+├── data/                               # Symlink → external storage (datasets, ckpts, results)
+│   ├── policy/robomimic/{configs,checkpoints,datasets}/
+│   ├── predictor/n2m/{task}_{layout}_{style}_{policy}_{rollout_num}/{pcl/,meta.json,training/}
+│   └── benchmark/results/             # JSON results, one per (task × predictor) run
+│
+├── env/                                # Submodules — installed editable by install.sh
+│   ├── robocasa/                      # RoboCasa kitchen envs
+│   ├── robosuite/                     # MuJoCo simulator wrapper
+│   └── mimicgen/                      # MimicGen demos
+├── policy/robomimic/                  # Robomimic submodule
+├── predictor/                          # Predictor submodules (heavy algo code)
+│   ├── N2M/
+│   ├── mobipi/
+│   ├── lelan/
+│   └── reachability/
+│
+├── install.sh                          # Pip-installs submodules + pins nerfstudio/numpy/timm
+├── pyproject.toml                      # Benchmark package metadata + optional extras
+├── CLAUDE.md                           # Notes for AI coding assistants on cross-file invariants
 └── README.md
 ```
 
+### Hydra config resolution
 
-### System Architecture
+Two layers: the small **YAML files** compose Hydra groups and interpolate paths; the heavy **JSON files** under `configs/env/configs/` and `configs/policy/configs/` carry the full robosuite / robomimic settings that get fed into `config_factory()` and `initialize_obs_utils_with_config()` at startup. CLI overrides land on YAML; runtime behavior comes from JSON.
 
-```mermaid
-graph TB
-    A[User] --> B[Hydra Config]
-    B --> C[BenchmarkRunner]
-    C --> D[Environment]
-    C --> E[Predictor]
-    C --> F[Policy]
-    
-    E --> E1[N2M]
-    E --> E2[Mobipi]
-    E --> E3[LeLaN]
-    E --> E4[Blank]
-    E --> E5[Reachability]
-    
-    F --> F1[Robomimic]
-    F --> F2[VLM]
-    F --> F3[VLA]
-    
-    D --> D1[RoboCasa]
-    
-    C --> G[Utils]
-    G --> G1[Navigation]
-    G --> G2[Collision]
-    G --> G3[Sampling]
-    G --> G4[Observation]
+```
+config.yaml
+  ├─> paths/default.yaml
+  ├─> env/robocasa.yaml         ── interpolates ${env.name} →  configs/env/configs/${env.name}.json
+  ├─> policy/bc_transformer.yaml ── interpolates ${env.name} →  configs/policy/configs/${env.name}_BCtransformer.json
+  ├─> predictor/<name>.yaml      ── e.g. n2m.yaml builds {task}_{layout}_{style}_{policy}_{rollout_num} dir
+  └─> benchmark/<mode>.yaml      ── evaluation.yaml (asserted by run_benchmark.py) or collection.yaml
 ```
 
-### Workflow
+### Runtime workflow
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Hydra
-    participant Runner
-    participant Env
-    participant Predictor
-    participant Policy
-    
-    User->>Hydra: python scripts/run_benchmark.py
-    Hydra->>Runner: Load configs
-    Runner->>Env: Create environment
-    Runner->>Predictor: Load predictor
-    Runner->>Policy: Load policy
-    
+    participant Runner as BenchmarkRunner
+    participant Env as RoboCasa env
+    participant Pred as Predictor
+    participant Pol as Policy
+
+    User->>Hydra: python scripts/run_benchmark.py env.name=... predictor=... policy=...
+    Hydra->>Runner: Composed config (YAML + JSON merged)
+    Runner->>Env: create_env_from_config(seed=train.seed*1000)
+    Runner->>Pred: load_checkpoint()
+    Runner->>Pol: load_checkpoint() + normalization stats
+
     loop For each episode
-        Runner->>Env: Reset & sample initial pose
-        
-        loop Until predictor.done
-            Runner->>Predictor: predict(obs, pose)
-            Predictor-->>Runner: predicted_pose, done
-            Runner->>Env: Teleport to pose
-        end
-        
-        loop Until task success/horizon
-            Runner->>Policy: predict_action(obs)
-            Policy-->>Runner: action
+        Runner->>Env: reset() → se2_initial
+        Runner->>Runner: build collision checker (depth_camera1-5)
+        Runner->>Runner: sample collision-free se2_randomized
+        Runner->>Env: teleport(se2_randomized)
+        Runner->>Pred: predict(se2_initial, se2_randomized, collision_checker)
+        Pred-->>Runner: {is_ego, se2_predicted, extra_info}
+        Runner->>Env: teleport(se2_predicted)  %% ego→world conversion if is_ego
+        loop Until success or horizon
+            Runner->>Pol: predict_action(obs)
+            Pol-->>Runner: action
             Runner->>Env: step(action)
         end
-        
-        Runner->>Runner: Log statistics
+        Runner->>Runner: Append episode to results.json
     end
-    
-    Runner->>User: Save results.json
 ```
-
-## Configuration Architecture
-
-### Configuration Structure
-
-```
-configs/
-├── env/
-│   ├── configs/              # Environment JSON configs (complete robosuite configs)
-│   │   ├── CloseDrawer.json
-│   │   ├── PnPCounterToCab.json
-│   │   └── ...
-│   └── robocasa.yaml         # Universal RoboCasa environment config
-│
-├── policy/
-│   ├── configs/              # Policy JSON configs (complete robomimic configs)
-│   │   ├── CloseDrawer_BCtransformer.json
-│   │   ├── CloseDrawer_diffusion.json
-│   │   └── ...
-│   ├── bc_transformer.yaml   # BC Transformer policy
-│   └── diffusion.yaml        # Diffusion policy
-│
-├── predictor/                # Predictor configs
-│   ├── n2m.yaml
-│   ├── mobipi.yaml
-│   └── ...
-│
-└── benchmark/                # Benchmark mode configs
-    ├── collection.yaml
-    └── evaluation.yaml
-```
-
-### Configuration Resolution
-
-```
-config.yaml
-  └─> env/robocasa.yaml (env.name specified via command line)
-       ├─> configs/env/configs/${env.name}.json (full env config)
-       └─> policy/bc_transformer.yaml (auto-constructs config_name from env.name)
-            └─> configs/policy/configs/${env.name}_BCtransformer.json (full policy config)
-```
-

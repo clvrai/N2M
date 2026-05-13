@@ -4,7 +4,7 @@ defaults:
   - paths: default
   - env: robocasa
   - policy: bc_transformer
-  - predictor: blank
+  - predictor: oracle
   - benchmark: evaluation
   - _self_
 

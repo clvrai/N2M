@@ -9,7 +9,7 @@ class BasePredictor(ABC):
     """Base class for all predictors.
     
     All predictors use a unified iterative interface:
-    - One-shot predictors (N2M, mobipi, blank): return done=True on first predict() call
+    - One-shot predictors (N2M, mobipi, oracle): return done=True on first predict() call
     - Iterative predictors (lelan, reachability): return done=False until completion
     
     The benchmark will loop calling predict() until done=True is returned.

@@ -8,7 +8,7 @@ import os
 import json
 
 from benchmark.env.env_utils import create_env_from_config
-from benchmark.predictor.blank_predictor import BlankPredictor
+from benchmark.predictor.oracle_predictor import OraclePredictor
 from benchmark.predictor.n2m_predictor import N2MPredictor
 from benchmark.predictor.lelan_predictor import LeLaNPredictor
 from benchmark.predictor.mobipi_predictor import MobipiPredictor
@@ -204,8 +204,8 @@ def _create_predictor(hydra_cfg: DictConfig, json_config, env, unwrapped_env):
     
     print(f"\n============= Loading Predictor: {predictor_name} =============")
     
-    if predictor_name == 'blank':
-        predictor = BlankPredictor(hydra_cfg, json_config, env, unwrapped_env)
+    if predictor_name == 'oracle':
+        predictor = OraclePredictor(hydra_cfg, json_config, env, unwrapped_env)
     elif predictor_name == 'n2m':
         # N2M predictor needs environment to resolve path templates
         predictor = N2MPredictor(hydra_cfg, json_config, env, unwrapped_env)

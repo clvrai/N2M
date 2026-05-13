@@ -1,0 +1,6 @@
+# Oracle predictor configuration (upper-bound baseline)
+
+name: oracle
+type: oracle
+
+# No additional config needed for oracle predictor
