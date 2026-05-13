@@ -4,14 +4,21 @@ Unified benchmark framework for mobile manipulation navigation predictors.
 
 ## Overview
 
-This repository provides a benchmark environment for evaluating different navigation prediction methods (N2M, Mobipi, Reachability, Oracle, LeLaN) combined with manipulation policies in RoboCasa kitchen environments.
+This repository provides a benchmark environment for evaluating different navigation prediction methods (N2M, Mobipi, Reachability, Oracle) combined with manipulation policies in RoboCasa kitchen environments.
 
 **Key Features:**
 
 - Unified predictor/policy/env interfaces for benchmark
-- include 5 predictors: N2M, Mobipi, Reachability, Oracle, LeLaN
+- include 4 predictors: N2M, Mobipi, Reachability, Oracle
 - Minimal modification to third-party libraries
 - Hydra configuration management
+
+## Current Status
+
+- The repository has been synchronized with the latest benchmark code.
+- The pretrained assets used by the benchmark have been uploaded and are available through the prepared `data/` folder linked below.
+- The benchmark result files used for the paper's benchmark statistics have also been uploaded; the download link is provided in the evaluation section below.
+- TODO: We have not yet re-cloned the repository from GitHub and run through the README from scratch to verify the full setup flow end-to-end. There may still be small setup bugs. We plan to finish this final check before May 15, 2026.
 
 ## Installation
 
@@ -407,9 +414,28 @@ N2M-benchmark/
 │   ├── collect_n2m_data.py            # Collect N2M training data via base-policy rollouts
 │   └── collect_mobipi_images.py       # Collect multi-view images for mobipi 3DGS training
 │
-├── data/                               # Symlink → external storage (datasets, ckpts, results)
-│   ├── policy/robomimic/{configs,checkpoints,datasets}/
-│   ├── predictor/n2m/{task}_{layout}_{style}_{policy}_{rollout_num}/{pcl/,meta.json,training/}
+├── data/                               # External assets, datasets, checkpoints, and results
+│   ├── policy/
+│   │   ├── robomimic/
+│   │   │   ├── checkpoints/           # BC Transformer policy checkpoints
+│   │   │   └── datasets/              # RoboCasa datasets used by BC Transformer
+│   │   └── dp/
+│   │       ├── checkpoints/           # Diffusion policy checkpoints
+│   │       └── datasets/              # Datasets used by diffusion policies
+│   ├── predictor/
+│   │   ├── n2m/
+│   │   │   ├── PointBERT/             # PointBERT encoder checkpoint
+│   │   │   └── {task}_{layout}_{style}_{policy}_{rollout_num}/
+│   │   │       ├── pcl/               # Collected point clouds for N2M training
+│   │   │       ├── meta.json          # Pose and point-cloud metadata
+│   │   │       └── training/
+│   │   │           ├── config.json
+│   │   │           └── ckpts/best_model.pth
+│   │   └── mobipi/
+│   │       └── scene_data/
+│   │           └── close_drawer/
+│   │               └── layout0_style0_seed123000/
+│   │                   └── model/splatfacto/.../nerfstudio_models/step-*.ckpt
 │   └── benchmark/results/             # JSON results, one per (task × predictor) run
 │
 ├── env/                                # Submodules — installed editable by install.sh
