@@ -18,7 +18,7 @@ This repository provides a benchmark environment for evaluating different naviga
 - The repository has been synchronized with the latest benchmark code.
 - The pretrained assets used by the benchmark have been uploaded and are available through the prepared `data/` folder linked below.
 - The benchmark result files used for the paper's benchmark statistics have also been uploaded; the download link is provided in the evaluation section below.
-- TODO: We have not yet re-cloned the repository from GitHub and run through the README from scratch to verify the full setup flow end-to-end. There may still be small setup bugs. We plan to finish this final check before May 15, 2026.
+- If you encounter any issues while running the benchmark, please open a GitHub issue.
 
 ## Installation
 
