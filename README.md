@@ -138,3 +138,6 @@ pcd_numpy = np.concatenate([np.asarray(pcd.points), np.asarray(pcd.colors)], axi
 # predict initial pose. If it fails to sample valid points within certain number of trial, is_valid will return False. Otherwise, is_valid will be True
 initial_pose, is_valid = n2m.predict(pcd_numpy)
 ```
+
+## ACK
+This work was supported by Institute of Information & communications Technology Planning & Evaluation (IITP) grant (No.RS2019-II190075, Artificial Intelligence Graduate School Program, KAIST; No.2022-0-00077, AI Technology Development for Commonsense Extraction, Reasoning, and Inference from Heterogeneous Data; No.RS2022-II220984, Development of Artificial Intelligence Technology for Personalized Plug-and-Play Explanation and Verification of Explanation), National Research Foundation of Korea (NRF) grant funded by the Korea government (MSIT) (NRF-2021H1D3A2A03103683, Brain Pool Research Program; RS-2024-00414822), and the Technology Innovation Program(or Industrial Strategic Technology Development Program-Robot Industry Technology Development)(RS2024-00427719, Dexterous and Agile Humanoid Robots for Industrial Applications) funded by the Ministry of Trade Industry & Energy(MOTIE, Korea)
